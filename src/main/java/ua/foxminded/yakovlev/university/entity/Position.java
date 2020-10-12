@@ -1,0 +1,13 @@
+package ua.foxminded.yakovlev.university.entity;
+
+public enum Position {
+    UNIVERSITY_PROFESSOR,
+    PROFESSOR,
+    ASSOCIATE_PROFESSOR,
+    ASSISTANT_PROFESSOR,
+    MASTER_INSTRUCTOR,
+    SENIOR_INSTRUCTOR,
+    INSTRUCTOR,
+    RESEARCH_ASSOCIATE,
+    ADJUNCT_PROFESSOR;
+}
