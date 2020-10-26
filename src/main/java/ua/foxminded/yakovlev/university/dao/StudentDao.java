@@ -4,7 +4,7 @@ import java.util.List;
 
 import ua.foxminded.yakovlev.university.entity.Student;
 
-public interface StudentDao extends EntityDao<Student, Integer> {
+public interface StudentDao extends EntityDao<Student, Long> {
 
-	List<Student> findByGroupId(Integer groupId);
+	List<Student> findByGroupId(Long groupId);
 }
