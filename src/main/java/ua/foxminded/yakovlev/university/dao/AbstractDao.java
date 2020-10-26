@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 
-public abstract class AbstractDao<E, ID> implements EntityDao<E, ID> {
+public abstract class AbstractDao<E, ID> {
 
 	private final String findAll;
 	private final String findById;
