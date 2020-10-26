@@ -8,23 +8,24 @@ import org.springframework.jdbc.core.RowMapper;
 public abstract class AbstractDao<E, ID> implements EntityDao<E, ID> {
 
 	private final String findAll;
-	private final String save;
 	private final String findById;
 	private final String update;
 	private final String delete;
 	private final RowMapper<E> rowMapper;
-	
 	private final JdbcTemplate jdbcTemplate;
 
-	public AbstractDao(JdbcTemplate jdbcTemplate, RowMapper<E> rowMapper, String findAll, String save, String findById, String update,
+	public AbstractDao(JdbcTemplate jdbcTemplate, 
+			RowMapper<E> rowMapper, 
+			String findAll, 
+			String findById, 
+			String update,
 			String delete) {
 		this.findAll = findAll;
-		this.save = save;
 		this.findById = findById;
 		this.update = update;
 		this.delete = delete;
-		this.jdbcTemplate = jdbcTemplate;
 		this.rowMapper = rowMapper;
+		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	public List<E> findAll() {
@@ -36,20 +37,19 @@ public abstract class AbstractDao<E, ID> implements EntityDao<E, ID> {
 	}
 
 	public void delete(ID id) {
-		jdbcTemplate.update(delete, id);		
+		jdbcTemplate.update(delete, id);	
 	}
 
-	public void update(E entity) {
+	public E update(E entity) {
 		jdbcTemplate.update(update, setValuesForUpdate(entity));
+		return findById(getId(entity));
 	}
 
-	public void save(E entity) {
-		jdbcTemplate.update(save, setValuesForSave(entity));
-	}
+	public abstract E save(E entity);
 
 	public abstract PreparedStatementSetter setValuesForUpdate(E entity);
-
-	public abstract PreparedStatementSetter setValuesForSave(E entity);
+	
+	public abstract ID getId(E entity);
 
 	protected List<E> findByQuery(String sql, PreparedStatementSetter preparedStatementSetter) {
 		return jdbcTemplate.query(sql, preparedStatementSetter, rowMapper);
