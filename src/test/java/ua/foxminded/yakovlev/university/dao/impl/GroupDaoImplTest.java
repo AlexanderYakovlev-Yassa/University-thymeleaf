@@ -38,7 +38,7 @@ class GroupDaoImplTest {
 	}
 	
 	@Test
-	void findAllShouldReturnCertainListOfStudents() {
+	void findAllShouldReturnCertainListOfGroups() {
 		
 		List<Group> expected = getAllGroups();
 		List<Group> actual = dao.findAll();
