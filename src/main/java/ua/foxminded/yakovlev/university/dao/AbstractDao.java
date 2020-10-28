@@ -2,14 +2,16 @@ package ua.foxminded.yakovlev.university.dao;
 
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 public abstract class AbstractDao<E, ID> {
 
 	private final String findAll;
 	private final String findById;
-	private final String update;
 	private final String delete;
 	private final RowMapper<E> rowMapper;
 	private final JdbcTemplate jdbcTemplate;
@@ -17,12 +19,10 @@ public abstract class AbstractDao<E, ID> {
 	public AbstractDao(JdbcTemplate jdbcTemplate, 
 			RowMapper<E> rowMapper, 
 			String findAll, 
-			String findById, 
-			String update,
+			String findById,
 			String delete) {
 		this.findAll = findAll;
 		this.findById = findById;
-		this.update = update;
 		this.delete = delete;
 		this.rowMapper = rowMapper;
 		this.jdbcTemplate = jdbcTemplate;
@@ -41,15 +41,30 @@ public abstract class AbstractDao<E, ID> {
 	}
 
 	public E update(E entity) {
-		jdbcTemplate.update(update, setValuesForUpdate(entity));
-		return findById(getId(entity));
+		
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+
+	    jdbcTemplate.update(getPreparedStatementCreatorForUpdate(entity), keyHolder);
+	    @SuppressWarnings("unchecked")
+	    ID entityId = (ID) keyHolder.getKey();
+	    
+		return findById(entityId);
 	}
 
-	public abstract E save(E entity);
+	public E save(E entity) {
+		
+		KeyHolder keyHolder = new GeneratedKeyHolder();
 
-	public abstract PreparedStatementSetter setValuesForUpdate(E entity);
+	    jdbcTemplate.update(getPreparedStatementCreatorForSave(entity), keyHolder);
+	    @SuppressWarnings("unchecked")
+	    ID entityId = (ID) keyHolder.getKey();
+	    
+		return findById(entityId);
+	}
+
+	public abstract PreparedStatementCreator getPreparedStatementCreatorForUpdate(E entity);
 	
-	public abstract ID getId(E entity);
+	public abstract PreparedStatementCreator getPreparedStatementCreatorForSave(E entity);
 
 	protected List<E> findByQuery(String sql, PreparedStatementSetter preparedStatementSetter) {
 		return jdbcTemplate.query(sql, preparedStatementSetter, rowMapper);
