@@ -86,7 +86,7 @@ class StudentDaoImplTest {
 	void saveShouldSaveCertainStudent() {
 		
 		List<Student> expected = getAllStudents();
-		Student newStudent = getStudent(1L, "aa-01", 9L, 6L, "Новый", "Студент");
+		Student newStudent = getStudent(1L, "aa-01", 10L, 6L, "Новый", "Студент");
 		expected.add(newStudent);
 		Student studentToAdd = getStudent(1L, "aa-01", 0L, 0L, "Новый", "Студент");
 		
