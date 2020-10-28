@@ -16,6 +16,8 @@
 		<junit.jupiter.version>5.4.2</junit.jupiter.version>
 		<postgresql-version>42.2.18</postgresql-version>
 		<h2-database-version>1.4.200</h2-database-version>
+		<lombok-version>1.18.12</lombok-version>
+		<spring-jdbc-version>5.2.9.RELEASE</spring-jdbc-version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -44,13 +46,13 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.12</version>
+			<version>${lombok-version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-jdbc</artifactId>
-			<version>5.2.9.RELEASE</version>
+			<version>${spring-jdbc-version}</version>
 		</dependency>
 	</dependencies>
 	<build>
