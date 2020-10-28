@@ -6,6 +6,6 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper=true)
 @Data public class Lecturer extends Person {
 
-	private Long id;
+	private Long lecturerId;
 	private Position position;
 }

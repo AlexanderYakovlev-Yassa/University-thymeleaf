@@ -14,8 +14,10 @@
 		<maven-compiler-source>8</maven-compiler-source>
 		<jacoco-maven-plugin-version>0.8.6</jacoco-maven-plugin-version>
 		<junit.jupiter.version>5.4.2</junit.jupiter.version>
-		<postgresql-version>42.2.15</postgresql-version>
-		<h2-database-version>1.4.192</h2-database-version>
+		<postgresql-version>42.2.18</postgresql-version>
+		<h2-database-version>1.4.200</h2-database-version>
+		<lombok-version>1.18.12</lombok-version>
+		<spring-jdbc-version>5.2.9.RELEASE</spring-jdbc-version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -44,10 +46,14 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.12</version>
+			<version>${lombok-version}</version>
 			<scope>provided</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring-jdbc-version}</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -56,7 +62,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler-plugin-version}</version>
 				<configuration>
-					<annotationProcessorPaths>						
+					<annotationProcessorPaths>
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
