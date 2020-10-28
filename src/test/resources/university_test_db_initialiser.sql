@@ -10,30 +10,30 @@ DROP TABLE IF EXISTS persons;
 CREATE TABLE public.courses
 (
     course_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
-    course_name character varying COLLATE pg_catalog."default" NOT NULL,
-    course_description character varying COLLATE pg_catalog."default",
+    course_name character varying,
+    course_description character varying,
     CONSTRAINT courses_pkey PRIMARY KEY (course_id)
 );
 
 CREATE TABLE public.groups
 (
     group_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
-    group_name character varying COLLATE pg_catalog."default" NOT NULL,
+    group_name character varying,
     CONSTRAINT pk_group_id PRIMARY KEY (group_id)
 );
 
 CREATE TABLE public.positions
 (
     position_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
-    position_name character varying COLLATE pg_catalog."default" NOT NULL,
+    position_name character varying,
     CONSTRAINT positions_pkey PRIMARY KEY (position_id)
 );
 
 CREATE TABLE public.persons
 (
     person_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
-    person_first_name character varying COLLATE pg_catalog."default" NOT NULL,
-    person_last_name character varying COLLATE pg_catalog."default" NOT NULL,
+    person_first_name character varying,
+    person_last_name character varying,
     CONSTRAINT persons_pkey PRIMARY KEY (person_id)
 );
 
@@ -44,11 +44,11 @@ CREATE TABLE public.lecturers
     lecturer_position_id bigint,
     CONSTRAINT lecturers_pkey PRIMARY KEY (lecturer_id),
     CONSTRAINT lecturer_person_id_fkey FOREIGN KEY (lecturer_person_id)
-        REFERENCES public.persons (person_id) MATCH SIMPLE
+        REFERENCES public.persons (person_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT lecturer_position_id_fkey FOREIGN KEY (lecturer_position_id)
-        REFERENCES public.positions (position_id) MATCH SIMPLE
+        REFERENCES public.positions (position_id)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
@@ -60,11 +60,11 @@ CREATE TABLE public.students
     student_person_id bigint,
     CONSTRAINT students_pkey PRIMARY KEY (student_id),
     CONSTRAINT student_group_id_fkey FOREIGN KEY (student_group_id)
-        REFERENCES public.groups (group_id) MATCH SIMPLE
+        REFERENCES public.groups (group_id)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT student_person_id_fkey FOREIGN KEY (student_person_id)
-        REFERENCES public.persons (person_id) MATCH SIMPLE
+        REFERENCES public.persons (person_id)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
@@ -77,11 +77,11 @@ CREATE TABLE public.timetable_records
     timetable_record_course_id bigint NOT NULL,
     CONSTRAINT timetable_records_pkey PRIMARY KEY (timetable_record_id),
     CONSTRAINT timetable_record_course_id_fkey FOREIGN KEY (timetable_record_course_id)
-        REFERENCES public.courses (course_id) MATCH SIMPLE
+        REFERENCES public.courses (course_id)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT timetable_record_lecturer_id_fkey FOREIGN KEY (timetable_record_lecturer_id)
-        REFERENCES public.lecturers (lecturer_id) MATCH SIMPLE
+        REFERENCES public.lecturers (lecturer_id)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
@@ -93,11 +93,11 @@ CREATE TABLE public.timetable_record_groups
     timetable_record_group_group_id bigint NOT NULL,
     CONSTRAINT timetable_record_groups_pkey PRIMARY KEY (timetable_record_group_id),
     CONSTRAINT timetable_record_group_timetable_record_id_fkey FOREIGN KEY (timetable_record_group_timetable_record_id)
-        REFERENCES public.timetable_records (timetable_record_id) MATCH SIMPLE
+        REFERENCES public.timetable_records (timetable_record_id)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT timetable_record_groups_group_id_fkey FOREIGN KEY (timetable_record_group_group_id)
-        REFERENCES public.groups (group_id) MATCH SIMPLE
+        REFERENCES public.groups (group_id)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
@@ -118,12 +118,14 @@ VALUES
 ('Максим', 'Конев'),
 ('Андрей', 'Аксенов'),
 ('Мирон', 'Давыдов'),
-('Владимир', 'Ойстрах');
+('Владимир', 'Ойстрах'),
+('Cтанислав', 'Кудесник');
 
 INSERT INTO courses(course_name, course_description)	
 VALUES 
 ('Математика', 'Общий курс математики'),
 ('Физика', 'Общий курс физики'),
+('Музыка', 'Основы музыкальной грамоты'),
 ('Биология', 'Общий курс биологии');
 
 INSERT INTO students(student_person_id, student_group_id)
@@ -150,7 +152,8 @@ INSERT INTO lecturers(lecturer_person_id, lecturer_position_id)
 VALUES
 (6, 7),
 (7, 7),
-(8, 8);
+(8, 8),
+(9, 3);
 
 INSERT INTO timetable_records(timetable_record_time, timetable_record_lecturer_id, timetable_record_course_id)
 VALUES
