@@ -1,10 +1,14 @@
 package ua.foxminded.yakovlev.university.dao.impl;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.StudentDao;
@@ -28,10 +32,12 @@ public class StudentDaoImpl extends AbstractDao<Student, Long> implements Studen
 			+ "g.group_name "
 			+ "FROM public.students s, public.groups g, public.persons p "
 			+ "WHERE s.student_person_id = p.person_id AND s.student_group_id = g.group_id AND s.student_id = ?;";
-	private static final String UPDATE = "UPDATE public.persons "
+	private static final String SAVE_PERSON = "INSERT INTO public.persons(person_first_name, person_last_name) VALUES (?, ?);";
+	private static final String SAVE_STUDENT = "INSERT INTO public.students(student_person_id, student_group_id) VALUES (?, ?);";
+	private static final String UPDATE_PERSON = "UPDATE public.persons "
 			+ "SET person_first_name=?, person_last_name=? "
-			+ "WHERE person_id=?; "
-			+ "UPDATE public.students "
+			+ "WHERE person_id=?;";
+	private static final String UPDATE_STUDENT = "UPDATE public.students "
 			+ "SET student_group_id=? "
 			+ "WHERE student_id=?;";
 	private static final String DELETE = "DELETE FROM public.persons "
@@ -47,6 +53,8 @@ public class StudentDaoImpl extends AbstractDao<Student, Long> implements Studen
 			+ "g.group_name "
 			+ "FROM public.students s, public.groups g, public.persons p "
 			+ "WHERE s.student_person_id = p.person_id AND s.student_group_id = g.group_id AND s.student_group_id = ?;";
+	private static final String PERSON_ID_KEY = "person_id";
+	private static final String STUDENT_ID_KEY = "student_id";
 	
 	private final JdbcTemplate jdbcTemplate;
 	
@@ -54,8 +62,7 @@ public class StudentDaoImpl extends AbstractDao<Student, Long> implements Studen
 		super(jdbcTemplate, 
 				rowMapper,
 				FIND_ALL, 
-				FIND_BY_ID, 
-				UPDATE, 
+				FIND_BY_ID,
 				DELETE);
 		this.jdbcTemplate = jdbcTemplate;
 	}
@@ -71,45 +78,44 @@ public class StudentDaoImpl extends AbstractDao<Student, Long> implements Studen
 	}
 
 	@Override
-	public PreparedStatementSetter setValuesForUpdate(Student student) {
+	public PreparedStatementCreator getPreparedStatementCreatorForSave(Student student) {
 		
-		return ps -> {
-			ps.setString(1, student.getFirstName());
-			ps.setString(2, student.getLastName());
-			ps.setLong(3, student.getPersonId());
-			ps.setLong(4, student.getGroup().getId());
-			ps.setLong(5,  student.getStudentId());
-		};
-	}
-	
-	@Override
-	public Student save(Student student) {
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+
+	    jdbcTemplate.update(connection -> {
+	        PreparedStatement ps = connection
+	                .prepareStatement(SAVE_PERSON, new String[] {PERSON_ID_KEY});
+	                ps.setString(1, student.getFirstName());
+	                ps.setString(2, student.getLastName());
+	                return ps;
+	              }, keyHolder);
+	    
+		Long personId = keyHolder.getKey().longValue();
 		
-		Long personId = jdbcTemplate.query("INSERT INTO public.persons(person_first_name, person_last_name) VALUES (?, ?) RETURNING person_id;", 
-				ps -> {
-					ps.setString(1, student.getFirstName());
-					ps.setString(2, student.getLastName());
-				},
-				rs -> {
-					rs.next();
-					return rs.getLong("person_id");
-				});
-		
-		Long studentId = jdbcTemplate.query("INSERT INTO public.students(student_person_id, student_group_id) VALUES (?, ?) RETURNING student_id;",
-				ps -> {
-					ps.setLong(1, personId);
-					ps.setLong(2, student.getGroup().getId());
-				},
-				rs -> {
-					rs.next();
-					return rs.getLong("student_id");
-				});
-		
-		return findById(studentId);
+		return connection -> {
+	        PreparedStatement ps = connection
+	                .prepareStatement(SAVE_STUDENT, new String[] {STUDENT_ID_KEY});
+	                ps.setLong(1, personId);
+	                ps.setLong(2, student.getGroup().getId());
+	                return ps;
+	              };
 	}
 
 	@Override
-	public Long getId(Student student) {		
-		return student.getStudentId();
+	public PreparedStatementCreator getPreparedStatementCreatorForUpdate(Student student) {
+		
+		executeUpdate(UPDATE_PERSON, ps -> {
+			ps.setString(1, student.getFirstName());
+	        ps.setString(2, student.getLastName());
+	        ps.setLong(3, student.getPersonId());
+		});
+		
+		return connection -> {
+	        PreparedStatement ps = connection
+	                .prepareStatement(UPDATE_STUDENT, new String[] {STUDENT_ID_KEY});	                
+	                ps.setLong(1, student.getGroup().getId());
+	                ps.setLong(2, student.getStudentId());
+	                return ps;
+	              };
 	}
 }
