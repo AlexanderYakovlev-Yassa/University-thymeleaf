@@ -9,11 +9,13 @@ import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Component;
 
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.LecturerDao;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 
+@Component
 public class LecturerDaoImpl extends AbstractDao<Lecturer, Long> implements LecturerDao {
 	
 	private static final String FIND_ALL = "SELECT l.lecturer_id, "

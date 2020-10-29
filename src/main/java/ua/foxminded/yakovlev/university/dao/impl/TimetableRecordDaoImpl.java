@@ -8,10 +8,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.TimetableRecordDao;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
 
+@Component
 public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> implements TimetableRecordDao {
 
 	private static final String FIND_ALL = "SELECT t.*, l.*, c.*, p.*, ps.* "

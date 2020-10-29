@@ -5,11 +5,13 @@ import java.sql.PreparedStatement;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.PositionDao;
 import ua.foxminded.yakovlev.university.entity.Position;
 
+@Component
 public class PositionDaoImpl extends AbstractDao<Position, Long> implements PositionDao {
 
 	private static final String FIND_ALL = "SELECT * FROM public.positions;";
