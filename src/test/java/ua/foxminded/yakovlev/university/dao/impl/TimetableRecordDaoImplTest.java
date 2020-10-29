@@ -8,32 +8,25 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-
-import ua.foxminded.yakovlev.university.dbconnector.JdbcTemplateFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import ua.foxminded.yakovlev.university.dao.TimetableRecordDao;
 import ua.foxminded.yakovlev.university.entity.Course;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.entity.Position;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
-import ua.foxminded.yakovlev.university.mapper.TimetableRecordMapper;
 import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
-import ua.foxminded.yakovlev.university.util.FileReader;
 
 class TimetableRecordDaoImplTest {
 
+	private static ClassPathXmlApplicationContext context;
 	private static TestDatabaseGenerator generator;
-	private static TimetableRecordDaoImpl dao;
+	private static TimetableRecordDao dao;
 
 	@BeforeAll
 	static void initTestCase() {
-		FileReader fileReader = new FileReader();
-		JdbcTemplateFactory jdbcTemplateFactory = new JdbcTemplateFactory("university_db");
-		JdbcTemplate jdbcTemplate = jdbcTemplateFactory.getJdbcTemplate();
-		RowMapper<TimetableRecord> rowMapper = new TimetableRecordMapper();
-		ScriptExecutor scriptExecutor = new ScriptExecutor(jdbcTemplate);
-		generator = new TestDatabaseGenerator(fileReader, scriptExecutor);
-		dao = new TimetableRecordDaoImpl(jdbcTemplate, rowMapper);
+		context = new ClassPathXmlApplicationContext("applicationContext.xml");
+		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
+		dao = context.getBean("timetableRecordDao", TimetableRecordDaoImpl.class);
 	}
 
 	@BeforeEach

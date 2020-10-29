@@ -7,29 +7,21 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-
-import ua.foxminded.yakovlev.university.dbconnector.JdbcTemplateFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ua.foxminded.yakovlev.university.entity.Group;
-import ua.foxminded.yakovlev.university.mapper.GroupMapper;
 import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
-import ua.foxminded.yakovlev.university.util.FileReader;
 
 class GroupDaoImplTest {
 
+	private static ClassPathXmlApplicationContext context;
 	private static TestDatabaseGenerator generator;
 	private static GroupDaoImpl dao;
 
 	@BeforeAll
 	static void initTestCase() {
-		FileReader fileReader = new FileReader();
-		JdbcTemplateFactory jdbcTemplateFactory = new JdbcTemplateFactory("university_db");
-		JdbcTemplate jdbcTemplate = jdbcTemplateFactory.getJdbcTemplate();
-		RowMapper<Group> rowMapper = new GroupMapper();
-		ScriptExecutor scriptExecutor = new ScriptExecutor(jdbcTemplate);
-		generator = new TestDatabaseGenerator(fileReader, scriptExecutor);
-		dao = new GroupDaoImpl(jdbcTemplate, rowMapper);
+		context = new ClassPathXmlApplicationContext("applicationContext.xml");
+		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
+		dao = context.getBean("groupDao", GroupDaoImpl.class);
 	}
 
 	@BeforeEach

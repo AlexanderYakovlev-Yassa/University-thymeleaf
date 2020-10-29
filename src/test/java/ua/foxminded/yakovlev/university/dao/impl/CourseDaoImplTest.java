@@ -7,29 +7,22 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-
-import ua.foxminded.yakovlev.university.dbconnector.JdbcTemplateFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import ua.foxminded.yakovlev.university.dao.CourseDao;
 import ua.foxminded.yakovlev.university.entity.Course;
-import ua.foxminded.yakovlev.university.mapper.CourseMapper;
 import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
-import ua.foxminded.yakovlev.university.util.FileReader;
 
 class CourseDaoImplTest {
 
 	private static TestDatabaseGenerator generator;
-	private static CourseDaoImpl dao;
+	private static CourseDao dao;
+	private static ClassPathXmlApplicationContext context;
 
 	@BeforeAll
 	static void initTestCase() {
-		FileReader fileReader = new FileReader();
-		JdbcTemplateFactory jdbcTemplateFactory = new JdbcTemplateFactory("university_db");
-		JdbcTemplate jdbcTemplate = jdbcTemplateFactory.getJdbcTemplate();
-		RowMapper<Course> rowMapper = new CourseMapper();
-		ScriptExecutor scriptExecutor = new ScriptExecutor(jdbcTemplate);
-		generator = new TestDatabaseGenerator(fileReader, scriptExecutor);
-		dao = new CourseDaoImpl(jdbcTemplate, rowMapper);
+		context = new ClassPathXmlApplicationContext("applicationContext.xml");
+		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
+		dao = context.getBean("courseDao", CourseDao.class);
 	}
 
 	@BeforeEach
