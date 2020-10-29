@@ -5,8 +5,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import ua.foxminded.yakovlev.university.exception.DaoRuntimeException;
 
+@Component
 public class FileReader {
 
 	public List<String> readFile(Path path) {
