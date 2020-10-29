@@ -4,9 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import ua.foxminded.yakovlev.university.entity.Group;
 
+@Component
 public class GroupMapper implements RowMapper<Group> {
 	
 	private static final String GROUP_ID = "group_id";

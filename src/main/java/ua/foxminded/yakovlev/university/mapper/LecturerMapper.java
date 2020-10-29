@@ -4,10 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.entity.Position;
 
+@Component
 public class LecturerMapper implements RowMapper<Lecturer> {
 	
 	private static final String PERSON_ID = "lecturer_person_id";
