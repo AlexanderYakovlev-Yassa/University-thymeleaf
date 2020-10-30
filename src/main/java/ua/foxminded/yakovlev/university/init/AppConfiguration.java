@@ -2,26 +2,22 @@ package ua.foxminded.yakovlev.university.init;
 
 import java.util.ResourceBundle;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import ua.foxminded.yakovlev.university.dao.CourseDao;
-import ua.foxminded.yakovlev.university.dao.GroupDao;
 import ua.foxminded.yakovlev.university.dao.LecturerDao;
 import ua.foxminded.yakovlev.university.dao.PositionDao;
 import ua.foxminded.yakovlev.university.dao.StudentDao;
 import ua.foxminded.yakovlev.university.dao.TimetableRecordDao;
 import ua.foxminded.yakovlev.university.dao.impl.CourseDaoImpl;
-import ua.foxminded.yakovlev.university.dao.impl.GroupDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.LecturerDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.PositionDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.StudentDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.TimetableRecordDaoImpl;
 import ua.foxminded.yakovlev.university.mapper.CourseMapper;
-import ua.foxminded.yakovlev.university.mapper.GroupMapper;
 import ua.foxminded.yakovlev.university.mapper.LecturerMapper;
 import ua.foxminded.yakovlev.university.mapper.PositionMapper;
 import ua.foxminded.yakovlev.university.mapper.StudentMapper;
