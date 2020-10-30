@@ -49,37 +49,26 @@ public class AppConfiguration {
 	}
 	
 	@Bean (name="courseDao")
-	@Autowired
 	public CourseDao getCourseDao(JdbcTemplate jdbcTemplate, CourseMapper courseMapper) {		
 		return new CourseDaoImpl(jdbcTemplate, courseMapper);
 	}
 	
-	@Bean (name="groupDao")
-	@Autowired
-	public GroupDao getCourseDao(JdbcTemplate jdbcTemplate, GroupMapper groupMapper) {		
-		return new GroupDaoImpl(jdbcTemplate, groupMapper);
-	}
-	
 	@Bean (name="positionDao")
-	@Autowired
 	public PositionDao getCourseDao(JdbcTemplate jdbcTemplate, PositionMapper positionMapper) {		
 		return new PositionDaoImpl(jdbcTemplate, positionMapper);
 	}
 	
 	@Bean (name="lecturerDao")
-	@Autowired
 	public LecturerDao getCourseDao(JdbcTemplate jdbcTemplate, LecturerMapper lecturerMapper) {		
 		return new LecturerDaoImpl(jdbcTemplate, lecturerMapper);
 	}
 	
 	@Bean (name="studentDao")
-	@Autowired
 	public StudentDao getCourseDao(JdbcTemplate jdbcTemplate, StudentMapper studentMapper) {		
 		return new StudentDaoImpl(jdbcTemplate, studentMapper);
 	}
 	
 	@Bean (name="timetableRecordDao")
-	@Autowired
 	public TimetableRecordDao getCourseDao(JdbcTemplate jdbcTemplate, TimetableRecordMapper timetableRecordMapper) {		
 		return new TimetableRecordDaoImpl(jdbcTemplate, timetableRecordMapper);
 	}
