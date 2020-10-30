@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import ua.foxminded.yakovlev.university.dao.CourseDao;
+import ua.foxminded.yakovlev.university.dao.GroupDao;
 import ua.foxminded.yakovlev.university.dao.LecturerDao;
 import ua.foxminded.yakovlev.university.dao.PositionDao;
 import ua.foxminded.yakovlev.university.dao.StudentDao;
@@ -17,11 +18,15 @@ import ua.foxminded.yakovlev.university.dao.impl.LecturerDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.PositionDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.StudentDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.TimetableRecordDaoImpl;
+import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.mapper.CourseMapper;
 import ua.foxminded.yakovlev.university.mapper.LecturerMapper;
 import ua.foxminded.yakovlev.university.mapper.PositionMapper;
 import ua.foxminded.yakovlev.university.mapper.StudentMapper;
 import ua.foxminded.yakovlev.university.mapper.TimetableRecordMapper;
+import ua.foxminded.yakovlev.university.service.GroupService;
+import ua.foxminded.yakovlev.university.service.impl.GroupServiceImpl;
+import ua.foxminded.yakovlev.university.validator.EntityValidator;
 
 @Configuration
 public class AppConfiguration {
@@ -67,5 +72,10 @@ public class AppConfiguration {
 	@Bean (name="timetableRecordDao")
 	public TimetableRecordDao getCourseDao(JdbcTemplate jdbcTemplate, TimetableRecordMapper timetableRecordMapper) {		
 		return new TimetableRecordDaoImpl(jdbcTemplate, timetableRecordMapper);
+	}
+	
+	@Bean (name="groupService")
+	public GroupService getCourseService(GroupDao groupDao, EntityValidator<Group> validator) {		
+		return new GroupServiceImpl(groupDao, validator);
 	}
 }

@@ -2,7 +2,6 @@ package ua.foxminded.yakovlev.university.init;
 
 import java.util.ResourceBundle;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,14 +20,18 @@ import ua.foxminded.yakovlev.university.dao.impl.PositionDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.ScriptExecutor;
 import ua.foxminded.yakovlev.university.dao.impl.StudentDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.TimetableRecordDaoImpl;
+import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.mapper.CourseMapper;
 import ua.foxminded.yakovlev.university.mapper.GroupMapper;
 import ua.foxminded.yakovlev.university.mapper.LecturerMapper;
 import ua.foxminded.yakovlev.university.mapper.PositionMapper;
 import ua.foxminded.yakovlev.university.mapper.StudentMapper;
 import ua.foxminded.yakovlev.university.mapper.TimetableRecordMapper;
+import ua.foxminded.yakovlev.university.service.GroupService;
+import ua.foxminded.yakovlev.university.service.impl.GroupServiceImpl;
 import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
 import ua.foxminded.yakovlev.university.util.FileReader;
+import ua.foxminded.yakovlev.university.validator.EntityValidator;
 
 @Configuration
 public class AppConfiguration {
@@ -89,5 +92,10 @@ public class AppConfiguration {
 	@Bean (name="databaseGenerator")
 	public TestDatabaseGenerator getDatabaseGenerator(FileReader fileReader, ScriptExecutor scriptExecutor) {
 		return new TestDatabaseGenerator(fileReader, scriptExecutor);
+	}
+	
+	@Bean (name="groupService")
+	public GroupService getCourseService(GroupDao groupDao, EntityValidator<Group> validator) {		
+		return new GroupServiceImpl(groupDao, validator);
 	}
 }
