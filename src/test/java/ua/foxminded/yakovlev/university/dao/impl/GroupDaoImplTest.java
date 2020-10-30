@@ -119,6 +119,82 @@ class GroupDaoImplTest {
 		assertEquals(expected, actual);
 	}
 	
+	@Test
+	void findByTimeableIdShouldReturnCertainListOfGroups() {
+		
+		List<Group> expected = getAllGroups();
+		expected.remove(3);
+		expected.remove(2);
+		
+		List<Group> actual = dao.findByTimeableId(1L);
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void addToTimeableShouldAddCertainRecord() {
+		
+		List<Group> expected = getAllGroups();
+		expected.remove(3);
+		expected.remove(2);
+		
+		dao.addToTimeable(2L, 2L);
+		
+		List<Group> actual = dao.findByTimeableId(2L);
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void addToTimeableShouldReturnCertainListOfGroups() {
+		
+		List<Group> expected = getAllGroups();
+		expected.remove(3);
+		expected.remove(2);
+		
+		List<Group> actual = dao.addToTimeable(2L, 2L);
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void removeFromTimeableShouldRemoveCertainRecord() {
+		
+		List<Group> expected = getAllGroups();
+		expected.remove(3);
+		expected.remove(2);
+		expected.remove(1);
+		
+		dao.removeFromTimeable(1L, 2L);
+		
+		List<Group> actual = dao.findByTimeableId(2L);
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void removeFromTimeableShouldReturnCertainListOfGroups() {
+		
+		List<Group> expected = getAllGroups();
+		expected.remove(3);
+		expected.remove(2);
+		expected.remove(1);
+		
+		List<Group> actual = dao.removeFromTimeable(1L, 2L);
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void removeFromTimeableShouldShouldReturnEmptyListOfGroupsWhenRemovingLastGroupFromCertainTimetable() {
+		
+		List<Group> expected = new ArrayList<>();
+		
+		List<Group> actual = dao.removeFromTimeable(2L, 1L);
+		
+		assertEquals(expected, actual);
+	}
+	
 	List<Group> getAllGroups() {
 		
 		List<Group> allGroups = new ArrayList<>();
