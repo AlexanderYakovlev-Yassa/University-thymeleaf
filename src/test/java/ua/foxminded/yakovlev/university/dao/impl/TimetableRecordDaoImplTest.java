@@ -83,6 +83,38 @@ class TimetableRecordDaoImplTest {
 	}
 	
 	@Test
+	void findByPeriodOfTimeAndLecturerIdShouldReturnCertainTimetableRecordList() {
+		
+		List<TimetableRecord> expected = getAllTimetableRecords();
+		expected.remove(0);
+		expected.remove(0);
+		
+		LocalDateTime firstDate = LocalDateTime.parse("2020-10-16T09:30:00");
+		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T12:30:00");
+		Long lecturerId = 3L;
+		
+		List<TimetableRecord> actual = dao.findByPeriodOfTimeAndLecturerId(firstDate, secondDate, lecturerId);
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void findByPeriodOfTimeAndStudentIdShouldReturnCertainTimetableRecordList() {
+		
+		List<TimetableRecord> expected = getAllTimetableRecords();
+		expected.remove(0);
+		expected.remove(0);
+		
+		LocalDateTime firstDate = LocalDateTime.parse("2020-10-16T09:30:00");
+		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T13:00:00");
+		Long studentId = 3L;
+		
+		List<TimetableRecord> actual = dao.findByPeriodOfTimeAndLecturerId(firstDate, secondDate, studentId);
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
 	void saveShouldSaveCertainTimetableRecord() {
 		
 		List<TimetableRecord> expected = getAllTimetableRecords();

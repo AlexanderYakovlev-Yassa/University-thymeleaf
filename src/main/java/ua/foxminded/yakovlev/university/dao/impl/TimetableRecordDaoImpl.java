@@ -43,6 +43,26 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 			+ "JOIN positions ps ON l.lecturer_position_id = ps.position_id "
 			+ "WHERE timetable_record_time >= ? "
 			+ "AND timetable_record_time < ?;";
+	private static final String FIND_BETWEEN_TWO_DATES_AND_LECTURER = "SELECT t.*, l.*, c.*, p.*, ps.* " + "FROM public.timetable_records t "
+			+ "JOIN courses c ON t.timetable_record_course_id = c.course_id "
+			+ "JOIN lecturers l ON t.timetable_record_lecturer_id = l.lecturer_id "
+			+ "JOIN persons p ON l.lecturer_person_id = p.person_id "
+			+ "JOIN positions ps ON l.lecturer_position_id = ps.position_id "
+			+ "WHERE timetable_record_time >= ? "
+			+ "AND timetable_record_time < ?"
+			+ "AND l.lecturer_id = ?;";
+	private static final String FIND_BETWEEN_TWO_DATES_AND_GROUP = "SELECT t.*, l.*, c.*, p.*, ps.*  FROM ("
+			+ "SELECT t.* "
+			+ "FROM public.timetable_record_groups tg "
+			+ "JOIN public.timetable_records t ON t.timetable_record_id = tg.timetable_record_group_timetable_record_id "
+			+ "JOIN public.students s ON tg.timetable_record_group_group_id = s.student_group_id "
+			+ "WHERE s.student_id = ?) t "
+			+ "JOIN courses c ON t.timetable_record_course_id = c.course_id "
+			+ "JOIN lecturers l ON t.timetable_record_lecturer_id = l.lecturer_id "
+			+ "JOIN persons p ON l.lecturer_person_id = p.person_id "
+			+ "JOIN positions ps ON l.lecturer_position_id = ps.position_id "
+			+ "WHERE timetable_record_time >= ? "
+			+ "AND timetable_record_time < ?;";
 	private static final String FIND_BY_TIMETABLE_ID = "SELECT g.* "
 			+ "FROM public.timetable_record_groups t "
 			+ "JOIN public.groups g ON t.timetable_record_group_group_id = g.group_id "
@@ -190,5 +210,39 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 			ps.setLong(1, timetableId);
 			ps.setLong(2, groupId);
 		});
+	}
+
+	@Override
+	public List<TimetableRecord> findByPeriodOfTimeAndLecturerId(LocalDateTime periodStart, LocalDateTime periodFinish,
+			Long lecturerId) {
+		
+		PreparedStatementSetter preparedStatementSetter = ps -> {
+			ps.setObject(1, periodStart);
+			ps.setObject(2, periodFinish);
+			ps.setLong(3, lecturerId);
+		};
+		
+		List<TimetableRecord> recordList = findByQuery(FIND_BETWEEN_TWO_DATES_AND_LECTURER, preparedStatementSetter);
+		
+		determineGroupsInRecordList(recordList);
+		
+		return recordList;
+	}
+
+	@Override
+	public List<TimetableRecord> findByPeriodOfTimeAndStudentId(LocalDateTime periodStart, LocalDateTime periodFinish,
+			Long studentId) {
+		
+		PreparedStatementSetter preparedStatementSetter = ps -> {
+			ps.setLong(1, studentId);
+			ps.setObject(2, periodStart);
+			ps.setObject(3, periodFinish);
+		};
+		
+		List<TimetableRecord> recordList = findByQuery(FIND_BETWEEN_TWO_DATES_AND_GROUP, preparedStatementSetter);
+		
+		determineGroupsInRecordList(recordList);
+		
+		return recordList;
 	}
 }
