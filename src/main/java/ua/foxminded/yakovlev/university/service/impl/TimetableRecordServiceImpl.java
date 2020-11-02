@@ -34,4 +34,16 @@ public class TimetableRecordServiceImpl extends AbstractService<TimetableRecord,
 	public TimetableRecord removeGroupFromTimeable(Long timetableId, Long groupId) {		
 		return dao.removeGroupFromTimeable(timetableId, groupId);
 	}
+
+	@Override
+	public List<TimetableRecord> findByPeriodOfTimeAndLecturerId(LocalDateTime periodStart, LocalDateTime periodFinish,
+			Long lecturerId) {		
+		return dao.findByPeriodOfTimeAndLecturerId(periodStart, periodFinish, lecturerId);
+	}
+
+	@Override
+	public List<TimetableRecord> findByPeriodOfTimeAndGroupId(LocalDateTime periodStart, LocalDateTime periodFinish,
+			Long studentId) {
+		return dao.findByPeriodOfTimeAndStudentId(periodStart, periodFinish, studentId);
+	}
 }
