@@ -7,21 +7,22 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ua.foxminded.yakovlev.university.dao.LecturerDao;
 import ua.foxminded.yakovlev.university.entity.Position;
+import ua.foxminded.yakovlev.university.init.AppConfiguration;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
 
 class LecturerDaoImplTest {
 
-	private static ClassPathXmlApplicationContext context;
+	private static AnnotationConfigApplicationContext context;
 	private static TestDatabaseGenerator generator;
 	private static LecturerDao dao;
 
 	@BeforeAll
 	static void initTestCase() {
-		context = new ClassPathXmlApplicationContext("applicationContext.xml");
+		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
 		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
 		dao = context.getBean("lecturerDao", LecturerDaoImpl.class);
 	}
