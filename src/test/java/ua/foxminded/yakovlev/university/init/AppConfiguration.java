@@ -1,9 +1,10 @@
 package ua.foxminded.yakovlev.university.init;
 
-import java.util.ResourceBundle;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
@@ -20,36 +21,53 @@ import ua.foxminded.yakovlev.university.dao.impl.PositionDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.ScriptExecutor;
 import ua.foxminded.yakovlev.university.dao.impl.StudentDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.TimetableRecordDaoImpl;
-import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.mapper.CourseMapper;
 import ua.foxminded.yakovlev.university.mapper.GroupMapper;
 import ua.foxminded.yakovlev.university.mapper.LecturerMapper;
 import ua.foxminded.yakovlev.university.mapper.PositionMapper;
 import ua.foxminded.yakovlev.university.mapper.StudentMapper;
 import ua.foxminded.yakovlev.university.mapper.TimetableRecordMapper;
+import ua.foxminded.yakovlev.university.service.CourseService;
 import ua.foxminded.yakovlev.university.service.GroupService;
+import ua.foxminded.yakovlev.university.service.LecturerService;
+import ua.foxminded.yakovlev.university.service.PositionService;
+import ua.foxminded.yakovlev.university.service.StudentService;
+import ua.foxminded.yakovlev.university.service.TimetableRecordService;
+import ua.foxminded.yakovlev.university.service.impl.CourseServiceImpl;
 import ua.foxminded.yakovlev.university.service.impl.GroupServiceImpl;
+import ua.foxminded.yakovlev.university.service.impl.LecturerServiceImpl;
+import ua.foxminded.yakovlev.university.service.impl.PositionServiceImpl;
+import ua.foxminded.yakovlev.university.service.impl.StudentServiceImpl;
+import ua.foxminded.yakovlev.university.service.impl.TimetableRecordServiceImpl;
 import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
 import ua.foxminded.yakovlev.university.util.FileReader;
-import ua.foxminded.yakovlev.university.validator.EntityValidator;
+import ua.foxminded.yakovlev.university.validator.CourseValidator;
+import ua.foxminded.yakovlev.university.validator.GroupValidator;
+import ua.foxminded.yakovlev.university.validator.LecturerValidator;
+import ua.foxminded.yakovlev.university.validator.PositionValidator;
+import ua.foxminded.yakovlev.university.validator.StudentValidator;
+import ua.foxminded.yakovlev.university.validator.TimetableRecordValidator;
 
 @Configuration
+@ComponentScan("ua.foxminded.yakovlev.university")
+@PropertySource("university_db.properties")
 public class AppConfiguration {
 
-	private static final String DB_PROPERTIES = "university_db";
-	private static final String DRIVER = "driver";
-	private static final String URL = "url";
-	private static final String USER = "user";
-	private static final String PASSWORD = "password";
+	@Value("${driver}")
+	private String driver;
+	@Value("${url}")
+	private String url;
+	@Value("${user}")
+	private String user;
+	@Value("${password}")
+	private String password;
 
 	@Bean (name="jdbcTemplate")
 	public JdbcTemplate getJdbcTemplate() {
 
-		ResourceBundle dbResourceBundle = ResourceBundle.getBundle(DB_PROPERTIES);
-
-		DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource(dbResourceBundle.getString(URL),
-				dbResourceBundle.getString(USER), dbResourceBundle.getString(PASSWORD));
-		driverManagerDataSource.setDriverClassName(dbResourceBundle.getString(DRIVER));
+		DriverManagerDataSource driverManagerDataSource = 
+				new DriverManagerDataSource(url, user, password);
+		driverManagerDataSource.setDriverClassName(driver);
 		
 		return new JdbcTemplate(driverManagerDataSource);
 	}
@@ -60,28 +78,30 @@ public class AppConfiguration {
 	}
 	
 	@Bean (name="groupDao")
-	public GroupDao getCourseDao(JdbcTemplate jdbcTemplate, GroupMapper groupMapper) {		
+	public GroupDao getGroupDao(JdbcTemplate jdbcTemplate, GroupMapper groupMapper) {		
 		return new GroupDaoImpl(jdbcTemplate, groupMapper);
 	}
 	
 	@Bean (name="positionDao")
-	public PositionDao getCourseDao(JdbcTemplate jdbcTemplate, PositionMapper positionMapper) {		
+	public PositionDao getPositionDao(JdbcTemplate jdbcTemplate, PositionMapper positionMapper) {		
 		return new PositionDaoImpl(jdbcTemplate, positionMapper);
 	}
 	
 	@Bean (name="lecturerDao")
-	public LecturerDao getCourseDao(JdbcTemplate jdbcTemplate, LecturerMapper lecturerMapper) {		
+	public LecturerDao getLecturerDao(JdbcTemplate jdbcTemplate, LecturerMapper lecturerMapper) {		
 		return new LecturerDaoImpl(jdbcTemplate, lecturerMapper);
 	}
 	
 	@Bean (name="studentDao")
-	public StudentDao getCourseDao(JdbcTemplate jdbcTemplate, StudentMapper studentMapper) {		
+	public StudentDao getStudentDao(JdbcTemplate jdbcTemplate, StudentMapper studentMapper) {		
 		return new StudentDaoImpl(jdbcTemplate, studentMapper);
 	}
 	
 	@Bean (name="timetableRecordDao")
-	public TimetableRecordDao getCourseDao(JdbcTemplate jdbcTemplate, TimetableRecordMapper timetableRecordMapper) {		
-		return new TimetableRecordDaoImpl(jdbcTemplate, timetableRecordMapper);
+	public TimetableRecordDao getTimetableRecordDao(JdbcTemplate jdbcTemplate, 
+			TimetableRecordMapper timetableRecordMapper,
+			GroupMapper groupMapper) {		
+		return new TimetableRecordDaoImpl(jdbcTemplate, timetableRecordMapper, groupMapper);
 	}
 	
 	@Bean (name="scriptExecutor")
@@ -94,8 +114,33 @@ public class AppConfiguration {
 		return new TestDatabaseGenerator(fileReader, scriptExecutor);
 	}
 	
+	@Bean (name="courseService")
+	public CourseService getCourseService(CourseDao courseDao, CourseValidator validator) {		
+		return new CourseServiceImpl(courseDao, validator);
+	}
+	
 	@Bean (name="groupService")
-	public GroupService getCourseService(GroupDao groupDao, EntityValidator<Group> validator) {		
+	public GroupService getGroupService(GroupDao groupDao, GroupValidator validator) {		
 		return new GroupServiceImpl(groupDao, validator);
+	}
+	
+	@Bean (name="positionService")
+	public PositionService getPositionService(PositionDao positionDao, PositionValidator validator) {		
+		return new PositionServiceImpl(positionDao, validator);
+	}
+	
+	@Bean (name="studentService")
+	public StudentService getStudentService(StudentDao studentDao, StudentValidator validator) {		
+		return new StudentServiceImpl(studentDao, validator);
+	}
+	
+	@Bean (name="lecturerService")
+	public LecturerService getLecturerService(LecturerDao lecturerDao, LecturerValidator validator) {		
+		return new LecturerServiceImpl(lecturerDao, validator);
+	}
+	
+	@Bean (name="timetableRecordService")
+	public TimetableRecordService getTimetableRecordService(TimetableRecordDao timetableRecordDao, TimetableRecordValidator validator) {		
+		return new TimetableRecordServiceImpl(timetableRecordDao, validator);
 	}
 }
