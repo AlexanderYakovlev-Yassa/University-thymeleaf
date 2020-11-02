@@ -7,19 +7,21 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ua.foxminded.yakovlev.university.dao.GroupDao;
 import ua.foxminded.yakovlev.university.entity.Group;
+import ua.foxminded.yakovlev.university.init.AppConfiguration;
 import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
 
 class GroupDaoImplTest {
 
-	private static ClassPathXmlApplicationContext context;
+	private static AnnotationConfigApplicationContext context;
 	private static TestDatabaseGenerator generator;
-	private static GroupDaoImpl dao;
+	private static GroupDao dao;
 
 	@BeforeAll
 	static void initTestCase() {
-		context = new ClassPathXmlApplicationContext("applicationContext.xml");
+		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
 		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
 		dao = context.getBean("groupDao", GroupDaoImpl.class);
 	}
@@ -115,82 +117,6 @@ class GroupDaoImplTest {
 		
 		Group expected = dao.update(changedGroup);		
 		Group actual = dao.findById(changedGroup.getId());
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void findByTimeableIdShouldReturnCertainListOfGroups() {
-		
-		List<Group> expected = getAllGroups();
-		expected.remove(3);
-		expected.remove(2);
-		
-		List<Group> actual = dao.findByTimeableId(1L);
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void addToTimeableShouldAddCertainRecord() {
-		
-		List<Group> expected = getAllGroups();
-		expected.remove(3);
-		expected.remove(2);
-		
-		dao.addToTimeable(2L, 2L);
-		
-		List<Group> actual = dao.findByTimeableId(2L);
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void addToTimeableShouldReturnCertainListOfGroups() {
-		
-		List<Group> expected = getAllGroups();
-		expected.remove(3);
-		expected.remove(2);
-		
-		List<Group> actual = dao.addToTimeable(2L, 2L);
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void removeFromTimeableShouldRemoveCertainRecord() {
-		
-		List<Group> expected = getAllGroups();
-		expected.remove(3);
-		expected.remove(2);
-		expected.remove(1);
-		
-		dao.removeFromTimeable(1L, 2L);
-		
-		List<Group> actual = dao.findByTimeableId(2L);
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void removeFromTimeableShouldReturnCertainListOfGroups() {
-		
-		List<Group> expected = getAllGroups();
-		expected.remove(3);
-		expected.remove(2);
-		expected.remove(1);
-		
-		List<Group> actual = dao.removeFromTimeable(1L, 2L);
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void removeFromTimeableShouldShouldReturnEmptyListOfGroupsWhenRemovingLastGroupFromCertainTimetable() {
-		
-		List<Group> expected = new ArrayList<>();
-		
-		List<Group> actual = dao.removeFromTimeable(2L, 1L);
 		
 		assertEquals(expected, actual);
 	}
