@@ -8,4 +8,7 @@ import ua.foxminded.yakovlev.university.entity.TimetableRecord;
 public interface TimetableRecordDao extends EntityDao<TimetableRecord, Long> {
 
 	List<TimetableRecord> findByPeriodOfTime(LocalDateTime periodStart, LocalDateTime periodFinish);
+	
+	TimetableRecord addGroupToTimeable(Long timetableId, Long groupId);
+	TimetableRecord removeGroupFromTimeable(Long timetableId, Long groupId);
 }
