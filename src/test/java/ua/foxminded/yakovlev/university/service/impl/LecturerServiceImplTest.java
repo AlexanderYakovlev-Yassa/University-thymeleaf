@@ -1,4 +1,4 @@
-package ua.foxminded.yakovlev.university.dao.impl;
+package ua.foxminded.yakovlev.university.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,23 +8,23 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ua.foxminded.yakovlev.university.dao.LecturerDao;
 import ua.foxminded.yakovlev.university.entity.Position;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
+import ua.foxminded.yakovlev.university.service.LecturerService;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
 
-class LecturerDaoImplTest {
+class LecturerServiceImplTest {
 
 	private static AnnotationConfigApplicationContext context;
 	private static TestDatabaseGenerator generator;
-	private static LecturerDao dao;
+	private static LecturerService service;
 
 	@BeforeAll
 	static void initTestCase() {
 		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
 		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
-		dao = context.getBean("lecturerDao", LecturerDaoImpl.class);
+		service = context.getBean("lecturerService", LecturerServiceImpl.class);
 	}
 
 	@BeforeEach
@@ -36,7 +36,7 @@ class LecturerDaoImplTest {
 	void findAllShouldReturnCertainListOfLecturers() {
 		
 		List<Lecturer> expected = getAllLecturers();
-		List<Lecturer> actual = dao.findAll();
+		List<Lecturer> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -45,7 +45,7 @@ class LecturerDaoImplTest {
 	void findByIdShouldReturnCertainLecturer() {
 		
 		Lecturer expected = getAllLecturers().get(1);
-		Lecturer actual = dao.findById(2L);
+		Lecturer actual = service.findById(2L);
 		
 		assertEquals(expected, actual);
 	}
@@ -56,9 +56,9 @@ class LecturerDaoImplTest {
 		List<Lecturer> expected = getAllLecturers();
 		expected.remove(3);
 		
-		dao.delete(4L);
+		service.delete(4L);
 		
-		List<Lecturer> actual = dao.findAll();
+		List<Lecturer> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -70,7 +70,7 @@ class LecturerDaoImplTest {
 		expected.remove(3);
 		expected.remove(2);
 		
-		List<Lecturer> actual = dao.findByPositionId(7L);
+		List<Lecturer> actual = service.findByPositionId(7L);
 		
 		assertEquals(expected, actual);
 	}
@@ -84,9 +84,9 @@ class LecturerDaoImplTest {
 		expected.add(newLecturer);
 		Lecturer lecturerToAdd = getLecturer(3L, "ASSOCIATE_PROFESSOR", 10L, 5L, "Новый", "Лектор");
 		
-		dao.save(lecturerToAdd);
+		service.save(lecturerToAdd);
 		
-		List<Lecturer> actual = dao.findAll();
+		List<Lecturer> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -101,9 +101,9 @@ class LecturerDaoImplTest {
 		Position newPosition = getAllLecturers().get(3).getPosition();
 		expected.setPosition(newPosition);
 		
-		dao.update(expected);
+		service.update(expected);
 		
-		Lecturer actual = dao.findById(expected.getLecturerId());
+		Lecturer actual = service.findById(expected.getLecturerId());
 		
 		assertEquals(expected, actual);
 	}
@@ -117,9 +117,9 @@ class LecturerDaoImplTest {
 		Position newPosition = getAllLecturers().get(3).getPosition();
 		newLecturer.setPosition(newPosition);
 		
-		Lecturer expected = dao.update(newLecturer);
+		Lecturer expected = service.update(newLecturer);
 		
-		Lecturer actual = dao.findById(newLecturer.getLecturerId());
+		Lecturer actual = service.findById(newLecturer.getLecturerId());
 		
 		assertEquals(expected, actual);
 	}

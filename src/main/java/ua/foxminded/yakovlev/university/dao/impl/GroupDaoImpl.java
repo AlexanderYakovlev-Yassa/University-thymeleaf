@@ -1,15 +1,16 @@
 package ua.foxminded.yakovlev.university.dao.impl;
 
 import java.sql.PreparedStatement;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.GroupDao;
 import ua.foxminded.yakovlev.university.entity.Group;
 
+@Component
 public class GroupDaoImpl extends AbstractDao<Group, Long> implements GroupDao {
 
 	private static final String FIND_ALL = "SELECT * FROM public.groups;";

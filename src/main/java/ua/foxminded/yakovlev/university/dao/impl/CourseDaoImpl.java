@@ -1,14 +1,18 @@
 package ua.foxminded.yakovlev.university.dao.impl;
 
 import java.sql.PreparedStatement;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.CourseDao;
 import ua.foxminded.yakovlev.university.entity.Course;
 
+@Component
 public class CourseDaoImpl extends AbstractDao<Course, Long> implements CourseDao {
 
 	private static final String FIND_ALL = "SELECT * FROM public.courses;";
@@ -23,7 +27,8 @@ public class CourseDaoImpl extends AbstractDao<Course, Long> implements CourseDa
 	
 	private final JdbcTemplate jdbcTemplate;
 	private final RowMapper<Course> courseMapper;
-	
+		
+	@Autowired
 	public CourseDaoImpl(JdbcTemplate jdbcTemplate, RowMapper<Course> courseMapper) {
 		super(jdbcTemplate, courseMapper, FIND_ALL, FIND_BY_ID, DELETE);
 		this.jdbcTemplate = jdbcTemplate;

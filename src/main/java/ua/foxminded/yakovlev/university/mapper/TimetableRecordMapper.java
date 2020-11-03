@@ -6,12 +6,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import ua.foxminded.yakovlev.university.entity.Course;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.entity.Position;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
 
+@Component
 public class TimetableRecordMapper implements RowMapper<TimetableRecord> {
 		
 	private static final String TIMETABLE_RECORD_ID = "timetable_record_id";
@@ -28,7 +30,7 @@ public class TimetableRecordMapper implements RowMapper<TimetableRecord> {
 	private static final String COURSE_NAME = "course_name";
 	private static final String COURSE_DESCRIPTION = "course_description";
 	
-	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";//"2007-12-03 10:15:30"
+	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 	@Override
 	public TimetableRecord mapRow(ResultSet rs, int rowNum) throws SQLException {

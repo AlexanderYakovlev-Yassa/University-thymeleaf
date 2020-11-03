@@ -39,24 +39,26 @@ public abstract class AbstractDao<E, ID> {
 	public void delete(ID id) {
 		jdbcTemplate.update(delete, id);	
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	public E update(E entity) {
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
 	    jdbcTemplate.update(getPreparedStatementCreatorForUpdate(entity), keyHolder);
-	    @SuppressWarnings("unchecked")
+	    
 	    ID entityId = (ID) keyHolder.getKey();
 	    
 		return findById(entityId);
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	public E save(E entity) {
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
 	    jdbcTemplate.update(getPreparedStatementCreatorForSave(entity), keyHolder);
-	    @SuppressWarnings("unchecked")
+	    
 	    ID entityId = (ID) keyHolder.getKey();
 	    
 		return findById(entityId);

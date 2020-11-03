@@ -1,4 +1,4 @@
-package ua.foxminded.yakovlev.university.dao.impl;
+package ua.foxminded.yakovlev.university.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,22 +8,22 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ua.foxminded.yakovlev.university.dao.CourseDao;
 import ua.foxminded.yakovlev.university.entity.Course;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
+import ua.foxminded.yakovlev.university.service.CourseService;
 import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
 
-class CourseDaoImplTest {
+class CourseServiceImplTest {
 
 	private static TestDatabaseGenerator generator;
-	private static CourseDao dao;
+	private static CourseService service;
 	private static AnnotationConfigApplicationContext context;
 
 	@BeforeAll
 	static void initTestCase() {
 		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
 		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
-		dao = context.getBean("courseDao", CourseDao.class);
+		service = context.getBean("courseService", CourseService.class);
 	}
 
 	@BeforeEach
@@ -35,7 +35,7 @@ class CourseDaoImplTest {
 	void findAllShouldReturnCertainListOfCourses() {
 		
 		List<Course> expected = getAllCourses();
-		List<Course> actual = dao.findAll();
+		List<Course> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -44,7 +44,7 @@ class CourseDaoImplTest {
 	void findByIdShouldReturnCertainCourse() {
 		
 		Course expected = getAllCourses().get(1);
-		Course actual = dao.findById(2L);
+		Course actual = service.findById(2L);
 		
 		assertEquals(expected, actual);
 	}
@@ -55,9 +55,9 @@ class CourseDaoImplTest {
 		List<Course> expected = getAllCourses();
 		expected.remove(3);
 		
-		dao.delete(4L);
+		service.delete(4L);
 		
-		List<Course> actual = dao.findAll();
+		List<Course> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -67,7 +67,7 @@ class CourseDaoImplTest {
 		
 		Course expected = getCourse(2L, "Физика", "Общий курс физики");
 		
-		Course actual = dao.findCourseByName("Физика");
+		Course actual = service.findCourseByName("Физика");
 		
 		assertEquals(expected, actual);
 	}
@@ -80,9 +80,9 @@ class CourseDaoImplTest {
 		expected.add(newCourse);
 		Course courseToAdd = getCourse(0L, "Химия", "Неорганическая физика");
 		
-		dao.save(courseToAdd);
+		service.save(courseToAdd);
 		
-		List<Course> actual = dao.findAll();
+		List<Course> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -93,7 +93,7 @@ class CourseDaoImplTest {
 		Course courseToAdd = getCourse(0L, "Химия", "Неорганическая физика");
 		
 		Course expected = getCourse(5L, "Химия", "Неорганическая физика");
-		Course actual = dao.save(courseToAdd);		
+		Course actual = service.save(courseToAdd);		
 		
 		assertEquals(expected, actual);
 	}
@@ -103,9 +103,9 @@ class CourseDaoImplTest {
 		
 		Course expected = getCourse(2L, "Химия", "Неорганическая физика");
 				
-		dao.update(expected);
+		service.update(expected);
 		
-		Course actual = dao.findById(expected.getId());
+		Course actual = service.findById(expected.getId());
 		
 		assertEquals(expected, actual);
 	}
@@ -115,8 +115,8 @@ class CourseDaoImplTest {
 		
 		Course changedCourse = getCourse(2L, "Химия", "Неорганическая физика");
 		
-		Course expected = dao.update(changedCourse);		
-		Course actual = dao.findById(changedCourse.getId());
+		Course expected = service.update(changedCourse);		
+		Course actual = service.findById(changedCourse.getId());
 		
 		assertEquals(expected, actual);
 	}

@@ -1,29 +1,31 @@
-package ua.foxminded.yakovlev.university.dao.impl;
+package ua.foxminded.yakovlev.university.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ua.foxminded.yakovlev.university.dao.GroupDao;
+
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
+import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
 
-class GroupDaoImplTest {
+class GroupServiceImplTest {
 
 	private static AnnotationConfigApplicationContext context;
 	private static TestDatabaseGenerator generator;
-	private static GroupDao dao;
+	private static GroupService service;
 
 	@BeforeAll
 	static void initTestCase() {
 		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
 		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
-		dao = context.getBean("groupDao", GroupDaoImpl.class);
+		service = context.getBean("groupService", GroupServiceImpl.class);
 	}
 
 	@BeforeEach
@@ -35,7 +37,7 @@ class GroupDaoImplTest {
 	void findAllShouldReturnCertainListOfGroups() {
 		
 		List<Group> expected = getAllGroups();
-		List<Group> actual = dao.findAll();
+		List<Group> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -44,7 +46,7 @@ class GroupDaoImplTest {
 	void findByIdShouldReturnCertainGroup() {
 		
 		Group expected = getAllGroups().get(1);
-		Group actual = dao.findById(2L);
+		Group actual = service.findById(2L);
 		
 		assertEquals(expected, actual);
 	}
@@ -55,9 +57,9 @@ class GroupDaoImplTest {
 		List<Group> expected = getAllGroups();
 		expected.remove(3);
 		
-		dao.delete(4L);
+		service.delete(4L);
 		
-		List<Group> actual = dao.findAll();
+		List<Group> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -67,7 +69,7 @@ class GroupDaoImplTest {
 		
 		Group expected = getGroup(1L, "aa-01");
 		
-		Group actual = dao.findGroupByName("aa-01");
+		Group actual = service.findGroupByName("aa-01");
 		
 		assertEquals(expected, actual);
 	}
@@ -76,13 +78,13 @@ class GroupDaoImplTest {
 	void saveShouldSaveCertainGroup() {
 		
 		List<Group> expected = getAllGroups();
-		Group newGroup = getGroup(5L, "new-6");
+		Group newGroup = getGroup(5L, "ne-66");
 		expected.add(newGroup);
-		Group groupToAdd = getGroup(0L, "new-6");
+		Group groupToAdd = getGroup(0L, "ne-66");
 		
-		dao.save(groupToAdd);
+		service.save(groupToAdd);
 		
-		List<Group> actual = dao.findAll();
+		List<Group> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -90,10 +92,10 @@ class GroupDaoImplTest {
 	@Test
 	void saveShouldReturnJustSavedGroup() {
 		
-		Group groupToAdd = getGroup(0L, "new-6");
+		Group groupToAdd = getGroup(0L, "ne-66");
 		
-		Group expected = getGroup(5L, "new-6");
-		Group actual = dao.save(groupToAdd);		
+		Group expected = getGroup(5L, "ne-66");
+		Group actual = service.save(groupToAdd);		
 		
 		assertEquals(expected, actual);
 	}
@@ -101,11 +103,11 @@ class GroupDaoImplTest {
 	@Test
 	void updateShouldUpdateCertainFieldsOfGroup() {
 		
-		Group expected = getGroup(2L, "Измененное");
+		Group expected = getGroup(2L, "ne-66");
 				
-		dao.update(expected);
+		service.update(expected);
 		
-		Group actual = dao.findById(expected.getId());
+		Group actual = service.findById(expected.getId());
 		
 		assertEquals(expected, actual);
 	}
@@ -113,10 +115,10 @@ class GroupDaoImplTest {
 	@Test
 	void updateShouldReturnUpdatedGroup() {
 		
-		Group changedGroup = getGroup(2L, "Измененное");
+		Group changedGroup = getGroup(2L, "ne-66");
 		
-		Group expected = dao.update(changedGroup);		
-		Group actual = dao.findById(changedGroup.getId());
+		Group expected = service.update(changedGroup);		
+		Group actual = service.findById(changedGroup.getId());
 		
 		assertEquals(expected, actual);
 	}
@@ -142,4 +144,5 @@ class GroupDaoImplTest {
 		
 		return group;
 	}
+
 }

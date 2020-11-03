@@ -1,4 +1,4 @@
-package ua.foxminded.yakovlev.university.dao.impl;
+package ua.foxminded.yakovlev.university.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -9,26 +9,26 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ua.foxminded.yakovlev.university.dao.TimetableRecordDao;
 import ua.foxminded.yakovlev.university.entity.Course;
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.entity.Position;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
+import ua.foxminded.yakovlev.university.service.TimetableRecordService;
 import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
 
-class TimetableRecordDaoImplTest {
+class TimetableRecordServiceImplTest {
 
 	private static AnnotationConfigApplicationContext context;
 	private static TestDatabaseGenerator generator;
-	private static TimetableRecordDao dao;
+	private static TimetableRecordService service;
 
 	@BeforeAll
 	static void initTestCase() {
 		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
 		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
-		dao = context.getBean("timetableRecordDao", TimetableRecordDaoImpl.class);
+		service = context.getBean("timetableRecordService", TimetableRecordServiceImpl.class);
 	}
 
 	@BeforeEach
@@ -40,7 +40,7 @@ class TimetableRecordDaoImplTest {
 	void findAllShouldReturnCertainListOfTimetableRecords() {
 		
 		List<TimetableRecord> expected = getAllTimetableRecords();
-		List<TimetableRecord> actual = dao.findAll();
+		List<TimetableRecord> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -49,7 +49,7 @@ class TimetableRecordDaoImplTest {
 	void findByIdShouldReturnCertainTimetableRecord() {
 		
 		TimetableRecord expected = getAllTimetableRecords().get(1);
-		TimetableRecord actual = dao.findById(2L);
+		TimetableRecord actual = service.findById(2L);
 		
 		assertEquals(expected, actual);
 	}
@@ -60,9 +60,9 @@ class TimetableRecordDaoImplTest {
 		List<TimetableRecord> expected = getAllTimetableRecords();
 		expected.remove(2);
 		
-		dao.delete(3L);
+		service.delete(3L);
 		
-		List<TimetableRecord> actual = dao.findAll();
+		List<TimetableRecord> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -77,13 +77,114 @@ class TimetableRecordDaoImplTest {
 		LocalDateTime firstDate = LocalDateTime.parse("2020-10-16T09:30:00");
 		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T11:30:00");
 		
-		List<TimetableRecord> actual = dao.findByPeriodOfTime(firstDate, secondDate);
+		List<TimetableRecord> actual = service.findByPeriodOfTime(firstDate, secondDate);
 		
 		assertEquals(expected, actual);
 	}
 	
 	@Test
-	void findByLecturerShouldReturnCertainTimetableRecordList() {
+	void saveShouldSaveCertainTimetableRecord() {
+		
+		List<TimetableRecord> expected = getAllTimetableRecords();
+		TimetableRecord newTimetableRecord = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 4L, "2020-10-16T15:00:00", getAllGroups());
+		expected.add(newTimetableRecord);
+		TimetableRecord timetableRecordToAdd = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 0L, "2020-10-16T15:00:00", getAllGroups());
+		
+		service.save(timetableRecordToAdd);
+		
+		List<TimetableRecord> actual = service.findAll();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void saveShouldReturnJustSavedTimetableRecord() {
+		
+		TimetableRecord timetableRecordToAdd = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 0L, "2020-10-16T15:00:00", getAllGroups());
+		
+		TimetableRecord expected = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 4L, "2020-10-16T15:00:00", getAllGroups());
+		TimetableRecord actual = service.save(timetableRecordToAdd);		
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void updateShouldUpdateCertainFieldsOfTimetableRecord() {
+		
+		TimetableRecord expected = getAllTimetableRecords().get(0);
+		expected.setDate(LocalDateTime.parse("2020-10-17T09:00:00"));
+				
+		service.update(expected);
+		
+		TimetableRecord actual = service.findById(expected.getId());
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void updateShouldReturnUpdatedTimetableRecord() {
+		
+		TimetableRecord expected = getAllTimetableRecords().get(0);
+		expected.setDate(LocalDateTime.parse("2020-10-17T09:00:00"));
+				
+		service.update(expected);
+		TimetableRecord actual = service.findById(expected.getId());
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void addGroupShouldAddCertainRecord() {
+		
+		Group groupForAdd = getGroup(3L, "ab-03");
+		TimetableRecord expected = service.findById(2L);
+		expected.getGroupList().add(groupForAdd);
+		
+		service.addGroup(3L, 2L);
+		
+		TimetableRecord actual = service.findById(2L);
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void addGroupShouldReturnUpdatedTimetableRecord() {
+		
+		Group groupForAdd = getGroup(3L, "ab-03");
+		TimetableRecord expected = service.findById(2L);
+		expected.getGroupList().add(groupForAdd);
+		
+		TimetableRecord actual = service.addGroup(3L, 2L);
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void removeGroupFromTimeableShouldRemoveCertainRecord() {
+		
+		TimetableRecord expected = service.findById(1L);
+		expected.getGroupList().remove(0);
+		
+		service.removeGroup(1L, 1L);
+		
+		TimetableRecord actual = service.findById(1L);
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void removeGroupFromTimeableShouldReturnUpdatedTimetableRecord() {
+		
+		TimetableRecord expected = service.findById(1L);
+		expected.getGroupList().remove(0);
+		
+		TimetableRecord actual = service.removeGroup(1L, 1L);
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void findByLecturerIdShouldReturnCertainTimetableRecordList() {
 		
 		List<TimetableRecord> expected = getAllTimetableRecords();
 		expected.remove(0);
@@ -93,7 +194,7 @@ class TimetableRecordDaoImplTest {
 		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T12:30:00");
 		Long lecturerId = 3L;
 		
-		List<TimetableRecord> actual = dao.findByLecturer(lecturerId, firstDate, secondDate);
+		List<TimetableRecord> actual = service.findByLecturer(lecturerId, firstDate, secondDate);
 		
 		assertEquals(expected, actual);
 	}
@@ -109,108 +210,7 @@ class TimetableRecordDaoImplTest {
 		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T13:00:00");
 		Long studentId = 3L;
 		
-		List<TimetableRecord> actual = dao.findByStudent(studentId, firstDate, secondDate);
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void saveShouldSaveCertainTimetableRecord() {
-		
-		List<TimetableRecord> expected = getAllTimetableRecords();
-		TimetableRecord newTimetableRecord = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 4L, "2020-10-16T15:00:00", getAllGroups());
-		expected.add(newTimetableRecord);
-		TimetableRecord timetableRecordToAdd = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 0L, "2020-10-16T15:00:00", getAllGroups());
-		
-		dao.save(timetableRecordToAdd);
-		
-		List<TimetableRecord> actual = dao.findAll();
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void saveShouldReturnJustSavedTimetableRecord() {
-		
-		TimetableRecord timetableRecordToAdd = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 0L, "2020-10-16T15:00:00", getAllGroups());
-		
-		TimetableRecord expected = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 4L, "2020-10-16T15:00:00", getAllGroups());
-		TimetableRecord actual = dao.save(timetableRecordToAdd);		
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void updateShouldUpdateCertainFieldsOfTimetableRecord() {
-		
-		TimetableRecord expected = getAllTimetableRecords().get(0);
-		expected.setDate(LocalDateTime.parse("2020-10-17T09:00:00"));
-				
-		dao.update(expected);
-		
-		TimetableRecord actual = dao.findById(expected.getId());
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void updateShouldReturnUpdatedTimetableRecord() {
-		
-		TimetableRecord expected = getAllTimetableRecords().get(0);
-		expected.setDate(LocalDateTime.parse("2020-10-17T09:00:00"));
-				
-		dao.update(expected);
-		TimetableRecord actual = dao.findById(expected.getId());
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void addGroupShouldAddCertainRecord() {
-		
-		Group groupForAdd = getGroup(3L, "ab-03");
-		TimetableRecord expected = dao.findById(2L);
-		expected.getGroupList().add(groupForAdd);
-		
-		dao.addGroup(3L, 2L);
-		
-		TimetableRecord actual = dao.findById(2L);
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void addGroupShouldReturnUpdatedTimetableRecord() {
-		
-		Group groupForAdd = getGroup(3L, "ab-03");
-		TimetableRecord expected = dao.findById(2L);
-		expected.getGroupList().add(groupForAdd);
-		
-		TimetableRecord actual = dao.addGroup(3L, 2L);
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void removeGroupShouldRemoveCertainRecord() {
-		
-		TimetableRecord expected = dao.findById(1L);
-		expected.getGroupList().remove(0);
-		
-		dao.removeGroup(1L, 1L);
-		
-		TimetableRecord actual = dao.findById(1L);
-		
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void removeGroupShouldReturnUpdatedTimetableRecord() {
-		
-		TimetableRecord expected = dao.findById(1L);
-		expected.getGroupList().remove(0);
-		
-		TimetableRecord actual = dao.removeGroup(1L, 1L);
+		List<TimetableRecord> actual = service.findByStudent(studentId, firstDate, secondDate);
 		
 		assertEquals(expected, actual);
 	}

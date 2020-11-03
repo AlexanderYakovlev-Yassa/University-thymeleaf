@@ -1,4 +1,4 @@
-package ua.foxminded.yakovlev.university.dao.impl;
+package ua.foxminded.yakovlev.university.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,23 +8,23 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ua.foxminded.yakovlev.university.dao.StudentDao;
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.Student;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
+import ua.foxminded.yakovlev.university.service.StudentService;
 import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
 
-class StudentDaoImplTest {
+class StudentServiceImplTest {
 
 	private static AnnotationConfigApplicationContext context;
 	private static TestDatabaseGenerator generator;
-	private static StudentDao dao;
+	private static StudentService service;
 
 	@BeforeAll
 	static void initTestCase() {
 		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
 		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
-		dao = context.getBean("studentDao", StudentDaoImpl.class);
+		service = context.getBean("studentService", StudentServiceImpl.class);
 	}
 
 	@BeforeEach
@@ -36,7 +36,7 @@ class StudentDaoImplTest {
 	void findAllShouldReturnCertainListOfStudents() {
 		
 		List<Student> expected = getAllStudents();
-		List<Student> actual = dao.findAll();
+		List<Student> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -45,7 +45,7 @@ class StudentDaoImplTest {
 	void findByIdShouldReturnCertainStudent() {
 		
 		Student expected = getAllStudents().get(1);
-		Student actual = dao.findById(2L);
+		Student actual = service.findById(2L);
 		
 		assertEquals(expected, actual);
 	}
@@ -56,9 +56,9 @@ class StudentDaoImplTest {
 		List<Student> expected = getAllStudents();
 		expected.remove(2);
 		
-		dao.delete(3L);
+		service.delete(3L);
 		
-		List<Student> actual = dao.findAll();
+		List<Student> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -70,7 +70,7 @@ class StudentDaoImplTest {
 		expected.remove(4);
 		expected.remove(3);
 		
-		List<Student> actual = dao.findByGroupId(1L);
+		List<Student> actual = service.findByGroupId(1L);
 		
 		assertEquals(expected, actual);
 	}
@@ -84,9 +84,9 @@ class StudentDaoImplTest {
 		expected.add(newStudent);
 		Student studentToAdd = getStudent(1L, "aa-01", 0L, 0L, "Новый", "Студент");
 		
-		dao.save(studentToAdd);
+		service.save(studentToAdd);
 		
-		List<Student> actual = dao.findAll();
+		List<Student> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -101,9 +101,9 @@ class StudentDaoImplTest {
 		Group newGroup = getAllStudents().get(3).getGroup();
 		expected.setGroup(newGroup);
 		
-		dao.update(expected);
+		service.update(expected);
 		
-		Student actual = dao.findById(expected.getStudentId());
+		Student actual = service.findById(expected.getStudentId());
 		
 		assertEquals(expected, actual);
 	}
@@ -117,9 +117,9 @@ class StudentDaoImplTest {
 		Group newGroup = getAllStudents().get(3).getGroup();
 		newStudent.setGroup(newGroup);
 		
-		Student expected = dao.update(newStudent);
+		Student expected = service.update(newStudent);
 		
-		Student actual = dao.findById(newStudent.getStudentId());
+		Student actual = service.findById(newStudent.getStudentId());
 		
 		assertEquals(expected, actual);
 	}

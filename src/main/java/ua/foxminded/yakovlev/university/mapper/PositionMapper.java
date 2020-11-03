@@ -4,9 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 
 import ua.foxminded.yakovlev.university.entity.Position;
 
+@Component
 public class PositionMapper implements RowMapper<Position> {
 	
 	private static final String POSITION_ID = "position_id";

@@ -1,4 +1,4 @@
-package ua.foxminded.yakovlev.university.dao.impl;
+package ua.foxminded.yakovlev.university.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -8,22 +8,22 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ua.foxminded.yakovlev.university.dao.PositionDao;
 import ua.foxminded.yakovlev.university.entity.Position;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
+import ua.foxminded.yakovlev.university.service.PositionService;
 import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
 
-class PositionDaoImplTest {
+class PositionServiceImplTest {
 
 	private static AnnotationConfigApplicationContext context;
 	private static TestDatabaseGenerator generator;
-	private static PositionDao dao;
+	private static PositionService service;
 
 	@BeforeAll
 	static void initTestCase() {
 		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
 		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
-		dao = context.getBean("positionDao", PositionDaoImpl.class);
+		service = context.getBean("positionService", PositionServiceImpl.class);
 	}
 
 	@BeforeEach
@@ -35,7 +35,7 @@ class PositionDaoImplTest {
 	void findAllShouldReturnCertainListOfPositions() {
 		
 		List<Position> expected = getAllPositions();
-		List<Position> actual = dao.findAll();
+		List<Position> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -44,7 +44,7 @@ class PositionDaoImplTest {
 	void findByIdShouldReturnCertainPosition() {
 		
 		Position expected = getAllPositions().get(1);
-		Position actual = dao.findById(2L);
+		Position actual = service.findById(2L);
 		
 		assertEquals(expected, actual);
 	}
@@ -55,9 +55,9 @@ class PositionDaoImplTest {
 		List<Position> expected = getAllPositions();
 		expected.remove(3);
 		
-		dao.delete(4L);
+		service.delete(4L);
 		
-		List<Position> actual = dao.findAll();
+		List<Position> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -67,7 +67,7 @@ class PositionDaoImplTest {
 		
 		Position expected = getPosition(4L, "ASSISTANT_PROFESSOR");
 		
-		Position actual = dao.findPositionByName("ASSISTANT_PROFESSOR");
+		Position actual = service.findPositionByName("ASSISTANT_PROFESSOR");
 		
 		assertEquals(expected, actual);
 	}
@@ -80,9 +80,9 @@ class PositionDaoImplTest {
 		expected.add(newPosition);
 		Position positionToAdd = getPosition(0L, "TEST");
 		
-		dao.save(positionToAdd);
+		service.save(positionToAdd);
 		
-		List<Position> actual = dao.findAll();
+		List<Position> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -93,7 +93,7 @@ class PositionDaoImplTest {
 		Position positionToAdd = getPosition(0L, "TEST");
 		
 		Position expected = getPosition(10L, "TEST");
-		Position actual = dao.save(positionToAdd);		
+		Position actual = service.save(positionToAdd);		
 		
 		assertEquals(expected, actual);
 	}
@@ -103,9 +103,9 @@ class PositionDaoImplTest {
 		
 		Position expected = getPosition(2L, "TEST");
 				
-		dao.update(expected);
+		service.update(expected);
 		
-		Position actual = dao.findById(expected.getId());
+		Position actual = service.findById(expected.getId());
 		
 		assertEquals(expected, actual);
 	}
@@ -115,8 +115,8 @@ class PositionDaoImplTest {
 		
 		Position changedPosition = getPosition(2L, "TEST");
 		
-		Position expected = dao.update(changedPosition);		
-		Position actual = dao.findById(changedPosition.getId());
+		Position expected = service.update(changedPosition);		
+		Position actual = service.findById(changedPosition.getId());
 		
 		assertEquals(expected, actual);
 	}
