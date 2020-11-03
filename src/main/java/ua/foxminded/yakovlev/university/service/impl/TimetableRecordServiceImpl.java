@@ -26,24 +26,22 @@ public class TimetableRecordServiceImpl extends AbstractService<TimetableRecord,
 	}
 
 	@Override
-	public TimetableRecord addGroupToTimeable(Long timetableId, Long groupId) {		
-		return dao.addGroupToTimeable(timetableId, groupId);
+	public TimetableRecord addGroup(Long groupId, Long timetableId) {		
+		return dao.addGroup(groupId, timetableId);
 	}
 
 	@Override
-	public TimetableRecord removeGroupFromTimeable(Long timetableId, Long groupId) {		
-		return dao.removeGroupFromTimeable(timetableId, groupId);
+	public TimetableRecord removeGroup(Long groupId, Long timetableId) {		
+		return dao.removeGroup(groupId, timetableId);
 	}
 
 	@Override
-	public List<TimetableRecord> findByPeriodOfTimeAndLecturerId(LocalDateTime periodStart, LocalDateTime periodFinish,
-			Long lecturerId) {		
-		return dao.findByPeriodOfTimeAndLecturerId(periodStart, periodFinish, lecturerId);
+	public List<TimetableRecord> findByLecturer(Long lecturerId, LocalDateTime periodStart, LocalDateTime periodFinish) {		
+		return dao.findByLecturer(lecturerId, periodStart, periodFinish);
 	}
 
 	@Override
-	public List<TimetableRecord> findByPeriodOfTimeAndGroupId(LocalDateTime periodStart, LocalDateTime periodFinish,
-			Long studentId) {
-		return dao.findByPeriodOfTimeAndStudentId(periodStart, periodFinish, studentId);
+	public List<TimetableRecord> findByStudent(Long studentId, LocalDateTime periodStart, LocalDateTime periodFinish) {
+		return dao.findByStudent(studentId, periodStart, periodFinish);
 	}
 }

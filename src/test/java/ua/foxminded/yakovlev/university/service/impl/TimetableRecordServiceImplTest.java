@@ -134,13 +134,13 @@ class TimetableRecordServiceImplTest {
 	}
 	
 	@Test
-	void addGroupToTimeableShouldAddCertainRecord() {
+	void addGroupShouldAddCertainRecord() {
 		
 		Group groupForAdd = getGroup(3L, "ab-03");
 		TimetableRecord expected = service.findById(2L);
 		expected.getGroupList().add(groupForAdd);
 		
-		service.addGroupToTimeable(2L, 3L);
+		service.addGroup(3L, 2L);
 		
 		TimetableRecord actual = service.findById(2L);
 		
@@ -148,13 +148,13 @@ class TimetableRecordServiceImplTest {
 	}
 	
 	@Test
-	void addGroupToTimeableShouldReturnUpdatedTimetableRecord() {
+	void addGroupShouldReturnUpdatedTimetableRecord() {
 		
 		Group groupForAdd = getGroup(3L, "ab-03");
 		TimetableRecord expected = service.findById(2L);
 		expected.getGroupList().add(groupForAdd);
 		
-		TimetableRecord actual = service.addGroupToTimeable(2L, 3L);
+		TimetableRecord actual = service.addGroup(3L, 2L);
 		
 		assertEquals(expected, actual);
 	}
@@ -165,7 +165,7 @@ class TimetableRecordServiceImplTest {
 		TimetableRecord expected = service.findById(1L);
 		expected.getGroupList().remove(0);
 		
-		service.removeGroupFromTimeable(1L, 1L);
+		service.removeGroup(1L, 1L);
 		
 		TimetableRecord actual = service.findById(1L);
 		
@@ -178,13 +178,13 @@ class TimetableRecordServiceImplTest {
 		TimetableRecord expected = service.findById(1L);
 		expected.getGroupList().remove(0);
 		
-		TimetableRecord actual = service.removeGroupFromTimeable(1L, 1L);
+		TimetableRecord actual = service.removeGroup(1L, 1L);
 		
 		assertEquals(expected, actual);
 	}
 	
 	@Test
-	void findByPeriodOfTimeAndLecturerIdShouldReturnCertainTimetableRecordList() {
+	void findByLecturerIdShouldReturnCertainTimetableRecordList() {
 		
 		List<TimetableRecord> expected = getAllTimetableRecords();
 		expected.remove(0);
@@ -194,23 +194,23 @@ class TimetableRecordServiceImplTest {
 		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T12:30:00");
 		Long lecturerId = 3L;
 		
-		List<TimetableRecord> actual = service.findByPeriodOfTimeAndLecturerId(firstDate, secondDate, lecturerId);
+		List<TimetableRecord> actual = service.findByLecturer(lecturerId, firstDate, secondDate);
 		
 		assertEquals(expected, actual);
 	}
 	
 	@Test
-	void findByPeriodOfTimeAndStudentIdShouldReturnCertainTimetableRecordList() {
+	void findByStudentIdShouldReturnCertainTimetableRecordList() {
 		
 		List<TimetableRecord> expected = getAllTimetableRecords();
-		expected.remove(0);
+		expected.remove(2);
 		expected.remove(0);
 		
 		LocalDateTime firstDate = LocalDateTime.parse("2020-10-16T09:30:00");
 		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T13:00:00");
 		Long studentId = 3L;
 		
-		List<TimetableRecord> actual = service.findByPeriodOfTimeAndLecturerId(firstDate, secondDate, studentId);
+		List<TimetableRecord> actual = service.findByStudent(studentId, firstDate, secondDate);
 		
 		assertEquals(expected, actual);
 	}
