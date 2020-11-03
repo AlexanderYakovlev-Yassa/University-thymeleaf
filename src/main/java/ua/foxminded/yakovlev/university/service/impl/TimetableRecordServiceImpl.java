@@ -7,16 +7,14 @@ import org.springframework.stereotype.Component;
 import ua.foxminded.yakovlev.university.dao.TimetableRecordDao;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
-import ua.foxminded.yakovlev.university.validator.TimetableRecordValidator;
 
 @Component
 public class TimetableRecordServiceImpl extends AbstractService<TimetableRecord, Long> implements TimetableRecordService {
 
 	private final TimetableRecordDao dao;
 	
-	public TimetableRecordServiceImpl(TimetableRecordDao timetableRecordDao, 
-			TimetableRecordValidator timetableRecordValidator)  {
-		super(timetableRecordDao, timetableRecordValidator);
+	public TimetableRecordServiceImpl(TimetableRecordDao timetableRecordDao)  {
+		super(timetableRecordDao);
 		this.dao = timetableRecordDao;
 	}
 

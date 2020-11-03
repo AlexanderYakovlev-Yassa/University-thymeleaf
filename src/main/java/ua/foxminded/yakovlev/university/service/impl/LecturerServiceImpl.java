@@ -7,15 +7,14 @@ import org.springframework.stereotype.Component;
 import ua.foxminded.yakovlev.university.dao.LecturerDao;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.service.LecturerService;
-import ua.foxminded.yakovlev.university.validator.LecturerValidator;
 
 @Component
 public class LecturerServiceImpl extends AbstractService<Lecturer, Long> implements LecturerService {
 
 	private final LecturerDao dao;
 	
-	public LecturerServiceImpl(LecturerDao lecturerDao, LecturerValidator lecturerValidator)  {
-		super(lecturerDao, lecturerValidator);
+	public LecturerServiceImpl(LecturerDao lecturerDao)  {
+		super(lecturerDao);
 		this.dao = lecturerDao;
 	}
 

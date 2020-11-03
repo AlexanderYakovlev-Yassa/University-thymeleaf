@@ -34,11 +34,6 @@ import ua.foxminded.yakovlev.university.service.impl.LecturerServiceImpl;
 import ua.foxminded.yakovlev.university.service.impl.PositionServiceImpl;
 import ua.foxminded.yakovlev.university.service.impl.StudentServiceImpl;
 import ua.foxminded.yakovlev.university.service.impl.TimetableRecordServiceImpl;
-import ua.foxminded.yakovlev.university.validator.GroupValidator;
-import ua.foxminded.yakovlev.university.validator.LecturerValidator;
-import ua.foxminded.yakovlev.university.validator.PositionValidator;
-import ua.foxminded.yakovlev.university.validator.StudentValidator;
-import ua.foxminded.yakovlev.university.validator.TimetableRecordValidator;
 
 @Configuration
 public class AppConfiguration {
@@ -95,27 +90,27 @@ public class AppConfiguration {
 	}
 	
 	@Bean (name="groupService")
-	public GroupService getCourseService(GroupDao groupDao, GroupValidator validator) {		
-		return new GroupServiceImpl(groupDao, validator);
+	public GroupService getCourseService(GroupDao groupDao) {		
+		return new GroupServiceImpl(groupDao);
 	}
 	
 	@Bean (name="positionService")
-	public PositionService getPositionService(PositionDao positionDao, PositionValidator validator) {		
-		return new PositionServiceImpl(positionDao, validator);
+	public PositionService getPositionService(PositionDao positionDao) {		
+		return new PositionServiceImpl(positionDao);
 	}
 	
 	@Bean (name="studentService")
-	public StudentService getStudentService(StudentDao studentDao, StudentValidator validator) {		
-		return new StudentServiceImpl(studentDao, validator);
+	public StudentService getStudentService(StudentDao studentDao) {		
+		return new StudentServiceImpl(studentDao);
 	}
 	
 	@Bean (name="lecturerService")
-	public LecturerService getLecturerService(LecturerDao lecturerDao, LecturerValidator validator) {		
-		return new LecturerServiceImpl(lecturerDao, validator);
+	public LecturerService getLecturerService(LecturerDao lecturerDao) {		
+		return new LecturerServiceImpl(lecturerDao);
 	}
 	
 	@Bean (name="timetableRecordService")
-	public TimetableRecordService getTimetableRecordService(TimetableRecordDao timetableRecordDao, TimetableRecordValidator validator) {		
-		return new TimetableRecordServiceImpl(timetableRecordDao, validator);
+	public TimetableRecordService getTimetableRecordService(TimetableRecordDao timetableRecordDao) {		
+		return new TimetableRecordServiceImpl(timetableRecordDao);
 	}
 }
