@@ -83,7 +83,7 @@ class TimetableRecordDaoImplTest {
 	}
 	
 	@Test
-	void findByPeriodOfTimeAndLecturerIdShouldReturnCertainTimetableRecordList() {
+	void findByLecturerShouldReturnCertainTimetableRecordList() {
 		
 		List<TimetableRecord> expected = getAllTimetableRecords();
 		expected.remove(0);
@@ -93,23 +93,23 @@ class TimetableRecordDaoImplTest {
 		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T12:30:00");
 		Long lecturerId = 3L;
 		
-		List<TimetableRecord> actual = dao.findByPeriodOfTimeAndLecturerId(firstDate, secondDate, lecturerId);
+		List<TimetableRecord> actual = dao.findByLecturer(lecturerId, firstDate, secondDate);
 		
 		assertEquals(expected, actual);
 	}
 	
 	@Test
-	void findByPeriodOfTimeAndStudentIdShouldReturnCertainTimetableRecordList() {
+	void findByStudentIdShouldReturnCertainTimetableRecordList() {
 		
 		List<TimetableRecord> expected = getAllTimetableRecords();
-		expected.remove(0);
+		expected.remove(2);
 		expected.remove(0);
 		
 		LocalDateTime firstDate = LocalDateTime.parse("2020-10-16T09:30:00");
 		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T13:00:00");
 		Long studentId = 3L;
 		
-		List<TimetableRecord> actual = dao.findByPeriodOfTimeAndLecturerId(firstDate, secondDate, studentId);
+		List<TimetableRecord> actual = dao.findByStudent(studentId, firstDate, secondDate);
 		
 		assertEquals(expected, actual);
 	}
@@ -166,13 +166,13 @@ class TimetableRecordDaoImplTest {
 	}
 	
 	@Test
-	void addGroupToTimeableShouldAddCertainRecord() {
+	void addGroupShouldAddCertainRecord() {
 		
 		Group groupForAdd = getGroup(3L, "ab-03");
 		TimetableRecord expected = dao.findById(2L);
 		expected.getGroupList().add(groupForAdd);
 		
-		dao.addGroupToTimeable(2L, 3L);
+		dao.addGroup(3L, 2L);
 		
 		TimetableRecord actual = dao.findById(2L);
 		
@@ -180,24 +180,24 @@ class TimetableRecordDaoImplTest {
 	}
 	
 	@Test
-	void addGroupToTimeableShouldReturnUpdatedTimetableRecord() {
+	void addGroupShouldReturnUpdatedTimetableRecord() {
 		
 		Group groupForAdd = getGroup(3L, "ab-03");
 		TimetableRecord expected = dao.findById(2L);
 		expected.getGroupList().add(groupForAdd);
 		
-		TimetableRecord actual = dao.addGroupToTimeable(2L, 3L);
+		TimetableRecord actual = dao.addGroup(3L, 2L);
 		
 		assertEquals(expected, actual);
 	}
 	
 	@Test
-	void removeGroupFromTimeableShouldRemoveCertainRecord() {
+	void removeGroupShouldRemoveCertainRecord() {
 		
 		TimetableRecord expected = dao.findById(1L);
 		expected.getGroupList().remove(0);
 		
-		dao.removeGroupFromTimeable(1L, 1L);
+		dao.removeGroup(1L, 1L);
 		
 		TimetableRecord actual = dao.findById(1L);
 		
@@ -205,12 +205,12 @@ class TimetableRecordDaoImplTest {
 	}
 	
 	@Test
-	void removeGroupFromTimeableShouldReturnUpdatedTimetableRecord() {
+	void removeGroupShouldReturnUpdatedTimetableRecord() {
 		
 		TimetableRecord expected = dao.findById(1L);
 		expected.getGroupList().remove(0);
 		
-		TimetableRecord actual = dao.removeGroupFromTimeable(1L, 1L);
+		TimetableRecord actual = dao.removeGroup(1L, 1L);
 		
 		assertEquals(expected, actual);
 	}

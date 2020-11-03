@@ -9,9 +9,9 @@ public interface TimetableRecordDao extends EntityDao<TimetableRecord, Long> {
 
 	List<TimetableRecord> findByPeriodOfTime(LocalDateTime periodStart, LocalDateTime periodFinish);
 	
-	List<TimetableRecord> findByPeriodOfTimeAndLecturerId(LocalDateTime periodStart, LocalDateTime periodFinish, Long lecturerId);
-	List<TimetableRecord> findByPeriodOfTimeAndStudentId(LocalDateTime periodStart, LocalDateTime periodFinish, Long studentId);
+	List<TimetableRecord> findByLecturer(Long lecturerId, LocalDateTime periodStart, LocalDateTime periodFinish);
+	List<TimetableRecord> findByStudent(Long studentId, LocalDateTime periodStart, LocalDateTime periodFinish);
 	
-	TimetableRecord addGroupToTimeable(Long timetableId, Long groupId);
-	TimetableRecord removeGroupFromTimeable(Long timetableId, Long groupId);
+	TimetableRecord addGroup(Long groupId, Long timetableId);
+	TimetableRecord removeGroup(Long groupId, Long timetableId);
 }

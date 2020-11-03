@@ -148,7 +148,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 	public void delete(Long id) {
 		
 		List<Group> groupList = findGroupsByTimeableId(id);
-		groupList.forEach(g -> removeGroupFromTimeableRecordGroups(id, g.getId()));
+		groupList.forEach(g -> removeGroupFromTimeableRecordGroups(g.getId(), id));
 		
 		super.delete(id);
 	}
@@ -158,23 +158,23 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 		
 		List<Group> groupList = record.getGroupList();
 		TimetableRecord savedRecord = super.save(record);
-		groupList.forEach(g -> addGroupToTimeableRecordGroups(savedRecord.getId(), g.getId()));
+		groupList.forEach(g -> addGroupToTimeableRecordGroups(g.getId(), savedRecord.getId()));
 		
 		return findById(savedRecord.getId());
 	}
 	
 	@Override
-	public TimetableRecord addGroupToTimeable(Long timetableId, Long groupId) {
+	public TimetableRecord addGroup(Long groupId, Long timetableId) {
 		
-		addGroupToTimeableRecordGroups(timetableId, groupId);
+		addGroupToTimeableRecordGroups(groupId, timetableId);
 		
 		return findById(timetableId);
 	}
 
 	@Override
-	public TimetableRecord removeGroupFromTimeable(Long timetableId, Long groupId) {
+	public TimetableRecord removeGroup(Long groupId, Long timetableId) {
 		
-		removeGroupFromTimeableRecordGroups(timetableId, groupId);
+		removeGroupFromTimeableRecordGroups(groupId, timetableId);
 		
 		return findById(timetableId);
 	}
@@ -193,8 +193,8 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 			ps.setLong(1, id);
 		}, groupMapper);
 	}
-	
-	private void addGroupToTimeableRecordGroups(Long timetableId, Long groupId) {
+		
+	private void addGroupToTimeableRecordGroups(Long groupId, Long timetableId) {
 		
 		jdbcTemplate.update(connection -> {
 			PreparedStatement ps = connection.prepareStatement(ADD_TO_TIMETABLE);
@@ -203,8 +203,8 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 			return ps;
 		});
 	}
-	
-	private void removeGroupFromTimeableRecordGroups(Long timetableId, Long groupId) {
+		
+	private void removeGroupFromTimeableRecordGroups(Long groupId, Long timetableId) {
 		
 		executeUpdate(REMOVE_FROM_TIMETABLE, ps -> {
 			ps.setLong(1, timetableId);
@@ -213,8 +213,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 	}
 
 	@Override
-	public List<TimetableRecord> findByPeriodOfTimeAndLecturerId(LocalDateTime periodStart, LocalDateTime periodFinish,
-			Long lecturerId) {
+	public List<TimetableRecord> findByLecturer(Long lecturerId, LocalDateTime periodStart, LocalDateTime periodFinish) {
 		
 		PreparedStatementSetter preparedStatementSetter = ps -> {
 			ps.setObject(1, periodStart);
@@ -230,8 +229,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 	}
 
 	@Override
-	public List<TimetableRecord> findByPeriodOfTimeAndStudentId(LocalDateTime periodStart, LocalDateTime periodFinish,
-			Long studentId) {
+	public List<TimetableRecord> findByStudent(Long studentId, LocalDateTime periodStart, LocalDateTime periodFinish) {
 		
 		PreparedStatementSetter preparedStatementSetter = ps -> {
 			ps.setLong(1, studentId);
