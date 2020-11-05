@@ -12,18 +12,18 @@ import ua.foxminded.yakovlev.university.dao.StudentDao;
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.Student;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
-import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
+import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
 class StudentDaoImplTest {
 
 	private static AnnotationConfigApplicationContext context;
-	private static TestDatabaseGenerator generator;
+	private static DatabaseGenerator generator;
 	private static StudentDao dao;
 
 	@BeforeAll
 	static void initTestCase() {
 		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
-		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
+		generator = context.getBean("databaseGenerator", DatabaseGenerator.class);
 		dao = context.getBean("studentDao", StudentDaoImpl.class);
 	}
 

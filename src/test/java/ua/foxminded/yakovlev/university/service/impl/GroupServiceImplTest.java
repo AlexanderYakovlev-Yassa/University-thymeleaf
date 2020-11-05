@@ -13,18 +13,18 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
 import ua.foxminded.yakovlev.university.service.GroupService;
-import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
+import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
 class GroupServiceImplTest {
 
 	private static AnnotationConfigApplicationContext context;
-	private static TestDatabaseGenerator generator;
+	private static DatabaseGenerator generator;
 	private static GroupService service;
 
 	@BeforeAll
 	static void initTestCase() {
 		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
-		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
+		generator = context.getBean("databaseGenerator", DatabaseGenerator.class);
 		service = context.getBean("groupService", GroupServiceImpl.class);
 	}
 

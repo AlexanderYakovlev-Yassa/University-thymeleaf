@@ -16,18 +16,18 @@ import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.entity.Position;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
-import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
+import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
 class TimetableRecordDaoImplTest {
 
 	private static AnnotationConfigApplicationContext context;
-	private static TestDatabaseGenerator generator;
+	private static DatabaseGenerator generator;
 	private static TimetableRecordDao dao;
 
 	@BeforeAll
 	static void initTestCase() {
 		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
-		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
+		generator = context.getBean("databaseGenerator", DatabaseGenerator.class);
 		dao = context.getBean("timetableRecordDao", TimetableRecordDaoImpl.class);
 	}
 
