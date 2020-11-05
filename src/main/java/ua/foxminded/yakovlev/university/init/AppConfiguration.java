@@ -2,7 +2,9 @@ package ua.foxminded.yakovlev.university.init;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
@@ -16,6 +18,7 @@ import ua.foxminded.yakovlev.university.dao.impl.CourseDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.GroupDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.LecturerDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.PositionDaoImpl;
+import ua.foxminded.yakovlev.university.dao.impl.ScriptExecutor;
 import ua.foxminded.yakovlev.university.dao.impl.StudentDaoImpl;
 import ua.foxminded.yakovlev.university.dao.impl.TimetableRecordDaoImpl;
 import ua.foxminded.yakovlev.university.mapper.CourseMapper;
@@ -24,18 +27,24 @@ import ua.foxminded.yakovlev.university.mapper.LecturerMapper;
 import ua.foxminded.yakovlev.university.mapper.PositionMapper;
 import ua.foxminded.yakovlev.university.mapper.StudentMapper;
 import ua.foxminded.yakovlev.university.mapper.TimetableRecordMapper;
+import ua.foxminded.yakovlev.university.service.CourseService;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.service.LecturerService;
 import ua.foxminded.yakovlev.university.service.PositionService;
 import ua.foxminded.yakovlev.university.service.StudentService;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
+import ua.foxminded.yakovlev.university.service.impl.CourseServiceImpl;
 import ua.foxminded.yakovlev.university.service.impl.GroupServiceImpl;
 import ua.foxminded.yakovlev.university.service.impl.LecturerServiceImpl;
 import ua.foxminded.yakovlev.university.service.impl.PositionServiceImpl;
 import ua.foxminded.yakovlev.university.service.impl.StudentServiceImpl;
 import ua.foxminded.yakovlev.university.service.impl.TimetableRecordServiceImpl;
+import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
+import ua.foxminded.yakovlev.university.util.FileReader;
 
 @Configuration
+@ComponentScan("ua.foxminded.yakovlev.university")
+@PropertySource("university_db.properties")
 public class AppConfiguration {
 
 	@Value("${driver}")
@@ -46,6 +55,8 @@ public class AppConfiguration {
 	private String user;
 	@Value("${password}")
 	private String password;
+	@Value("${database_script_path}")
+	private String databaseScriptPath;
 
 	@Bean (name="jdbcTemplate")
 	public JdbcTemplate getJdbcTemplate() {
@@ -55,6 +66,16 @@ public class AppConfiguration {
 		driverManagerDataSource.setDriverClassName(driver);
 		
 		return new JdbcTemplate(driverManagerDataSource);
+	}
+	
+	@Bean (name="scriptExecutor")
+	public ScriptExecutor getScriptExecutor(JdbcTemplate jdbcTemplate) {
+		return new ScriptExecutor(jdbcTemplate);
+	}
+	
+	@Bean (name="databaseGenerator")
+	public DatabaseGenerator getDatabaseGenerator(FileReader fileReader, ScriptExecutor scriptExecutor) {
+		return new DatabaseGenerator(fileReader, scriptExecutor, databaseScriptPath);		
 	}
 	
 	@Bean (name="courseDao")
@@ -89,8 +110,13 @@ public class AppConfiguration {
 		return new TimetableRecordDaoImpl(jdbcTemplate, timetableRecordMapper, groupMapper);
 	}
 	
+	@Bean (name="courseService")
+	public CourseService getCourseService(CourseDao courseDao) {		
+		return new CourseServiceImpl(courseDao);
+	}
+	
 	@Bean (name="groupService")
-	public GroupService getCourseService(GroupDao groupDao) {		
+	public GroupService getGroupService(GroupDao groupDao) {		
 		return new GroupServiceImpl(groupDao);
 	}
 	
