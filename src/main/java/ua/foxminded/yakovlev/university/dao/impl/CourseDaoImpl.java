@@ -2,7 +2,10 @@ package ua.foxminded.yakovlev.university.dao.impl;
 
 import java.sql.PreparedStatement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,9 +14,12 @@ import org.springframework.stereotype.Component;
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.CourseDao;
 import ua.foxminded.yakovlev.university.entity.Course;
+import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
 
 @Component
 public class CourseDaoImpl extends AbstractDao<Course, Long> implements CourseDao {
+	
+	private static final Logger logger = LoggerFactory.getLogger(CourseDaoImpl.class);
 
 	private static final String FIND_ALL = "SELECT * FROM public.courses;";
 	private static final String SAVE = "INSERT INTO public.courses(course_name, course_description) VALUES (?, ?);";
@@ -36,8 +42,14 @@ public class CourseDaoImpl extends AbstractDao<Course, Long> implements CourseDa
 	}
 
 	@Override
-	public Course findCourseByName(String courseName) {
-		return jdbcTemplate.queryForObject(FIND_BY_COURSE_NAME, courseMapper, courseName);
+	public Course findCourseByName(String courseName) throws DaoNotFoundException {
+		
+		try {
+			return jdbcTemplate.queryForObject(FIND_BY_COURSE_NAME, courseMapper, courseName);
+		} catch (EmptyResultDataAccessException e) {
+			logger.warn("Course is not found", e);
+			throw new DaoNotFoundException("Course is not found");
+		}		
 	}
 
 	@Override
