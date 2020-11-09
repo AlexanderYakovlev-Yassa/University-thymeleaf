@@ -14,6 +14,9 @@ import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.entity.Position;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
+import ua.foxminded.yakovlev.university.exception.ServiceAlreadyExistsException;
+import ua.foxminded.yakovlev.university.exception.ServiceConstrainException;
+import ua.foxminded.yakovlev.university.exception.ServiceNotFoundException;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
 import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
@@ -40,7 +43,13 @@ class TimetableRecordServiceImplTest {
 	void findAllShouldReturnCertainListOfTimetableRecords() {
 		
 		List<TimetableRecord> expected = getAllTimetableRecords();
-		List<TimetableRecord> actual = service.findAll();
+		List<TimetableRecord> actual = null;
+		
+		try {
+			actual = service.findAll();
+		} catch (ServiceNotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -49,7 +58,13 @@ class TimetableRecordServiceImplTest {
 	void findByIdShouldReturnCertainTimetableRecord() {
 		
 		TimetableRecord expected = getAllTimetableRecords().get(1);
-		TimetableRecord actual = service.findById(2L);
+		TimetableRecord actual = null;
+		
+		try {
+			actual = service.findById(2L);
+		} catch (ServiceNotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -60,9 +75,14 @@ class TimetableRecordServiceImplTest {
 		List<TimetableRecord> expected = getAllTimetableRecords();
 		expected.remove(2);
 		
-		service.delete(3L);
+		List<TimetableRecord> actual = null;
 		
-		List<TimetableRecord> actual = service.findAll();
+		try {
+			service.delete(3L);
+			actual = service.findAll();
+		} catch (ServiceNotFoundException | ServiceConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -77,7 +97,13 @@ class TimetableRecordServiceImplTest {
 		LocalDateTime firstDate = LocalDateTime.parse("2020-10-16T09:30:00");
 		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T11:30:00");
 		
-		List<TimetableRecord> actual = service.findByPeriodOfTime(firstDate, secondDate);
+		List<TimetableRecord> actual = null;
+		
+		try {
+			actual = service.findByPeriodOfTime(firstDate, secondDate);
+		} catch (ServiceNotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -90,9 +116,14 @@ class TimetableRecordServiceImplTest {
 		expected.add(newTimetableRecord);
 		TimetableRecord timetableRecordToAdd = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 0L, "2020-10-16T15:00:00", getAllGroups());
 		
-		service.save(timetableRecordToAdd);
+		List<TimetableRecord> actual = null;
 		
-		List<TimetableRecord> actual = service.findAll();
+		try {
+			service.save(timetableRecordToAdd);
+			actual = service.findAll();
+		} catch (ServiceNotFoundException | ServiceAlreadyExistsException | ServiceConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -103,9 +134,27 @@ class TimetableRecordServiceImplTest {
 		TimetableRecord timetableRecordToAdd = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 0L, "2020-10-16T15:00:00", getAllGroups());
 		
 		TimetableRecord expected = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 4L, "2020-10-16T15:00:00", getAllGroups());
-		TimetableRecord actual = service.save(timetableRecordToAdd);		
+		TimetableRecord actual = null;
+		
+		try {
+			actual = service.save(timetableRecordToAdd);
+		} catch (ServiceNotFoundException | ServiceAlreadyExistsException | ServiceConstrainException e) {
+			fail(e);
+		}		
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void saveShouldThrowServiceAlreadyExistsExceptionWhenAddRecordWithSameTimeAndLecturer() {
+		
+		List<TimetableRecord> allRecords = getAllTimetableRecords();
+		TimetableRecord recordForAdd = allRecords.get(0);
+		recordForAdd.setId(0L);
+		recordForAdd.setCourse(allRecords.get(1).getCourse());
+		recordForAdd.setGroupList(allRecords.get(1).getGroupList());
+		
+		assertThrows(ServiceAlreadyExistsException.class, () -> service.save(recordForAdd));
 	}
 	
 	@Test
@@ -114,11 +163,28 @@ class TimetableRecordServiceImplTest {
 		TimetableRecord expected = getAllTimetableRecords().get(0);
 		expected.setDate(LocalDateTime.parse("2020-10-17T09:00:00"));
 				
-		service.update(expected);
+		TimetableRecord actual = null;
 		
-		TimetableRecord actual = service.findById(expected.getId());
+		try {
+			service.update(expected);
+			actual = service.findById(expected.getId());
+		} catch (ServiceNotFoundException | ServiceAlreadyExistsException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void updateShouldThrowServiceAlreadyExistsExceptionWhenLecturerAndTimeInUpdatingRecordSameAsInOtherExistingRecord() {
+		
+		List<TimetableRecord> allRecords = getAllTimetableRecords();
+		TimetableRecord updatingRecord = allRecords.get(0);
+		TimetableRecord donorRecord = allRecords.get(1);
+		updatingRecord.setDate(donorRecord.getDate());
+		updatingRecord.setLecturer(donorRecord.getLecturer());
+		
+		assertThrows(ServiceAlreadyExistsException.class, () -> service.update(updatingRecord));
 	}
 	
 	@Test
@@ -127,8 +193,14 @@ class TimetableRecordServiceImplTest {
 		TimetableRecord expected = getAllTimetableRecords().get(0);
 		expected.setDate(LocalDateTime.parse("2020-10-17T09:00:00"));
 				
-		service.update(expected);
-		TimetableRecord actual = service.findById(expected.getId());
+		TimetableRecord actual = null;
+		
+		try {
+			service.update(expected);
+			actual = service.findById(expected.getId());
+		} catch (ServiceNotFoundException | ServiceAlreadyExistsException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -137,12 +209,17 @@ class TimetableRecordServiceImplTest {
 	void addGroupShouldAddCertainRecord() {
 		
 		Group groupForAdd = getGroup(3L, "ab-03");
-		TimetableRecord expected = service.findById(2L);
-		expected.getGroupList().add(groupForAdd);
+		TimetableRecord expected = null;
+		TimetableRecord actual = null;
 		
-		service.addGroup(3L, 2L);
-		
-		TimetableRecord actual = service.findById(2L);
+		try {
+			expected = service.findById(2L);
+			expected.getGroupList().add(groupForAdd);
+			service.addGroup(3L, 2L);
+			actual = service.findById(2L);
+		} catch (ServiceNotFoundException | ServiceConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -151,23 +228,45 @@ class TimetableRecordServiceImplTest {
 	void addGroupShouldReturnUpdatedTimetableRecord() {
 		
 		Group groupForAdd = getGroup(3L, "ab-03");
-		TimetableRecord expected = service.findById(2L);
-		expected.getGroupList().add(groupForAdd);
 		
-		TimetableRecord actual = service.addGroup(3L, 2L);
+		TimetableRecord expected = null;
+		TimetableRecord actual = null;
+		
+		try {
+			expected = service.findById(2L);
+			expected.getGroupList().add(groupForAdd);
+			actual = service.addGroup(3L, 2L);
+		} catch (ServiceNotFoundException | ServiceConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
 	
 	@Test
+	void addGroupShouldTrowsServiceConstrainExceptionWhenSuchGroupIsAlreadyInRecord() {
+		
+		TimetableRecord record = getAllTimetableRecords().get(0);
+		Long timetableId = record.getId();
+		Long alreadyExistedGroupId = record.getGroupList().get(0).getId();
+		
+		assertThrows(ServiceConstrainException.class, () -> service.addGroup(alreadyExistedGroupId, timetableId));
+	}
+	
+	@Test
 	void removeGroupFromTimeableShouldRemoveCertainRecord() {
 		
-		TimetableRecord expected = service.findById(1L);
-		expected.getGroupList().remove(0);
+		TimetableRecord expected = null;
+		TimetableRecord actual = null;
 		
-		service.removeGroup(1L, 1L);
-		
-		TimetableRecord actual = service.findById(1L);
+		try {
+			expected = service.findById(1L);
+			expected.getGroupList().remove(0);			
+			service.removeGroup(1L, 1L);			
+			actual = service.findById(1L);
+		} catch (ServiceNotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -175,10 +274,16 @@ class TimetableRecordServiceImplTest {
 	@Test
 	void removeGroupFromTimeableShouldReturnUpdatedTimetableRecord() {
 		
-		TimetableRecord expected = service.findById(1L);
-		expected.getGroupList().remove(0);
+		TimetableRecord expected = null;
+		TimetableRecord actual = null;
 		
-		TimetableRecord actual = service.removeGroup(1L, 1L);
+		try {
+			expected = service.findById(1L);
+			expected.getGroupList().remove(0);			
+			actual = service.removeGroup(1L, 1L);
+		} catch (ServiceNotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -194,7 +299,12 @@ class TimetableRecordServiceImplTest {
 		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T12:30:00");
 		Long lecturerId = 3L;
 		
-		List<TimetableRecord> actual = service.findByLecturer(lecturerId, firstDate, secondDate);
+		List<TimetableRecord> actual = null;
+		try {
+			actual = service.findByLecturer(lecturerId, firstDate, secondDate);
+		} catch (ServiceNotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -210,7 +320,12 @@ class TimetableRecordServiceImplTest {
 		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T13:00:00");
 		Long studentId = 3L;
 		
-		List<TimetableRecord> actual = service.findByStudent(studentId, firstDate, secondDate);
+		List<TimetableRecord> actual = null;
+		try {
+			actual = service.findByStudent(studentId, firstDate, secondDate);
+		} catch (ServiceNotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}

@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.Student;
+import ua.foxminded.yakovlev.university.exception.ServiceAlreadyExistsException;
+import ua.foxminded.yakovlev.university.exception.ServiceConstrainException;
+import ua.foxminded.yakovlev.university.exception.ServiceNotFoundException;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
 import ua.foxminded.yakovlev.university.service.StudentService;
 import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
@@ -36,7 +39,13 @@ class StudentServiceImplTest {
 	void findAllShouldReturnCertainListOfStudents() {
 		
 		List<Student> expected = getAllStudents();
-		List<Student> actual = service.findAll();
+		List<Student> actual = null;
+		
+		try {
+			actual = service.findAll();
+		} catch (ServiceNotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -45,7 +54,13 @@ class StudentServiceImplTest {
 	void findByIdShouldReturnCertainStudent() {
 		
 		Student expected = getAllStudents().get(1);
-		Student actual = service.findById(2L);
+		Student actual = null;
+		
+		try {
+			actual = service.findById(2L);
+		} catch (ServiceNotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -56,9 +71,14 @@ class StudentServiceImplTest {
 		List<Student> expected = getAllStudents();
 		expected.remove(2);
 		
-		service.delete(3L);
+		List<Student> actual = null;
 		
-		List<Student> actual = service.findAll();
+		try {
+			service.delete(3L);
+			actual = service.findAll();
+		} catch (ServiceNotFoundException | ServiceConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -70,7 +90,13 @@ class StudentServiceImplTest {
 		expected.remove(4);
 		expected.remove(3);
 		
-		List<Student> actual = service.findByGroupId(1L);
+		List<Student> actual = null;
+		
+		try {
+			actual = service.findByGroupId(1L);
+		} catch (ServiceNotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -84,9 +110,14 @@ class StudentServiceImplTest {
 		expected.add(newStudent);
 		Student studentToAdd = getStudent(1L, "aa-01", 0L, 0L, "Новый", "Студент");
 		
-		service.save(studentToAdd);
+		List<Student> actual = null;
 		
-		List<Student> actual = service.findAll();
+		try {
+			service.save(studentToAdd);
+			actual = service.findAll();
+		} catch (ServiceNotFoundException | ServiceAlreadyExistsException | ServiceConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -101,9 +132,14 @@ class StudentServiceImplTest {
 		Group newGroup = getAllStudents().get(3).getGroup();
 		expected.setGroup(newGroup);
 		
-		service.update(expected);
+		Student actual = null;
 		
-		Student actual = service.findById(expected.getStudentId());
+		try {
+			service.update(expected);
+			actual = service.findById(expected.getStudentId());
+		} catch (ServiceNotFoundException | ServiceAlreadyExistsException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -117,11 +153,22 @@ class StudentServiceImplTest {
 		Group newGroup = getAllStudents().get(3).getGroup();
 		newStudent.setGroup(newGroup);
 		
-		Student expected = service.update(newStudent);
+		Student expected = null;		
+		Student actual = null;
 		
-		Student actual = service.findById(newStudent.getStudentId());
+		try {
+			expected = service.update(newStudent);		
+			actual = service.findById(newStudent.getStudentId());
+		} catch (ServiceNotFoundException | ServiceAlreadyExistsException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void findByIdShouldThrowsServiceNotFoundExceptionWhenStudentIdIsNotExisting() {		
+		assertThrows(ServiceNotFoundException.class, () -> service.findById(99L));
 	}
 	
 	List<Student> getAllStudents() {
