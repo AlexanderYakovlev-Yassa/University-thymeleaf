@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 import ua.foxminded.yakovlev.university.dao.LecturerDao;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
+import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
+import ua.foxminded.yakovlev.university.exception.ServiceNotFoundException;
 import ua.foxminded.yakovlev.university.service.LecturerService;
 
 @Component
@@ -19,7 +21,12 @@ public class LecturerServiceImpl extends AbstractService<Lecturer, Long> impleme
 	}
 
 	@Override
-	public List<Lecturer> findByPositionId(Long positionId) {
-		return dao.findByPositionId(positionId);
+	public List<Lecturer> findByPositionId(Long positionId) throws ServiceNotFoundException {
+		
+		try {
+			return dao.findByPositionId(positionId);
+		} catch (DaoNotFoundException e) {
+			throw new ServiceNotFoundException("Entity not found");
+		}
 	}
 }
