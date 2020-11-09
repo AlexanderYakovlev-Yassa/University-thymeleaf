@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ua.foxminded.yakovlev.university.dao.PositionDao;
 import ua.foxminded.yakovlev.university.entity.Position;
+import ua.foxminded.yakovlev.university.exception.DaoAlreadyExistsException;
+import ua.foxminded.yakovlev.university.exception.DaoConstrainException;
+import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
 import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
@@ -35,7 +38,13 @@ class PositionDaoImplTest {
 	void findAllShouldReturnCertainListOfPositions() {
 		
 		List<Position> expected = getAllPositions();
-		List<Position> actual = dao.findAll();
+		List<Position> actual = null;
+		
+		try {
+			actual = dao.findAll();
+		} catch (DaoNotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -44,7 +53,13 @@ class PositionDaoImplTest {
 	void findByIdShouldReturnCertainPosition() {
 		
 		Position expected = getAllPositions().get(1);
-		Position actual = dao.findById(2L);
+		Position actual = null;
+		
+		try {
+			actual = dao.findById(2L);
+		} catch (DaoNotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -55,9 +70,14 @@ class PositionDaoImplTest {
 		List<Position> expected = getAllPositions();
 		expected.remove(3);
 		
-		dao.delete(4L);
 		
-		List<Position> actual = dao.findAll();
+		List<Position> actual = null;
+		try {
+			dao.delete(4L);
+			actual = dao.findAll();
+		} catch (DaoNotFoundException | DaoConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -67,7 +87,13 @@ class PositionDaoImplTest {
 		
 		Position expected = getPosition(4L, "ASSISTANT_PROFESSOR");
 		
-		Position actual = dao.findPositionByName("ASSISTANT_PROFESSOR");
+		Position actual = null;
+		
+		try {
+			actual = dao.findPositionByName("ASSISTANT_PROFESSOR");
+		} catch (DaoNotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -80,9 +106,15 @@ class PositionDaoImplTest {
 		expected.add(newPosition);
 		Position positionToAdd = getPosition(0L, "TEST");
 		
-		dao.save(positionToAdd);
 		
-		List<Position> actual = dao.findAll();
+		List<Position> actual = null;
+		
+		try {
+			dao.save(positionToAdd);
+			actual = dao.findAll();
+		} catch (DaoNotFoundException | DaoAlreadyExistsException | DaoConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -93,7 +125,13 @@ class PositionDaoImplTest {
 		Position positionToAdd = getPosition(0L, "TEST");
 		
 		Position expected = getPosition(10L, "TEST");
-		Position actual = dao.save(positionToAdd);		
+		Position actual = null;
+		
+		try {
+			actual = dao.save(positionToAdd);
+		} catch (DaoNotFoundException | DaoAlreadyExistsException | DaoConstrainException e) {
+			fail(e);
+		}		
 		
 		assertEquals(expected, actual);
 	}
@@ -103,9 +141,14 @@ class PositionDaoImplTest {
 		
 		Position expected = getPosition(2L, "TEST");
 				
-		dao.update(expected);
 		
-		Position actual = dao.findById(expected.getId());
+		Position actual = null;
+		try {
+			dao.update(expected);
+			actual = dao.findById(expected.getId());
+		} catch (DaoNotFoundException | DaoAlreadyExistsException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -115,10 +158,48 @@ class PositionDaoImplTest {
 		
 		Position changedPosition = getPosition(2L, "TEST");
 		
-		Position expected = dao.update(changedPosition);		
-		Position actual = dao.findById(changedPosition.getId());
+		Position expected = null;		
+		Position actual = null;
+		
+		try {
+			expected = dao.update(changedPosition);		
+			actual = dao.findById(changedPosition.getId());
+		} catch (DaoNotFoundException | DaoAlreadyExistsException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void findByIdShouldThrowsDaoNotFoundExceptionWhenPositionIdIsNotExisting() {		
+		assertThrows(DaoNotFoundException.class, () -> dao.findById(99L));
+	}
+	
+	@Test
+	void deleteShouldReturnsDaoConstrainExceptionWhenDeletingPositionIsInUseInAnotherTable() {		
+		assertThrows(DaoConstrainException.class, () -> dao.delete(8L));
+	}
+	
+	@Test
+	void findByNameShouldThrowsDaoNotFoundExceptionWhenPositionWithSuchNameIsNotExist() {
+		assertThrows(DaoNotFoundException.class, () -> dao.findPositionByName("Gelmeister"));
+	}
+	
+	@Test
+	void saveShouldThrowsDaoAlreadyExistsExceptionWhenSavingPositionNameAlreadyExists() {
+		
+		Position position = getPosition(null, "PROFESSOR");
+		
+		assertThrows(DaoAlreadyExistsException.class, () -> dao.save(position));
+	}
+	
+	@Test
+	void updateShouldThrowsDaoAlreadyExistsExceptionWhenNewUpdatingPositionNameHasAlreadyExisted() {
+		
+		Position group = getPosition(2L, "UNIVERSITY_PROFESSOR");
+		
+		assertThrows(DaoAlreadyExistsException.class, () -> dao.update(group));
 	}
 	
 	List<Position> getAllPositions() {
