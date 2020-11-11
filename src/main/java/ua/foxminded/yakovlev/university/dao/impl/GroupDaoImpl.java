@@ -45,7 +45,7 @@ public class GroupDaoImpl extends AbstractDao<Group, Long> implements GroupDao {
 		try {
 			return jdbcTemplate.queryForObject(FIND_BY_GROUP_NAME, groupMapper, groupName);
 		} catch (EmptyResultDataAccessException e) {
-			logger.warn("Group is not found", e);
+			logger.error("Group is not found", e);
 			throw new NotFoundException("Group is not found");
 		}
 	}

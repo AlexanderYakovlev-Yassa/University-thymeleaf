@@ -47,7 +47,7 @@ public class CourseDaoImpl extends AbstractDao<Course, Long> implements CourseDa
 		try {
 			return jdbcTemplate.queryForObject(FIND_BY_COURSE_NAME, courseMapper, courseName);
 		} catch (EmptyResultDataAccessException e) {
-			logger.warn("Course is not found", e);
+			logger.error("Course is not found", e);
 			throw new NotFoundException("Course is not found");
 		}		
 	}

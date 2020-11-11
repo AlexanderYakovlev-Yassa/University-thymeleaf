@@ -45,7 +45,7 @@ public class PositionDaoImpl extends AbstractDao<Position, Long> implements Posi
 		try {
 			return jdbcTemplate.queryForObject(FIND_BY_POSITION_NAME, positionMapper, positionName);
 		} catch (EmptyResultDataAccessException e) {
-			logger.warn("Entity is not found", e);
+			logger.error("Entity is not found", e);
 			throw new NotFoundException("Entity is not found");
 		}
 	}

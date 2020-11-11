@@ -213,7 +213,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 			return ps;
 		});
 		} catch (DataIntegrityViolationException e) {
-			logger.warn("There is a constrain preventing of a group adding", e);
+			logger.error("There is a constrain preventing of a group adding", e);
 			throw new ConstrainException("There is a constrain preventing of a group adding");
 		}
 	}

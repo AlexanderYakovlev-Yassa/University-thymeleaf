@@ -50,7 +50,7 @@ public abstract class AbstractDao<E, ID> {
 		try {
 			return jdbcTemplate.queryForObject(findById, rowMapper, id);
 		} catch (EmptyResultDataAccessException e) {
-			logger.warn("Entity not found", e);
+			logger.error("Entity not found", e);
 			throw new NotFoundException("Entity not found");
 		}
 	}
@@ -60,7 +60,7 @@ public abstract class AbstractDao<E, ID> {
 		try {
 			jdbcTemplate.update(delete, id);
 		} catch (DataIntegrityViolationException e) {
-			logger.warn("There is a constrain preventing deletion", e);
+			logger.error("There is a constrain preventing deletion", e);
 			throw new ConstrainException("There is a constrain preventing deletion");
 		}
 	}
@@ -73,7 +73,7 @@ public abstract class AbstractDao<E, ID> {
 		try {
 			jdbcTemplate.update(getPreparedStatementCreatorForUpdate(entity), keyHolder);
 		} catch (DuplicateKeyException e) {
-			logger.warn("entity already exists", e);
+			logger.error("entity already exists", e);
 			throw new AlreadyExistsException("entity already exists");
 		}
 		
@@ -90,7 +90,7 @@ public abstract class AbstractDao<E, ID> {
 		try {
 			jdbcTemplate.update(getPreparedStatementCreatorForSave(entity), keyHolder);
 		} catch (DuplicateKeyException e) {
-			logger.warn("entity already exists", e);
+			logger.error("entity already exists", e);
 			throw new AlreadyExistsException("entity already exists");
 		}
 		
@@ -108,7 +108,7 @@ public abstract class AbstractDao<E, ID> {
 		try {
 			return jdbcTemplate.query(sql, preparedStatementSetter, rowMapper);
 		} catch (EmptyResultDataAccessException e) {
-			logger.warn("Entity not found", e);
+			logger.error("Entity not found", e);
 			throw new NotFoundException("Entity not found");
 		}
 	}
@@ -117,7 +117,7 @@ public abstract class AbstractDao<E, ID> {
 		try {
 		jdbcTemplate.update(sql, preparedStatementSetter);
 		} catch (Exception e) {
-			logger.warn("Update fail", e);
+			logger.error("Update fail", e);
 			throw new CantUpdateException("Update fail", e);
 		}
 	}
