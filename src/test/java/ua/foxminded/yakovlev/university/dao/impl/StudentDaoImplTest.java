@@ -11,9 +11,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import ua.foxminded.yakovlev.university.dao.StudentDao;
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.Student;
-import ua.foxminded.yakovlev.university.exception.DaoAlreadyExistsException;
-import ua.foxminded.yakovlev.university.exception.DaoConstrainException;
-import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
+import ua.foxminded.yakovlev.university.exception.AlreadyExistsException;
+import ua.foxminded.yakovlev.university.exception.ConstrainException;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
 import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
@@ -42,7 +42,7 @@ class StudentDaoImplTest {
 		List<Student> actual = null;
 		try {
 			actual = dao.findAll();
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -57,7 +57,7 @@ class StudentDaoImplTest {
 		
 		try {
 			actual = dao.findById(2L);
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -75,7 +75,7 @@ class StudentDaoImplTest {
 		try {
 			dao.delete(3L);
 			actual = dao.findAll();
-		} catch (DaoNotFoundException | DaoConstrainException e) {
+		} catch (NotFoundException | ConstrainException e) {
 			fail(e);
 		}
 		
@@ -93,7 +93,7 @@ class StudentDaoImplTest {
 		
 		try {
 			actual = dao.findByGroupId(1L);
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -113,7 +113,7 @@ class StudentDaoImplTest {
 		try {
 			dao.save(studentToAdd);
 			actual = dao.findAll();
-		} catch (DaoNotFoundException | DaoAlreadyExistsException | DaoConstrainException e) {
+		} catch (NotFoundException | AlreadyExistsException | ConstrainException e) {
 			fail(e);
 		}
 		
@@ -135,7 +135,7 @@ class StudentDaoImplTest {
 		try {
 			dao.update(expected);
 			actual = dao.findById(expected.getStudentId());
-		} catch (DaoNotFoundException | DaoAlreadyExistsException e) {
+		} catch (NotFoundException | AlreadyExistsException e) {
 			fail(e);
 		}
 		
@@ -157,7 +157,7 @@ class StudentDaoImplTest {
 		try {
 			expected = dao.update(newStudent);		
 			actual = dao.findById(newStudent.getStudentId());
-		} catch (DaoNotFoundException | DaoAlreadyExistsException e) {
+		} catch (NotFoundException | AlreadyExistsException e) {
 			fail(e);
 		}
 		
@@ -166,7 +166,7 @@ class StudentDaoImplTest {
 	
 	@Test
 	void findByIdShouldThrowsDaoNotFoundExceptionWhenStudentIdIsNotExisting() {		
-		assertThrows(DaoNotFoundException.class, () -> dao.findById(99L));
+		assertThrows(NotFoundException.class, () -> dao.findById(99L));
 	}
 	
 	List<Student> getAllStudents() {

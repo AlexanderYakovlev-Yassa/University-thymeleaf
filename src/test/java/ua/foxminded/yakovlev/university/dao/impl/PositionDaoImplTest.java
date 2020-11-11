@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ua.foxminded.yakovlev.university.dao.PositionDao;
 import ua.foxminded.yakovlev.university.entity.Position;
-import ua.foxminded.yakovlev.university.exception.DaoAlreadyExistsException;
-import ua.foxminded.yakovlev.university.exception.DaoConstrainException;
-import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
+import ua.foxminded.yakovlev.university.exception.AlreadyExistsException;
+import ua.foxminded.yakovlev.university.exception.ConstrainException;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
 import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
@@ -42,7 +42,7 @@ class PositionDaoImplTest {
 		
 		try {
 			actual = dao.findAll();
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -57,7 +57,7 @@ class PositionDaoImplTest {
 		
 		try {
 			actual = dao.findById(2L);
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -75,7 +75,7 @@ class PositionDaoImplTest {
 		try {
 			dao.delete(4L);
 			actual = dao.findAll();
-		} catch (DaoNotFoundException | DaoConstrainException e) {
+		} catch (NotFoundException | ConstrainException e) {
 			fail(e);
 		}
 		
@@ -91,7 +91,7 @@ class PositionDaoImplTest {
 		
 		try {
 			actual = dao.findPositionByName("ASSISTANT_PROFESSOR");
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -112,7 +112,7 @@ class PositionDaoImplTest {
 		try {
 			dao.save(positionToAdd);
 			actual = dao.findAll();
-		} catch (DaoNotFoundException | DaoAlreadyExistsException | DaoConstrainException e) {
+		} catch (NotFoundException | AlreadyExistsException | ConstrainException e) {
 			fail(e);
 		}
 		
@@ -129,7 +129,7 @@ class PositionDaoImplTest {
 		
 		try {
 			actual = dao.save(positionToAdd);
-		} catch (DaoNotFoundException | DaoAlreadyExistsException | DaoConstrainException e) {
+		} catch (NotFoundException | AlreadyExistsException | ConstrainException e) {
 			fail(e);
 		}		
 		
@@ -146,7 +146,7 @@ class PositionDaoImplTest {
 		try {
 			dao.update(expected);
 			actual = dao.findById(expected.getId());
-		} catch (DaoNotFoundException | DaoAlreadyExistsException e) {
+		} catch (NotFoundException | AlreadyExistsException e) {
 			fail(e);
 		}
 		
@@ -164,7 +164,7 @@ class PositionDaoImplTest {
 		try {
 			expected = dao.update(changedPosition);		
 			actual = dao.findById(changedPosition.getId());
-		} catch (DaoNotFoundException | DaoAlreadyExistsException e) {
+		} catch (NotFoundException | AlreadyExistsException e) {
 			fail(e);
 		}
 		
@@ -173,17 +173,17 @@ class PositionDaoImplTest {
 	
 	@Test
 	void findByIdShouldThrowsDaoNotFoundExceptionWhenPositionIdIsNotExisting() {		
-		assertThrows(DaoNotFoundException.class, () -> dao.findById(99L));
+		assertThrows(NotFoundException.class, () -> dao.findById(99L));
 	}
 	
 	@Test
 	void deleteShouldReturnsDaoConstrainExceptionWhenDeletingPositionIsInUseInAnotherTable() {		
-		assertThrows(DaoConstrainException.class, () -> dao.delete(8L));
+		assertThrows(ConstrainException.class, () -> dao.delete(8L));
 	}
 	
 	@Test
 	void findByNameShouldThrowsDaoNotFoundExceptionWhenPositionWithSuchNameIsNotExist() {
-		assertThrows(DaoNotFoundException.class, () -> dao.findPositionByName("Gelmeister"));
+		assertThrows(NotFoundException.class, () -> dao.findPositionByName("Gelmeister"));
 	}
 	
 	@Test
@@ -191,7 +191,7 @@ class PositionDaoImplTest {
 		
 		Position position = getPosition(null, "PROFESSOR");
 		
-		assertThrows(DaoAlreadyExistsException.class, () -> dao.save(position));
+		assertThrows(AlreadyExistsException.class, () -> dao.save(position));
 	}
 	
 	@Test
@@ -199,7 +199,7 @@ class PositionDaoImplTest {
 		
 		Position group = getPosition(2L, "UNIVERSITY_PROFESSOR");
 		
-		assertThrows(DaoAlreadyExistsException.class, () -> dao.update(group));
+		assertThrows(AlreadyExistsException.class, () -> dao.update(group));
 	}
 	
 	List<Position> getAllPositions() {

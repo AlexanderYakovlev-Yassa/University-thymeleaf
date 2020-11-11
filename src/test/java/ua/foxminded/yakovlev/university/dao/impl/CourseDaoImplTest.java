@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ua.foxminded.yakovlev.university.dao.CourseDao;
 import ua.foxminded.yakovlev.university.entity.Course;
-import ua.foxminded.yakovlev.university.exception.DaoAlreadyExistsException;
-import ua.foxminded.yakovlev.university.exception.DaoConstrainException;
-import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
+import ua.foxminded.yakovlev.university.exception.AlreadyExistsException;
+import ua.foxminded.yakovlev.university.exception.ConstrainException;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
 import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
@@ -41,7 +41,7 @@ class CourseDaoImplTest {
 		List<Course> actual = null;
 		try {
 			actual = dao.findAll();
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -55,7 +55,7 @@ class CourseDaoImplTest {
 		Course actual = null;
 		try {
 			actual = dao.findById(2L);
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -64,7 +64,7 @@ class CourseDaoImplTest {
 	
 	@Test
 	void findByIdShouldThrowsDaoNotFoundExceptionWhenCourseIdIsNotExisting() {		
-		assertThrows(DaoNotFoundException.class, () -> dao.findById(99L));
+		assertThrows(NotFoundException.class, () -> dao.findById(99L));
 	}
 	
 	@Test
@@ -77,7 +77,7 @@ class CourseDaoImplTest {
 		try {
 			dao.delete(4L);
 			actual = dao.findAll();
-		} catch (DaoConstrainException | DaoNotFoundException e) {
+		} catch (ConstrainException | NotFoundException e) {
 			fail(e);
 		}		
 		
@@ -86,7 +86,7 @@ class CourseDaoImplTest {
 	
 	@Test
 	void deleteShouldReturnsDaoConstrainExceptionWhenDeletingCoursIsInUseInAnotherTable() {		
-		assertThrows(DaoConstrainException.class, () -> dao.delete(1L));
+		assertThrows(ConstrainException.class, () -> dao.delete(1L));
 	}
 	
 	@Test
@@ -98,7 +98,7 @@ class CourseDaoImplTest {
 		
 		try {
 			actual = dao.findCourseByName("Физика");
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -107,7 +107,7 @@ class CourseDaoImplTest {
 	
 	@Test
 	void findByNameShouldThrowsDaoNotFoundExceptionWhenCourseWithSuchNameIsNotExist() {
-		assertThrows(DaoNotFoundException.class, () -> dao.findCourseByName("Кибернетика"));
+		assertThrows(NotFoundException.class, () -> dao.findCourseByName("Кибернетика"));
 	}
 		
 	@Test
@@ -122,7 +122,7 @@ class CourseDaoImplTest {
 		try {
 			dao.save(courseToAdd);
 			actual = dao.findAll();
-		} catch (DaoNotFoundException | DaoAlreadyExistsException | DaoConstrainException e) {
+		} catch (NotFoundException | AlreadyExistsException | ConstrainException e) {
 			fail(e);
 		}
 				
@@ -139,7 +139,7 @@ class CourseDaoImplTest {
 		
 		try {
 			actual = dao.save(courseToAdd);
-		} catch (DaoNotFoundException | DaoAlreadyExistsException | DaoConstrainException e) {
+		} catch (NotFoundException | AlreadyExistsException | ConstrainException e) {
 			fail(e);
 		}
 		
@@ -151,7 +151,7 @@ class CourseDaoImplTest {
 		
 		Course course = getCourse(null, "Математика", null);
 		
-		assertThrows(DaoAlreadyExistsException.class, () -> dao.save(course));
+		assertThrows(AlreadyExistsException.class, () -> dao.save(course));
 	}
 	
 	@Test
@@ -163,7 +163,7 @@ class CourseDaoImplTest {
 		try {
 			dao.update(expected);
 			actual = dao.findById(expected.getId());
-		} catch (DaoNotFoundException | DaoAlreadyExistsException e) {
+		} catch (NotFoundException | AlreadyExistsException e) {
 			fail(e);
 		}		
 		
@@ -181,7 +181,7 @@ class CourseDaoImplTest {
 		try {
 			expected = dao.update(changedCourse);
 			actual = dao.findById(changedCourse.getId());
-		} catch (DaoNotFoundException | DaoAlreadyExistsException e) {
+		} catch (NotFoundException | AlreadyExistsException e) {
 			fail(e);
 		}		
 		
@@ -193,7 +193,7 @@ class CourseDaoImplTest {
 		
 		Course course = getCourse(2L, "Математика", "Общий курс физики");
 		
-		assertThrows(DaoAlreadyExistsException.class, () -> dao.update(course));
+		assertThrows(AlreadyExistsException.class, () -> dao.update(course));
 	}
 	
 	List<Course> getAllCourses() {

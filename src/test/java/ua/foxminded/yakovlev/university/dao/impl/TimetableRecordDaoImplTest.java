@@ -15,9 +15,9 @@ import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.entity.Position;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
-import ua.foxminded.yakovlev.university.exception.DaoAlreadyExistsException;
-import ua.foxminded.yakovlev.university.exception.DaoConstrainException;
-import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
+import ua.foxminded.yakovlev.university.exception.AlreadyExistsException;
+import ua.foxminded.yakovlev.university.exception.ConstrainException;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
 import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
@@ -47,7 +47,7 @@ class TimetableRecordDaoImplTest {
 		
 		try {
 			actual = dao.findAll();
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -61,7 +61,7 @@ class TimetableRecordDaoImplTest {
 		TimetableRecord actual = null;
 		try {
 			actual = dao.findById(2L);
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -79,7 +79,7 @@ class TimetableRecordDaoImplTest {
 		try {
 			dao.delete(3L);
 			actual = dao.findAll();
-		} catch (DaoNotFoundException | DaoConstrainException e) {
+		} catch (NotFoundException | ConstrainException e) {
 			fail(e);
 		}
 		
@@ -99,7 +99,7 @@ class TimetableRecordDaoImplTest {
 		List<TimetableRecord> actual = null;
 		try {
 			actual = dao.findByPeriodOfTime(firstDate, secondDate);
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -121,7 +121,7 @@ class TimetableRecordDaoImplTest {
 				;
 		try {
 			actual = dao.findByLecturer(lecturerId, firstDate, secondDate);
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -143,7 +143,7 @@ class TimetableRecordDaoImplTest {
 		
 		try {
 			actual = dao.findByStudent(studentId, firstDate, secondDate);
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -163,7 +163,7 @@ class TimetableRecordDaoImplTest {
 		try {
 			dao.save(timetableRecordToAdd);
 			actual = dao.findAll();
-		} catch (DaoNotFoundException | DaoAlreadyExistsException | DaoConstrainException e) {
+		} catch (NotFoundException | AlreadyExistsException | ConstrainException e) {
 			fail(e);
 		}
 		
@@ -180,7 +180,7 @@ class TimetableRecordDaoImplTest {
 		
 		try {
 			actual = dao.save(timetableRecordToAdd);
-		} catch (DaoNotFoundException | DaoAlreadyExistsException | DaoConstrainException e) {
+		} catch (NotFoundException | AlreadyExistsException | ConstrainException e) {
 			fail(e);
 		}		
 		
@@ -196,7 +196,7 @@ class TimetableRecordDaoImplTest {
 		recordForAdd.setCourse(allRecords.get(1).getCourse());
 		recordForAdd.setGroupList(allRecords.get(1).getGroupList());
 		
-		assertThrows(DaoAlreadyExistsException.class, () -> dao.save(recordForAdd));
+		assertThrows(AlreadyExistsException.class, () -> dao.save(recordForAdd));
 	}
 	
 	@Test
@@ -210,7 +210,7 @@ class TimetableRecordDaoImplTest {
 		try {
 			dao.update(expected);
 			actual = dao.findById(expected.getId());
-		} catch (DaoNotFoundException | DaoAlreadyExistsException e) {
+		} catch (NotFoundException | AlreadyExistsException e) {
 			fail(e);
 		}
 		
@@ -228,7 +228,7 @@ class TimetableRecordDaoImplTest {
 		try {
 			dao.update(expected);
 			actual = dao.findById(expected.getId());
-		} catch (DaoNotFoundException | DaoAlreadyExistsException e) {
+		} catch (NotFoundException | AlreadyExistsException e) {
 			fail(e);
 		}
 		
@@ -247,7 +247,7 @@ class TimetableRecordDaoImplTest {
 			expected.getGroupList().add(groupForAdd);
 			dao.addGroup(3L, 2L);
 			actual = dao.findById(2L);
-		} catch (DaoNotFoundException | DaoConstrainException e1) {
+		} catch (NotFoundException | ConstrainException e1) {
 			e1.printStackTrace();
 		}
 		
@@ -266,7 +266,7 @@ class TimetableRecordDaoImplTest {
 			expected = dao.findById(2L);
 			expected.getGroupList().add(groupForAdd);			
 			actual = dao.addGroup(3L, 2L);
-		} catch (DaoNotFoundException | DaoConstrainException e) {
+		} catch (NotFoundException | ConstrainException e) {
 			fail(e);
 		}
 		
@@ -283,7 +283,7 @@ class TimetableRecordDaoImplTest {
 			expected = dao.findById(1L);
 			dao.removeGroup(1L, 1L);
 			actual = dao.findById(1L);
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -302,7 +302,7 @@ class TimetableRecordDaoImplTest {
 			expected = dao.findById(1L);
 			expected.getGroupList().remove(0);		
 			actual = dao.removeGroup(1L, 1L);
-		} catch (DaoNotFoundException e) {
+		} catch (NotFoundException e) {
 			fail(e);
 		}
 		
@@ -316,7 +316,7 @@ class TimetableRecordDaoImplTest {
 		Long timetableId = record.getId();
 		Long alreadyExistedGroupId = record.getGroupList().get(0).getId();
 		
-		assertThrows(DaoConstrainException.class, () -> dao.addGroup(alreadyExistedGroupId, timetableId));
+		assertThrows(ConstrainException.class, () -> dao.addGroup(alreadyExistedGroupId, timetableId));
 	}
 	
 	@Test
@@ -328,7 +328,7 @@ class TimetableRecordDaoImplTest {
 		updatingRecord.setDate(donorRecord.getDate());
 		updatingRecord.setLecturer(donorRecord.getLecturer());
 		
-		assertThrows(DaoAlreadyExistsException.class, () -> dao.update(updatingRecord));
+		assertThrows(AlreadyExistsException.class, () -> dao.update(updatingRecord));
 	}
 	
 	List<TimetableRecord> getAllTimetableRecords() {
