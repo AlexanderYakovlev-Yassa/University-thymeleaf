@@ -14,10 +14,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import ua.foxminded.yakovlev.university.exception.DaoAlreadyExistsException;
-import ua.foxminded.yakovlev.university.exception.DaoConstrainException;
-import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
-import ua.foxminded.yakovlev.university.exception.DaoRuntimeException;
+import ua.foxminded.yakovlev.university.exception.AlreadyExistsException;
+import ua.foxminded.yakovlev.university.exception.ConstrainException;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
+import ua.foxminded.yakovlev.university.exception.CantUpdateException;
 
 public abstract class AbstractDao<E, ID> {
 	
@@ -45,28 +45,28 @@ public abstract class AbstractDao<E, ID> {
 		return jdbcTemplate.query(findAll, rowMapper);
 	}
 
-	public E findById(ID id) throws DaoNotFoundException {
+	public E findById(ID id) {
 		
 		try {
 			return jdbcTemplate.queryForObject(findById, rowMapper, id);
 		} catch (EmptyResultDataAccessException e) {
 			logger.warn("Entity not found", e);
-			throw new DaoNotFoundException("Entity not found");
+			throw new NotFoundException("Entity not found");
 		}
 	}
 
-	public void delete(ID id) throws DaoConstrainException {
+	public void delete(ID id) {
 		
 		try {
 			jdbcTemplate.update(delete, id);
 		} catch (DataIntegrityViolationException e) {
 			logger.warn("There is a constrain preventing deletion", e);
-			throw new DaoConstrainException("There is a constrain preventing deletion");
+			throw new ConstrainException("There is a constrain preventing deletion");
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	public E update(E entity) throws DaoNotFoundException, DaoAlreadyExistsException {
+	public E update(E entity) {
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -74,7 +74,7 @@ public abstract class AbstractDao<E, ID> {
 			jdbcTemplate.update(getPreparedStatementCreatorForUpdate(entity), keyHolder);
 		} catch (DuplicateKeyException e) {
 			logger.warn("entity already exists", e);
-			throw new DaoAlreadyExistsException("entity already exists");
+			throw new AlreadyExistsException("entity already exists");
 		}
 		
 	    ID entityId = (ID) keyHolder.getKey();
@@ -83,7 +83,7 @@ public abstract class AbstractDao<E, ID> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public E save(E entity) throws DaoNotFoundException, DaoAlreadyExistsException, DaoConstrainException {
+	public E save(E entity) {
 		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -91,7 +91,7 @@ public abstract class AbstractDao<E, ID> {
 			jdbcTemplate.update(getPreparedStatementCreatorForSave(entity), keyHolder);
 		} catch (DuplicateKeyException e) {
 			logger.warn("entity already exists", e);
-			throw new DaoAlreadyExistsException("entity already exists");
+			throw new AlreadyExistsException("entity already exists");
 		}
 		
 	    ID entityId = (ID) keyHolder.getKey();
@@ -103,13 +103,13 @@ public abstract class AbstractDao<E, ID> {
 	
 	public abstract PreparedStatementCreator getPreparedStatementCreatorForSave(E entity);
 
-	protected List<E> findByQuery(String sql, PreparedStatementSetter preparedStatementSetter) throws DaoNotFoundException {		
+	protected List<E> findByQuery(String sql, PreparedStatementSetter preparedStatementSetter) {		
 		
 		try {
 			return jdbcTemplate.query(sql, preparedStatementSetter, rowMapper);
 		} catch (EmptyResultDataAccessException e) {
 			logger.warn("Entity not found", e);
-			throw new DaoNotFoundException("Entity not found");
+			throw new NotFoundException("Entity not found");
 		}
 	}
 
@@ -118,7 +118,7 @@ public abstract class AbstractDao<E, ID> {
 		jdbcTemplate.update(sql, preparedStatementSetter);
 		} catch (Exception e) {
 			logger.warn("Update fail", e);
-			throw new DaoRuntimeException("Update fail", e);
+			throw new CantUpdateException("Update fail", e);
 		}
 	}
 }
