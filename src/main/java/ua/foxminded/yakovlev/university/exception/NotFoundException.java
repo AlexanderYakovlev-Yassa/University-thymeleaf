@@ -1,6 +1,6 @@
 package ua.foxminded.yakovlev.university.exception;
 
-public class NotFoundException extends Exception {
+public class NotFoundException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 

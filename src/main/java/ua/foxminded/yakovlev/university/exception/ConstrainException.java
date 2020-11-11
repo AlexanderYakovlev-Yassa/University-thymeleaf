@@ -1,6 +1,6 @@
 package ua.foxminded.yakovlev.university.exception;
 
-public class ConstrainException extends Exception {
+public class ConstrainException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 

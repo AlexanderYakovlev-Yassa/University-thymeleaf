@@ -1,6 +1,6 @@
 package ua.foxminded.yakovlev.university.exception;
 
-public class AlreadyExistsException extends Exception {
+public class AlreadyExistsException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
