@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.CourseDao;
 import ua.foxminded.yakovlev.university.entity.Course;
-import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
 
 @Component
 public class CourseDaoImpl extends AbstractDao<Course, Long> implements CourseDao {
@@ -42,13 +42,13 @@ public class CourseDaoImpl extends AbstractDao<Course, Long> implements CourseDa
 	}
 
 	@Override
-	public Course findCourseByName(String courseName) throws DaoNotFoundException {
+	public Course findCourseByName(String courseName) {
 		
 		try {
 			return jdbcTemplate.queryForObject(FIND_BY_COURSE_NAME, courseMapper, courseName);
 		} catch (EmptyResultDataAccessException e) {
 			logger.warn("Course is not found", e);
-			throw new DaoNotFoundException("Course is not found");
+			throw new NotFoundException("Course is not found");
 		}		
 	}
 

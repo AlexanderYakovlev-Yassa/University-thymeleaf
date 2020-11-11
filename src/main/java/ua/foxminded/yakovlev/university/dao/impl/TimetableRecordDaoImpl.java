@@ -17,9 +17,7 @@ import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.TimetableRecordDao;
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
-import ua.foxminded.yakovlev.university.exception.DaoAlreadyExistsException;
-import ua.foxminded.yakovlev.university.exception.DaoConstrainException;
-import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
+import ua.foxminded.yakovlev.university.exception.ConstrainException;
 
 @Component
 public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> implements TimetableRecordDao {
@@ -118,7 +116,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 	}
 
 	@Override
-	public List<TimetableRecord> findByPeriodOfTime(LocalDateTime periodStart, LocalDateTime periodFinish) throws DaoNotFoundException {
+	public List<TimetableRecord> findByPeriodOfTime(LocalDateTime periodStart, LocalDateTime periodFinish) {
 		
 		PreparedStatementSetter preparedStatementSetter = ps -> {
 			ps.setObject(1, periodStart);
@@ -143,7 +141,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 	}
 	
 	@Override
-	public TimetableRecord findById(Long id) throws DaoNotFoundException {
+	public TimetableRecord findById(Long id) {
 		
 		TimetableRecord record = super.findById(id);
 		
@@ -153,7 +151,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 	}
 	
 	@Override
-	public void delete(Long id) throws DaoConstrainException {
+	public void delete(Long id) {
 		
 		List<Group> groupList = findGroupsByTimeableId(id);
 		groupList.forEach(g -> removeGroupFromTimeableRecordGroups(g.getId(), id));
@@ -162,7 +160,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 	}
 	
 	@Override
-	public TimetableRecord save(TimetableRecord record) throws DaoNotFoundException, DaoAlreadyExistsException, DaoConstrainException {
+	public TimetableRecord save(TimetableRecord record) {
 		
 		List<Group> groupList = record.getGroupList();
 		TimetableRecord savedRecord = super.save(record);
@@ -175,7 +173,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 	}
 	
 	@Override
-	public TimetableRecord addGroup(Long groupId, Long timetableId) throws DaoNotFoundException, DaoConstrainException {
+	public TimetableRecord addGroup(Long groupId, Long timetableId) {
 		
 		addGroupToTimeableRecordGroups(groupId, timetableId);
 		
@@ -183,7 +181,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 	}
 
 	@Override
-	public TimetableRecord removeGroup(Long groupId, Long timetableId) throws DaoNotFoundException {
+	public TimetableRecord removeGroup(Long groupId, Long timetableId) {
 		
 		removeGroupFromTimeableRecordGroups(groupId, timetableId);
 		
@@ -205,7 +203,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 		}, groupMapper);
 	}
 		
-	private void addGroupToTimeableRecordGroups(Long groupId, Long timetableId) throws DaoConstrainException {
+	private void addGroupToTimeableRecordGroups(Long groupId, Long timetableId) {
 		
 		try {
 		jdbcTemplate.update(connection -> {
@@ -216,7 +214,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 		});
 		} catch (DataIntegrityViolationException e) {
 			logger.warn("There is a constrain preventing of a group adding", e);
-			throw new DaoConstrainException("There is a constrain preventing of a group adding");
+			throw new ConstrainException("There is a constrain preventing of a group adding");
 		}
 	}
 		
@@ -229,7 +227,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 	}
 
 	@Override
-	public List<TimetableRecord> findByLecturer(Long lecturerId, LocalDateTime periodStart, LocalDateTime periodFinish) throws DaoNotFoundException {
+	public List<TimetableRecord> findByLecturer(Long lecturerId, LocalDateTime periodStart, LocalDateTime periodFinish) {
 		
 		PreparedStatementSetter preparedStatementSetter = ps -> {
 			ps.setObject(1, periodStart);
@@ -245,7 +243,7 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 	}
 
 	@Override
-	public List<TimetableRecord> findByStudent(Long studentId, LocalDateTime periodStart, LocalDateTime periodFinish) throws DaoNotFoundException {
+	public List<TimetableRecord> findByStudent(Long studentId, LocalDateTime periodStart, LocalDateTime periodFinish) {
 		
 		PreparedStatementSetter preparedStatementSetter = ps -> {
 			ps.setLong(1, studentId);

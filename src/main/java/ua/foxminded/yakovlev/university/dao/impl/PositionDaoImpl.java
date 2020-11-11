@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.PositionDao;
 import ua.foxminded.yakovlev.university.entity.Position;
-import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
 
 @Component
 public class PositionDaoImpl extends AbstractDao<Position, Long> implements PositionDao {
@@ -40,13 +40,13 @@ public class PositionDaoImpl extends AbstractDao<Position, Long> implements Posi
 	}
 
 	@Override
-	public Position findPositionByName(String positionName) throws DaoNotFoundException {
+	public Position findPositionByName(String positionName) {
 		
 		try {
 			return jdbcTemplate.queryForObject(FIND_BY_POSITION_NAME, positionMapper, positionName);
 		} catch (EmptyResultDataAccessException e) {
 			logger.warn("Entity is not found", e);
-			throw new DaoNotFoundException("Entity is not found");
+			throw new NotFoundException("Entity is not found");
 		}
 	}
 

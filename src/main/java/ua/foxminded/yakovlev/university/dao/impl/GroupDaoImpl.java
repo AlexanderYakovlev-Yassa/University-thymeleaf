@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.GroupDao;
 import ua.foxminded.yakovlev.university.entity.Group;
-import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
 
 @Component
 public class GroupDaoImpl extends AbstractDao<Group, Long> implements GroupDao {
@@ -40,13 +40,13 @@ public class GroupDaoImpl extends AbstractDao<Group, Long> implements GroupDao {
 	}
 
 	@Override
-	public Group findGroupByName(String groupName) throws DaoNotFoundException {
+	public Group findGroupByName(String groupName) {
 		
 		try {
 			return jdbcTemplate.queryForObject(FIND_BY_GROUP_NAME, groupMapper, groupName);
 		} catch (EmptyResultDataAccessException e) {
 			logger.warn("Group is not found", e);
-			throw new DaoNotFoundException("Group is not found");
+			throw new NotFoundException("Group is not found");
 		}
 	}
 

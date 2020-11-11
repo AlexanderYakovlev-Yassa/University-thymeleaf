@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.LecturerDao;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
-import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
 
 @Component
 public class LecturerDaoImpl extends AbstractDao<Lecturer, Long> implements LecturerDao {
@@ -71,7 +70,7 @@ public class LecturerDaoImpl extends AbstractDao<Lecturer, Long> implements Lect
 	}
 
 	@Override
-	public List<Lecturer> findByPositionId(Long positionId) throws DaoNotFoundException {
+	public List<Lecturer> findByPositionId(Long positionId) {
 		
 		PreparedStatementSetter preparedStatementSetter = ps -> {
 			ps.setLong(1, positionId);

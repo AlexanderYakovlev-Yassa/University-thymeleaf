@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.StudentDao;
 import ua.foxminded.yakovlev.university.entity.Student;
-import ua.foxminded.yakovlev.university.exception.DaoNotFoundException;
 
 @Component
 public class StudentDaoImpl extends AbstractDao<Student, Long> implements StudentDao {
@@ -71,7 +70,7 @@ public class StudentDaoImpl extends AbstractDao<Student, Long> implements Studen
 	}
 
 	@Override
-	public List<Student> findByGroupId(Long groupId) throws DaoNotFoundException {
+	public List<Student> findByGroupId(Long groupId) {
 		
 		PreparedStatementSetter preparedStatementSetter = ps -> {
 			ps.setLong(1, groupId);
