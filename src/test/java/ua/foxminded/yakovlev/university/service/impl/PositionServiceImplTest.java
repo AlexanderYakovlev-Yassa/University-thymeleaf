@@ -9,9 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ua.foxminded.yakovlev.university.entity.Position;
-import ua.foxminded.yakovlev.university.exception.ServiceAlreadyExistsException;
-import ua.foxminded.yakovlev.university.exception.ServiceConstrainException;
-import ua.foxminded.yakovlev.university.exception.ServiceNotFoundException;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
 import ua.foxminded.yakovlev.university.service.PositionService;
 import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
@@ -38,13 +35,7 @@ class PositionServiceImplTest {
 	void findAllShouldReturnCertainListOfPositions() {
 		
 		List<Position> expected = getAllPositions();
-		List<Position> actual = null;
-		
-		try {
-			actual = service.findAll();
-		} catch (ServiceNotFoundException e) {
-			fail(e);
-		}
+		List<Position> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -53,13 +44,7 @@ class PositionServiceImplTest {
 	void findByIdShouldReturnCertainPosition() {
 		
 		Position expected = getAllPositions().get(1);
-		Position actual = null;
-		
-		try {
-			actual = service.findById(2L);
-		} catch (ServiceNotFoundException e) {
-			fail(e);
-		}
+		Position actual = service.findById(2L);
 		
 		assertEquals(expected, actual);
 	}
@@ -70,14 +55,9 @@ class PositionServiceImplTest {
 		List<Position> expected = getAllPositions();
 		expected.remove(3);
 		
-		List<Position> actual = null;
+		service.delete(4L);
 		
-		try {
-			service.delete(4L);
-			actual = service.findAll();
-		} catch (ServiceNotFoundException | ServiceConstrainException e) {
-			fail(e);
-		}
+		List<Position> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -87,13 +67,7 @@ class PositionServiceImplTest {
 		
 		Position expected = getPosition(4L, "ASSISTANT_PROFESSOR");
 		
-		Position actual = null;
-		
-		try {
-			actual = service.findPositionByName("ASSISTANT_PROFESSOR");
-		} catch (ServiceNotFoundException e) {
-			fail(e);
-		}
+		Position actual = service.findPositionByName("ASSISTANT_PROFESSOR");
 		
 		assertEquals(expected, actual);
 	}
@@ -106,14 +80,9 @@ class PositionServiceImplTest {
 		expected.add(newPosition);
 		Position positionToAdd = getPosition(0L, "TEST");
 		
-		List<Position> actual = null;
+		service.save(positionToAdd);
 		
-		try {
-			service.save(positionToAdd);
-			actual = service.findAll();
-		} catch (ServiceNotFoundException | ServiceAlreadyExistsException | ServiceConstrainException e) {
-			fail(e);
-		}
+		List<Position> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -124,13 +93,7 @@ class PositionServiceImplTest {
 		Position positionToAdd = getPosition(0L, "TEST");
 		
 		Position expected = getPosition(10L, "TEST");
-		Position actual = null;
-		
-		try {
-			actual = service.save(positionToAdd);
-		} catch (ServiceNotFoundException | ServiceAlreadyExistsException | ServiceConstrainException e) {
-			fail(e);
-		}		
+		Position actual = service.save(positionToAdd);		
 		
 		assertEquals(expected, actual);
 	}
@@ -140,14 +103,9 @@ class PositionServiceImplTest {
 		
 		Position expected = getPosition(2L, "TEST");
 				
-		Position actual = null;
+		service.update(expected);
 		
-		try {
-			service.update(expected);
-			actual = service.findById(expected.getId());
-		} catch (ServiceNotFoundException | ServiceAlreadyExistsException e) {
-			fail(e);
-		}
+		Position actual = service.findById(expected.getId());
 		
 		assertEquals(expected, actual);
 	}
@@ -157,48 +115,10 @@ class PositionServiceImplTest {
 		
 		Position changedPosition = getPosition(2L, "TEST");
 		
-		Position expected = null;		
-		Position actual = null;
-		
-		try {
-			expected = service.update(changedPosition);
-			actual = service.findById(changedPosition.getId());
-		} catch (ServiceNotFoundException | ServiceAlreadyExistsException e) {
-			fail(e);
-		}		
+		Position expected = service.update(changedPosition);		
+		Position actual = service.findById(changedPosition.getId());
 		
 		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void findByIdShouldThrowsServiceNotFoundExceptionWhenPositionIdIsNotExisting() {		
-		assertThrows(ServiceNotFoundException.class, () -> service.findById(99L));
-	}
-	
-	@Test
-	void deleteShouldReturnsServiceConstrainExceptionWhenDeletingPositionIsInUseInAnotherTable() {		
-		assertThrows(ServiceConstrainException.class, () -> service.delete(8L));
-	}
-	
-	@Test
-	void findByNameShouldThrowsServiceNotFoundExceptionWhenPositionWithSuchNameIsNotExist() {
-		assertThrows(ServiceNotFoundException.class, () -> service.findPositionByName("Gelmeister"));
-	}
-	
-	@Test
-	void saveShouldThrowsServiceAlreadyExistsExceptionWhenSavingPositionNameAlreadyExists() {
-		
-		Position position = getPosition(null, "PROFESSOR");
-		
-		assertThrows(ServiceAlreadyExistsException.class, () -> service.save(position));
-	}
-	
-	@Test
-	void updateShouldThrowsServiceAlreadyExistsExceptionWhenNewUpdatingPositionNameHasAlreadyExisted() {
-		
-		Position group = getPosition(2L, "UNIVERSITY_PROFESSOR");
-		
-		assertThrows(ServiceAlreadyExistsException.class, () -> service.update(group));
 	}
 	
 	List<Position> getAllPositions() {

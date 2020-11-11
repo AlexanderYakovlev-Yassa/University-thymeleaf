@@ -9,9 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ua.foxminded.yakovlev.university.entity.Course;
-import ua.foxminded.yakovlev.university.exception.ServiceAlreadyExistsException;
-import ua.foxminded.yakovlev.university.exception.ServiceConstrainException;
-import ua.foxminded.yakovlev.university.exception.ServiceNotFoundException;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
 import ua.foxminded.yakovlev.university.service.CourseService;
 import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
@@ -38,13 +35,7 @@ class CourseServiceImplTest {
 	void findAllShouldReturnCertainListOfCourses() {
 		
 		List<Course> expected = getAllCourses();
-		List<Course> actual = null;
-		
-		try {
-			actual = service.findAll();
-		} catch (ServiceNotFoundException e) {
-			fail(e);
-		}
+		List<Course> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -53,20 +44,9 @@ class CourseServiceImplTest {
 	void findByIdShouldReturnCertainCourse() {
 		
 		Course expected = getAllCourses().get(1);
-		Course actual = null;
-		
-		try {
-			actual = service.findById(2L);
-		} catch (ServiceNotFoundException e) {
-			fail(e);
-		}
+		Course actual = service.findById(2L);
 		
 		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void findByIdShouldThrowsServiceNotFoundExceptionWhenCourseIdIsNotExisting() {		
-		assertThrows(ServiceNotFoundException.class, () -> service.findById(99L));
 	}
 	
 	@Test
@@ -75,21 +55,11 @@ class CourseServiceImplTest {
 		List<Course> expected = getAllCourses();
 		expected.remove(3);
 		
-		List<Course> actual = null;
+		service.delete(4L);
 		
-		try {
-			service.delete(4L);
-			actual = service.findAll();
-		} catch (ServiceNotFoundException | ServiceConstrainException e) {
-			fail(e);
-		}
+		List<Course> actual = service.findAll();
 		
 		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void deleteShouldReturnsServiceConstrainExceptionWhenDeletingCoursIsInUseInAnotherTable() {		
-		assertThrows(ServiceConstrainException.class, () -> service.delete(1L));
 	}
 	
 	@Test
@@ -97,20 +67,9 @@ class CourseServiceImplTest {
 		
 		Course expected = getCourse(2L, "Физика", "Общий курс физики");
 		
-		Course actual = null;
-		
-		try {
-			actual = service.findCourseByName("Физика");
-		} catch (ServiceNotFoundException e) {
-			fail(e);
-		}
+		Course actual = service.findCourseByName("Физика");
 		
 		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void findByNameShouldThrowsServiceNotFoundExceptionWhenCourseWithSuchNameIsNotExist() {
-		assertThrows(ServiceNotFoundException.class, () -> service.findCourseByName("Кибернетика"));
 	}
 		
 	@Test
@@ -121,14 +80,9 @@ class CourseServiceImplTest {
 		expected.add(newCourse);
 		Course courseToAdd = getCourse(0L, "Химия", "Неорганическая физика");
 		
-		List<Course> actual = null;
+		service.save(courseToAdd);
 		
-		try {
-			service.save(courseToAdd);
-			actual = service.findAll();
-		} catch (ServiceNotFoundException | ServiceAlreadyExistsException | ServiceConstrainException e) {
-			fail(e);
-		}
+		List<Course> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -139,23 +93,9 @@ class CourseServiceImplTest {
 		Course courseToAdd = getCourse(0L, "Химия", "Неорганическая физика");
 		
 		Course expected = getCourse(5L, "Химия", "Неорганическая физика");
-		Course actual = null;
-		
-		try {
-			actual = service.save(courseToAdd);
-		} catch (ServiceNotFoundException | ServiceAlreadyExistsException | ServiceConstrainException e) {
-			fail(e);
-		}		
+		Course actual = service.save(courseToAdd);		
 		
 		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void saveShouldThrowsServiceAlreadyExistsExceptionWhenSavingCourseNameAlreadyExists() {
-		
-		Course course = getCourse(null, "Математика", null);
-		
-		assertThrows(ServiceAlreadyExistsException.class, () -> service.save(course));
 	}
 	
 	@Test
@@ -163,14 +103,9 @@ class CourseServiceImplTest {
 		
 		Course expected = getCourse(2L, "Химия", "Неорганическая физика");
 				
-		Course actual = null;
+		service.update(expected);
 		
-		try {
-			service.update(expected);
-			actual = service.findById(expected.getId());
-		} catch (ServiceNotFoundException | ServiceAlreadyExistsException e) {
-			fail(e);
-		}
+		Course actual = service.findById(expected.getId());
 		
 		assertEquals(expected, actual);
 	}
@@ -180,25 +115,10 @@ class CourseServiceImplTest {
 		
 		Course changedCourse = getCourse(2L, "Химия", "Неорганическая физика");
 		
-		Course expected = null;		
-		Course actual = null;
-		
-		try {
-			expected = service.update(changedCourse);		
-			actual = service.findById(changedCourse.getId());
-		} catch (ServiceNotFoundException | ServiceAlreadyExistsException e) {
-			fail(e);
-		}
+		Course expected = service.update(changedCourse);		
+		Course actual = service.findById(changedCourse.getId());
 		
 		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void updateShouldThrowsServiceAlreadyExistsExceptionWhenNewUpdatingCourseNameHasAlreadyExisted() {
-		
-		Course course = getCourse(2L, "Математика", "Общий курс физики");
-		
-		assertThrows(ServiceAlreadyExistsException.class, () -> service.update(course));
 	}
 	
 	List<Course> getAllCourses() {

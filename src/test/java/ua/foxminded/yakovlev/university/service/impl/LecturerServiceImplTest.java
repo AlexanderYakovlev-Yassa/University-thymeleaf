@@ -9,9 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ua.foxminded.yakovlev.university.entity.Position;
-import ua.foxminded.yakovlev.university.exception.ServiceAlreadyExistsException;
-import ua.foxminded.yakovlev.university.exception.ServiceConstrainException;
-import ua.foxminded.yakovlev.university.exception.ServiceNotFoundException;
 import ua.foxminded.yakovlev.university.init.AppConfiguration;
 import ua.foxminded.yakovlev.university.service.LecturerService;
 import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
@@ -39,13 +36,7 @@ class LecturerServiceImplTest {
 	void findAllShouldReturnCertainListOfLecturers() {
 		
 		List<Lecturer> expected = getAllLecturers();
-		List<Lecturer> actual = null;
-		
-		try {
-			actual = service.findAll();
-		} catch (ServiceNotFoundException e) {
-			fail(e);
-		}
+		List<Lecturer> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -54,13 +45,7 @@ class LecturerServiceImplTest {
 	void findByIdShouldReturnCertainLecturer() {
 		
 		Lecturer expected = getAllLecturers().get(1);
-		Lecturer actual = null;
-		
-		try {
-			actual = service.findById(2L);
-		} catch (ServiceNotFoundException e) {
-			fail(e);
-		}
+		Lecturer actual = service.findById(2L);
 		
 		assertEquals(expected, actual);
 	}
@@ -71,14 +56,9 @@ class LecturerServiceImplTest {
 		List<Lecturer> expected = getAllLecturers();
 		expected.remove(3);
 		
-		List<Lecturer> actual = null;
+		service.delete(4L);
 		
-		try {
-			service.delete(4L);
-			actual = service.findAll();
-		} catch (ServiceNotFoundException | ServiceConstrainException e) {
-			fail(e);
-		}
+		List<Lecturer> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -90,13 +70,7 @@ class LecturerServiceImplTest {
 		expected.remove(3);
 		expected.remove(2);
 		
-		List<Lecturer> actual = null;
-		
-		try {
-			actual = service.findByPositionId(7L);
-		} catch (ServiceNotFoundException e) {
-			fail(e);
-		}
+		List<Lecturer> actual = service.findByPositionId(7L);
 		
 		assertEquals(expected, actual);
 	}
@@ -110,14 +84,9 @@ class LecturerServiceImplTest {
 		expected.add(newLecturer);
 		Lecturer lecturerToAdd = getLecturer(3L, "ASSOCIATE_PROFESSOR", 10L, 5L, "Новый", "Лектор");
 		
-		List<Lecturer> actual = null;
+		service.save(lecturerToAdd);
 		
-		try {
-			service.save(lecturerToAdd);
-			actual = service.findAll();
-		} catch (ServiceNotFoundException | ServiceAlreadyExistsException | ServiceConstrainException e) {
-			fail(e);
-		}
+		List<Lecturer> actual = service.findAll();
 		
 		assertEquals(expected, actual);
 	}
@@ -132,14 +101,9 @@ class LecturerServiceImplTest {
 		Position newPosition = getAllLecturers().get(3).getPosition();
 		expected.setPosition(newPosition);
 		
-		Lecturer actual = null;
+		service.update(expected);
 		
-		try {
-			service.update(expected);
-			actual = service.findById(expected.getLecturerId());
-		} catch (ServiceNotFoundException | ServiceAlreadyExistsException e) {
-			fail(e);
-		}
+		Lecturer actual = service.findById(expected.getLecturerId());
 		
 		assertEquals(expected, actual);
 	}
@@ -153,27 +117,11 @@ class LecturerServiceImplTest {
 		Position newPosition = getAllLecturers().get(3).getPosition();
 		newLecturer.setPosition(newPosition);
 		
-		Lecturer expected = null;
-		Lecturer actual = null;
+		Lecturer expected = service.update(newLecturer);
 		
-		try {
-			expected = service.update(newLecturer);
-			actual = service.findById(newLecturer.getLecturerId());
-		} catch (ServiceNotFoundException | ServiceAlreadyExistsException e) {
-			fail(e);
-		}
+		Lecturer actual = service.findById(newLecturer.getLecturerId());
 		
 		assertEquals(expected, actual);
-	}
-	
-	@Test
-	void findByIdShouldThrowsServiceNotFoundExceptionWhenLecturerIdIsNotExisting() {		
-		assertThrows(ServiceNotFoundException.class, () -> service.findById(99L));
-	}
-	
-	@Test
-	void deleteShouldReturnsServiceConstrainExceptionWhenDeletingLecturerIsInUseInAnotherTable() {		
-		assertThrows(ServiceConstrainException.class, () -> service.delete(1L));
 	}
 	
 	List<Lecturer> getAllLecturers() {
