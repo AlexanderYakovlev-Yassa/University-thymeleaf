@@ -13,7 +13,7 @@ import ua.foxminded.yakovlev.university.entity.Position;
 import ua.foxminded.yakovlev.university.exception.AlreadyExistsException;
 import ua.foxminded.yakovlev.university.exception.ConstrainException;
 import ua.foxminded.yakovlev.university.exception.NotFoundException;
-import ua.foxminded.yakovlev.university.init.AppConfiguration;
+import ua.foxminded.yakovlev.university.init.PositionDaoTestConfiguration;
 import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
 class PositionDaoImplTest {
@@ -24,7 +24,7 @@ class PositionDaoImplTest {
 
 	@BeforeAll
 	static void initTestCase() {
-		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
+		context = new AnnotationConfigApplicationContext(PositionDaoTestConfiguration.class);
 		generator = context.getBean("databaseGenerator", DatabaseGenerator.class);
 		dao = context.getBean("positionDao", PositionDaoImpl.class);
 	}
