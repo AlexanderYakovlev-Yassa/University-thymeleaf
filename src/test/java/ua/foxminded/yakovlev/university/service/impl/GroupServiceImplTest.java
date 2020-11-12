@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import ua.foxminded.yakovlev.university.entity.Group;
-import ua.foxminded.yakovlev.university.init.AppConfiguration;
+import ua.foxminded.yakovlev.university.init.GroupDaoTestConfiguration;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
@@ -23,7 +23,7 @@ class GroupServiceImplTest {
 
 	@BeforeAll
 	static void initTestCase() {
-		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
+		context = new AnnotationConfigApplicationContext(GroupDaoTestConfiguration.class);
 		generator = context.getBean("databaseGenerator", DatabaseGenerator.class);
 		service = context.getBean("groupService", GroupServiceImpl.class);
 	}

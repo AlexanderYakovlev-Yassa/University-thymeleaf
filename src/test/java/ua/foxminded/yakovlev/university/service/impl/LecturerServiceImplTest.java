@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ua.foxminded.yakovlev.university.entity.Position;
-import ua.foxminded.yakovlev.university.init.AppConfiguration;
+import ua.foxminded.yakovlev.university.init.LecturerDaoTestConfiguration;
 import ua.foxminded.yakovlev.university.service.LecturerService;
 import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
@@ -22,7 +22,7 @@ class LecturerServiceImplTest {
 
 	@BeforeAll
 	static void initTestCase() {
-		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
+		context = new AnnotationConfigApplicationContext(LecturerDaoTestConfiguration.class);
 		generator = context.getBean("databaseGenerator", DatabaseGenerator.class);
 		service = context.getBean("lecturerService", LecturerServiceImpl.class);
 	}
