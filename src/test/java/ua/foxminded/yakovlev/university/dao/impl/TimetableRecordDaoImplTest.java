@@ -15,19 +15,22 @@ import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.entity.Position;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
-import ua.foxminded.yakovlev.university.init.AppConfiguration;
-import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
+import ua.foxminded.yakovlev.university.exception.AlreadyExistsException;
+import ua.foxminded.yakovlev.university.exception.ConstrainException;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
+import ua.foxminded.yakovlev.university.init.TimetableRecordDaoTestConfiguration;
+import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
 class TimetableRecordDaoImplTest {
 
 	private static AnnotationConfigApplicationContext context;
-	private static TestDatabaseGenerator generator;
+	private static DatabaseGenerator generator;
 	private static TimetableRecordDao dao;
 
 	@BeforeAll
 	static void initTestCase() {
-		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
-		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
+		context = new AnnotationConfigApplicationContext(TimetableRecordDaoTestConfiguration.class);
+		generator = context.getBean("databaseGenerator", DatabaseGenerator.class);
 		dao = context.getBean("timetableRecordDao", TimetableRecordDaoImpl.class);
 	}
 
@@ -40,7 +43,13 @@ class TimetableRecordDaoImplTest {
 	void findAllShouldReturnCertainListOfTimetableRecords() {
 		
 		List<TimetableRecord> expected = getAllTimetableRecords();
-		List<TimetableRecord> actual = dao.findAll();
+		List<TimetableRecord> actual = null;
+		
+		try {
+			actual = dao.findAll();
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -49,7 +58,12 @@ class TimetableRecordDaoImplTest {
 	void findByIdShouldReturnCertainTimetableRecord() {
 		
 		TimetableRecord expected = getAllTimetableRecords().get(1);
-		TimetableRecord actual = dao.findById(2L);
+		TimetableRecord actual = null;
+		try {
+			actual = dao.findById(2L);
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -60,9 +74,14 @@ class TimetableRecordDaoImplTest {
 		List<TimetableRecord> expected = getAllTimetableRecords();
 		expected.remove(2);
 		
-		dao.delete(3L);
+		List<TimetableRecord> actual = null;
 		
-		List<TimetableRecord> actual = dao.findAll();
+		try {
+			dao.delete(3L);
+			actual = dao.findAll();
+		} catch (NotFoundException | ConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -77,7 +96,12 @@ class TimetableRecordDaoImplTest {
 		LocalDateTime firstDate = LocalDateTime.parse("2020-10-16T09:30:00");
 		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T11:30:00");
 		
-		List<TimetableRecord> actual = dao.findByPeriodOfTime(firstDate, secondDate);
+		List<TimetableRecord> actual = null;
+		try {
+			actual = dao.findByPeriodOfTime(firstDate, secondDate);
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -93,7 +117,13 @@ class TimetableRecordDaoImplTest {
 		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T12:30:00");
 		Long lecturerId = 3L;
 		
-		List<TimetableRecord> actual = dao.findByLecturer(lecturerId, firstDate, secondDate);
+		List<TimetableRecord> actual = null
+				;
+		try {
+			actual = dao.findByLecturer(lecturerId, firstDate, secondDate);
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -109,7 +139,13 @@ class TimetableRecordDaoImplTest {
 		LocalDateTime secondDate = LocalDateTime.parse("2020-10-16T13:00:00");
 		Long studentId = 3L;
 		
-		List<TimetableRecord> actual = dao.findByStudent(studentId, firstDate, secondDate);
+		List<TimetableRecord> actual = null;
+		
+		try {
+			actual = dao.findByStudent(studentId, firstDate, secondDate);
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -122,9 +158,14 @@ class TimetableRecordDaoImplTest {
 		expected.add(newTimetableRecord);
 		TimetableRecord timetableRecordToAdd = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 0L, "2020-10-16T15:00:00", getAllGroups());
 		
-		dao.save(timetableRecordToAdd);
+		List<TimetableRecord> actual = null;
 		
-		List<TimetableRecord> actual = dao.findAll();
+		try {
+			dao.save(timetableRecordToAdd);
+			actual = dao.findAll();
+		} catch (NotFoundException | AlreadyExistsException | ConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -135,9 +176,27 @@ class TimetableRecordDaoImplTest {
 		TimetableRecord timetableRecordToAdd = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 0L, "2020-10-16T15:00:00", getAllGroups());
 		
 		TimetableRecord expected = getTimetableRecord(7L, "INSTRUCTOR", 6L, 1L, "Андрей", "Аксенов", 3L, "Музыка", "Основы музыкальной грамоты", 4L, "2020-10-16T15:00:00", getAllGroups());
-		TimetableRecord actual = dao.save(timetableRecordToAdd);		
+		TimetableRecord actual = null;
+		
+		try {
+			actual = dao.save(timetableRecordToAdd);
+		} catch (NotFoundException | AlreadyExistsException | ConstrainException e) {
+			fail(e);
+		}		
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void saveShouldThrowDaoAlreadyExistsExceptionWhenAddRecordWithSameTimeAndLecturer() {
+		
+		List<TimetableRecord> allRecords = getAllTimetableRecords();
+		TimetableRecord recordForAdd = allRecords.get(0);
+		recordForAdd.setId(0L);
+		recordForAdd.setCourse(allRecords.get(1).getCourse());
+		recordForAdd.setGroupList(allRecords.get(1).getGroupList());
+		
+		assertThrows(AlreadyExistsException.class, () -> dao.save(recordForAdd));
 	}
 	
 	@Test
@@ -146,9 +205,14 @@ class TimetableRecordDaoImplTest {
 		TimetableRecord expected = getAllTimetableRecords().get(0);
 		expected.setDate(LocalDateTime.parse("2020-10-17T09:00:00"));
 				
-		dao.update(expected);
+		TimetableRecord actual = null;
 		
-		TimetableRecord actual = dao.findById(expected.getId());
+		try {
+			dao.update(expected);
+			actual = dao.findById(expected.getId());
+		} catch (NotFoundException | AlreadyExistsException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -159,8 +223,14 @@ class TimetableRecordDaoImplTest {
 		TimetableRecord expected = getAllTimetableRecords().get(0);
 		expected.setDate(LocalDateTime.parse("2020-10-17T09:00:00"));
 				
-		dao.update(expected);
-		TimetableRecord actual = dao.findById(expected.getId());
+		TimetableRecord actual = null;
+		
+		try {
+			dao.update(expected);
+			actual = dao.findById(expected.getId());
+		} catch (NotFoundException | AlreadyExistsException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -169,12 +239,17 @@ class TimetableRecordDaoImplTest {
 	void addGroupShouldAddCertainRecord() {
 		
 		Group groupForAdd = getGroup(3L, "ab-03");
-		TimetableRecord expected = dao.findById(2L);
-		expected.getGroupList().add(groupForAdd);
+		TimetableRecord expected = null;
+		TimetableRecord actual = null;
 		
-		dao.addGroup(3L, 2L);
-		
-		TimetableRecord actual = dao.findById(2L);
+		try {
+			expected = dao.findById(2L);
+			expected.getGroupList().add(groupForAdd);
+			dao.addGroup(3L, 2L);
+			actual = dao.findById(2L);
+		} catch (NotFoundException | ConstrainException e1) {
+			e1.printStackTrace();
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -183,10 +258,17 @@ class TimetableRecordDaoImplTest {
 	void addGroupShouldReturnUpdatedTimetableRecord() {
 		
 		Group groupForAdd = getGroup(3L, "ab-03");
-		TimetableRecord expected = dao.findById(2L);
-		expected.getGroupList().add(groupForAdd);
 		
-		TimetableRecord actual = dao.addGroup(3L, 2L);
+		TimetableRecord expected = null;
+		TimetableRecord actual = null;
+		
+		try {
+			expected = dao.findById(2L);
+			expected.getGroupList().add(groupForAdd);			
+			actual = dao.addGroup(3L, 2L);
+		} catch (NotFoundException | ConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -194,12 +276,18 @@ class TimetableRecordDaoImplTest {
 	@Test
 	void removeGroupShouldRemoveCertainRecord() {
 		
-		TimetableRecord expected = dao.findById(1L);
-		expected.getGroupList().remove(0);
+		TimetableRecord expected = null;
+		TimetableRecord actual = null;
 		
-		dao.removeGroup(1L, 1L);
+		try {
+			expected = dao.findById(1L);
+			dao.removeGroup(1L, 1L);
+			actual = dao.findById(1L);
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
-		TimetableRecord actual = dao.findById(1L);
+		expected.getGroupList().remove(0);		
 		
 		assertEquals(expected, actual);
 	}
@@ -207,12 +295,40 @@ class TimetableRecordDaoImplTest {
 	@Test
 	void removeGroupShouldReturnUpdatedTimetableRecord() {
 		
-		TimetableRecord expected = dao.findById(1L);
-		expected.getGroupList().remove(0);
+		TimetableRecord expected = null;
+		TimetableRecord actual = null;
 		
-		TimetableRecord actual = dao.removeGroup(1L, 1L);
+		try {
+			expected = dao.findById(1L);
+			expected.getGroupList().remove(0);		
+			actual = dao.removeGroup(1L, 1L);
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void addGroupShouldTrowsDaoConstrainExceptionWhenSuchGroupIsAlreadyInRecord() {
+		
+		TimetableRecord record = getAllTimetableRecords().get(0);
+		Long timetableId = record.getId();
+		Long alreadyExistedGroupId = record.getGroupList().get(0).getId();
+		
+		assertThrows(ConstrainException.class, () -> dao.addGroup(alreadyExistedGroupId, timetableId));
+	}
+	
+	@Test
+	void updateShouldThrowDaoAlreadyExistsExceptionWhenLecturerAndTimeInUpdatingRecordSameAsInOtherExistingRecord() {
+		
+		List<TimetableRecord> allRecords = getAllTimetableRecords();
+		TimetableRecord updatingRecord = allRecords.get(0);
+		TimetableRecord donorRecord = allRecords.get(1);
+		updatingRecord.setDate(donorRecord.getDate());
+		updatingRecord.setLecturer(donorRecord.getLecturer());
+		
+		assertThrows(AlreadyExistsException.class, () -> dao.update(updatingRecord));
 	}
 	
 	List<TimetableRecord> getAllTimetableRecords() {

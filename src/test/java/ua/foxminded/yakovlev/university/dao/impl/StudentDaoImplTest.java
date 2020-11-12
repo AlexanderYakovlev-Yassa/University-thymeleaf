@@ -11,19 +11,22 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import ua.foxminded.yakovlev.university.dao.StudentDao;
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.Student;
-import ua.foxminded.yakovlev.university.init.AppConfiguration;
-import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
+import ua.foxminded.yakovlev.university.exception.AlreadyExistsException;
+import ua.foxminded.yakovlev.university.exception.ConstrainException;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
+import ua.foxminded.yakovlev.university.init.StudentDaoTestConfiguration;
+import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
 class StudentDaoImplTest {
 
 	private static AnnotationConfigApplicationContext context;
-	private static TestDatabaseGenerator generator;
+	private static DatabaseGenerator generator;
 	private static StudentDao dao;
 
 	@BeforeAll
 	static void initTestCase() {
-		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
-		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
+		context = new AnnotationConfigApplicationContext(StudentDaoTestConfiguration.class);
+		generator = context.getBean("databaseGenerator", DatabaseGenerator.class);
 		dao = context.getBean("studentDao", StudentDaoImpl.class);
 	}
 
@@ -36,7 +39,12 @@ class StudentDaoImplTest {
 	void findAllShouldReturnCertainListOfStudents() {
 		
 		List<Student> expected = getAllStudents();
-		List<Student> actual = dao.findAll();
+		List<Student> actual = null;
+		try {
+			actual = dao.findAll();
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -45,7 +53,13 @@ class StudentDaoImplTest {
 	void findByIdShouldReturnCertainStudent() {
 		
 		Student expected = getAllStudents().get(1);
-		Student actual = dao.findById(2L);
+		Student actual = null;
+		
+		try {
+			actual = dao.findById(2L);
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -56,9 +70,14 @@ class StudentDaoImplTest {
 		List<Student> expected = getAllStudents();
 		expected.remove(2);
 		
-		dao.delete(3L);
+		List<Student> actual = null;
 		
-		List<Student> actual = dao.findAll();
+		try {
+			dao.delete(3L);
+			actual = dao.findAll();
+		} catch (NotFoundException | ConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -70,7 +89,13 @@ class StudentDaoImplTest {
 		expected.remove(4);
 		expected.remove(3);
 		
-		List<Student> actual = dao.findByGroupId(1L);
+		List<Student> actual = null;
+		
+		try {
+			actual = dao.findByGroupId(1L);
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -83,10 +108,14 @@ class StudentDaoImplTest {
 		Student newStudent = getStudent(1L, "aa-01", 10L, 6L, "Новый", "Студент");
 		expected.add(newStudent);
 		Student studentToAdd = getStudent(1L, "aa-01", 0L, 0L, "Новый", "Студент");
-		
-		dao.save(studentToAdd);
-		
-		List<Student> actual = dao.findAll();
+				
+		List<Student> actual = null;
+		try {
+			dao.save(studentToAdd);
+			actual = dao.findAll();
+		} catch (NotFoundException | AlreadyExistsException | ConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -101,9 +130,14 @@ class StudentDaoImplTest {
 		Group newGroup = getAllStudents().get(3).getGroup();
 		expected.setGroup(newGroup);
 		
-		dao.update(expected);
+		Student actual = null;
 		
-		Student actual = dao.findById(expected.getStudentId());
+		try {
+			dao.update(expected);
+			actual = dao.findById(expected.getStudentId());
+		} catch (NotFoundException | AlreadyExistsException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -117,11 +151,22 @@ class StudentDaoImplTest {
 		Group newGroup = getAllStudents().get(3).getGroup();
 		newStudent.setGroup(newGroup);
 		
-		Student expected = dao.update(newStudent);
+		Student expected = null;		
+		Student actual = null;
 		
-		Student actual = dao.findById(newStudent.getStudentId());
+		try {
+			expected = dao.update(newStudent);		
+			actual = dao.findById(newStudent.getStudentId());
+		} catch (NotFoundException | AlreadyExistsException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void findByIdShouldThrowsDaoNotFoundExceptionWhenStudentIdIsNotExisting() {		
+		assertThrows(NotFoundException.class, () -> dao.findById(99L));
 	}
 	
 	List<Student> getAllStudents() {

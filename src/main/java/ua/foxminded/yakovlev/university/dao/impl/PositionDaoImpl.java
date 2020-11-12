@@ -2,6 +2,9 @@ package ua.foxminded.yakovlev.university.dao.impl;
 
 import java.sql.PreparedStatement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,9 +13,12 @@ import org.springframework.stereotype.Component;
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.PositionDao;
 import ua.foxminded.yakovlev.university.entity.Position;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
 
 @Component
 public class PositionDaoImpl extends AbstractDao<Position, Long> implements PositionDao {
+	
+	private static final Logger logger = LoggerFactory.getLogger(PositionDaoImpl.class);
 
 	private static final String FIND_ALL = "SELECT * FROM public.positions;";
 	private static final String SAVE = "INSERT INTO public.positions(position_name) VALUES (?);";
@@ -35,7 +41,13 @@ public class PositionDaoImpl extends AbstractDao<Position, Long> implements Posi
 
 	@Override
 	public Position findPositionByName(String positionName) {
-		return jdbcTemplate.queryForObject(FIND_BY_POSITION_NAME, positionMapper, positionName);
+		
+		try {
+			return jdbcTemplate.queryForObject(FIND_BY_POSITION_NAME, positionMapper, positionName);
+		} catch (EmptyResultDataAccessException e) {
+			logger.error("Entity is not found", e);
+			throw new NotFoundException("Entity is not found");
+		}
 	}
 
 	@Override

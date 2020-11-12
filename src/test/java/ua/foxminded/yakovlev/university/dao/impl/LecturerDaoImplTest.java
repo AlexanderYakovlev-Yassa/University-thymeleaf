@@ -10,20 +10,23 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ua.foxminded.yakovlev.university.dao.LecturerDao;
 import ua.foxminded.yakovlev.university.entity.Position;
-import ua.foxminded.yakovlev.university.init.AppConfiguration;
+import ua.foxminded.yakovlev.university.exception.AlreadyExistsException;
+import ua.foxminded.yakovlev.university.exception.ConstrainException;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
+import ua.foxminded.yakovlev.university.init.LecturerDaoTestConfiguration;
+import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
-import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
 
 class LecturerDaoImplTest {
 
 	private static AnnotationConfigApplicationContext context;
-	private static TestDatabaseGenerator generator;
+	private static DatabaseGenerator generator;
 	private static LecturerDao dao;
 
 	@BeforeAll
 	static void initTestCase() {
-		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
-		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
+		context = new AnnotationConfigApplicationContext(LecturerDaoTestConfiguration.class);
+		generator = context.getBean("databaseGenerator", DatabaseGenerator.class);
 		dao = context.getBean("lecturerDao", LecturerDaoImpl.class);
 	}
 
@@ -36,7 +39,13 @@ class LecturerDaoImplTest {
 	void findAllShouldReturnCertainListOfLecturers() {
 		
 		List<Lecturer> expected = getAllLecturers();
-		List<Lecturer> actual = dao.findAll();
+		List<Lecturer> actual = null;
+		
+		try {
+			actual = dao.findAll();
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -45,7 +54,13 @@ class LecturerDaoImplTest {
 	void findByIdShouldReturnCertainLecturer() {
 		
 		Lecturer expected = getAllLecturers().get(1);
-		Lecturer actual = dao.findById(2L);
+		Lecturer actual = null;
+		
+		try {
+			actual = dao.findById(2L);
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -54,11 +69,15 @@ class LecturerDaoImplTest {
 	void deleteShouldDeleteCertainLecturer() {
 		
 		List<Lecturer> expected = getAllLecturers();
-		expected.remove(3);
+		expected.remove(3);		
+		List<Lecturer> actual = null;
 		
-		dao.delete(4L);
-		
-		List<Lecturer> actual = dao.findAll();
+		try {
+			dao.delete(4L);
+			actual = dao.findAll();
+		} catch (NotFoundException | ConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -70,7 +89,13 @@ class LecturerDaoImplTest {
 		expected.remove(3);
 		expected.remove(2);
 		
-		List<Lecturer> actual = dao.findByPositionId(7L);
+		List<Lecturer> actual = null;
+		
+		try {
+			actual = dao.findByPositionId(7L);
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -84,9 +109,14 @@ class LecturerDaoImplTest {
 		expected.add(newLecturer);
 		Lecturer lecturerToAdd = getLecturer(3L, "ASSOCIATE_PROFESSOR", 10L, 5L, "Новый", "Лектор");
 		
-		dao.save(lecturerToAdd);
+		List<Lecturer> actual = null;
 		
-		List<Lecturer> actual = dao.findAll();
+		try {
+			dao.save(lecturerToAdd);
+			actual = dao.findAll();
+		} catch (NotFoundException | AlreadyExistsException | ConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -101,9 +131,14 @@ class LecturerDaoImplTest {
 		Position newPosition = getAllLecturers().get(3).getPosition();
 		expected.setPosition(newPosition);
 		
-		dao.update(expected);
+		Lecturer actual = null;
 		
-		Lecturer actual = dao.findById(expected.getLecturerId());
+		try {
+			dao.update(expected);
+			actual = dao.findById(expected.getLecturerId());
+		} catch (NotFoundException | AlreadyExistsException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -117,11 +152,27 @@ class LecturerDaoImplTest {
 		Position newPosition = getAllLecturers().get(3).getPosition();
 		newLecturer.setPosition(newPosition);
 		
-		Lecturer expected = dao.update(newLecturer);
+		Lecturer expected = null;
+		Lecturer actual = null;
 		
-		Lecturer actual = dao.findById(newLecturer.getLecturerId());
+		try {
+			expected = dao.update(newLecturer);
+			actual = dao.findById(newLecturer.getLecturerId());
+		} catch (NotFoundException | AlreadyExistsException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void findByIdShouldThrowsDaoNotFoundExceptionWhenLecturerIdIsNotExisting() {		
+		assertThrows(NotFoundException.class, () -> dao.findById(99L));
+	}
+	
+	@Test
+	void deleteShouldReturnsDaoConstrainExceptionWhenDeletingLecturerIsInUseInAnotherTable() {		
+		assertThrows(ConstrainException.class, () -> dao.delete(1L));
 	}
 	
 	List<Lecturer> getAllLecturers() {

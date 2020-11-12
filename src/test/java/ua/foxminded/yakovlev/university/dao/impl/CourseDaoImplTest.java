@@ -10,19 +10,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ua.foxminded.yakovlev.university.dao.CourseDao;
 import ua.foxminded.yakovlev.university.entity.Course;
-import ua.foxminded.yakovlev.university.init.AppConfiguration;
-import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
+import ua.foxminded.yakovlev.university.exception.AlreadyExistsException;
+import ua.foxminded.yakovlev.university.exception.ConstrainException;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
+import ua.foxminded.yakovlev.university.init.CourseDaoTestConfiguration;
+import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
 class CourseDaoImplTest {
 
-	private static TestDatabaseGenerator generator;
+	private static DatabaseGenerator generator;
 	private static CourseDao dao;
 	private static AnnotationConfigApplicationContext context;
 
 	@BeforeAll
 	static void initTestCase() {
-		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
-		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
+		context = new AnnotationConfigApplicationContext(CourseDaoTestConfiguration.class);
+		generator = context.getBean("databaseGenerator", DatabaseGenerator.class);
 		dao = context.getBean("courseDao", CourseDao.class);
 	}
 
@@ -35,7 +38,12 @@ class CourseDaoImplTest {
 	void findAllShouldReturnCertainListOfCourses() {
 		
 		List<Course> expected = getAllCourses();
-		List<Course> actual = dao.findAll();
+		List<Course> actual = null;
+		try {
+			actual = dao.findAll();
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
 	}
@@ -44,9 +52,19 @@ class CourseDaoImplTest {
 	void findByIdShouldReturnCertainCourse() {
 		
 		Course expected = getAllCourses().get(1);
-		Course actual = dao.findById(2L);
+		Course actual = null;
+		try {
+			actual = dao.findById(2L);
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void findByIdShouldThrowsDaoNotFoundExceptionWhenCourseIdIsNotExisting() {		
+		assertThrows(NotFoundException.class, () -> dao.findById(99L));
 	}
 	
 	@Test
@@ -54,12 +72,21 @@ class CourseDaoImplTest {
 		
 		List<Course> expected = getAllCourses();
 		expected.remove(3);
-		
-		dao.delete(4L);
-		
-		List<Course> actual = dao.findAll();
+		List<Course> actual = null;
+				
+		try {
+			dao.delete(4L);
+			actual = dao.findAll();
+		} catch (ConstrainException | NotFoundException e) {
+			fail(e);
+		}		
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void deleteShouldReturnsDaoConstrainExceptionWhenDeletingCoursIsInUseInAnotherTable() {		
+		assertThrows(ConstrainException.class, () -> dao.delete(1L));
 	}
 	
 	@Test
@@ -67,9 +94,20 @@ class CourseDaoImplTest {
 		
 		Course expected = getCourse(2L, "Физика", "Общий курс физики");
 		
-		Course actual = dao.findCourseByName("Физика");
+		Course actual = null;
+		
+		try {
+			actual = dao.findCourseByName("Физика");
+		} catch (NotFoundException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void findByNameShouldThrowsDaoNotFoundExceptionWhenCourseWithSuchNameIsNotExist() {
+		assertThrows(NotFoundException.class, () -> dao.findCourseByName("Кибернетика"));
 	}
 		
 	@Test
@@ -79,11 +117,15 @@ class CourseDaoImplTest {
 		Course newCourse = getCourse(5L, "Химия", "Неорганическая физика");
 		expected.add(newCourse);
 		Course courseToAdd = getCourse(0L, "Химия", "Неорганическая физика");
+		List<Course> actual = null;
 		
-		dao.save(courseToAdd);
-		
-		List<Course> actual = dao.findAll();
-		
+		try {
+			dao.save(courseToAdd);
+			actual = dao.findAll();
+		} catch (NotFoundException | AlreadyExistsException | ConstrainException e) {
+			fail(e);
+		}
+				
 		assertEquals(expected, actual);
 	}
 	
@@ -93,19 +135,37 @@ class CourseDaoImplTest {
 		Course courseToAdd = getCourse(0L, "Химия", "Неорганическая физика");
 		
 		Course expected = getCourse(5L, "Химия", "Неорганическая физика");
-		Course actual = dao.save(courseToAdd);		
+		Course actual = null;	
+		
+		try {
+			actual = dao.save(courseToAdd);
+		} catch (NotFoundException | AlreadyExistsException | ConstrainException e) {
+			fail(e);
+		}
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void saveShouldThrowsDaoAlreadyExistsExceptionWhenSavingCourseNameAlreadyExists() {
+		
+		Course course = getCourse(null, "Математика", null);
+		
+		assertThrows(AlreadyExistsException.class, () -> dao.save(course));
 	}
 	
 	@Test
 	void updateShouldUpdateCertainFieldsOfCourse() {
 		
 		Course expected = getCourse(2L, "Химия", "Неорганическая физика");
-				
-		dao.update(expected);
+		Course actual = null;	
 		
-		Course actual = dao.findById(expected.getId());
+		try {
+			dao.update(expected);
+			actual = dao.findById(expected.getId());
+		} catch (NotFoundException | AlreadyExistsException e) {
+			fail(e);
+		}		
 		
 		assertEquals(expected, actual);
 	}
@@ -115,10 +175,25 @@ class CourseDaoImplTest {
 		
 		Course changedCourse = getCourse(2L, "Химия", "Неорганическая физика");
 		
-		Course expected = dao.update(changedCourse);		
-		Course actual = dao.findById(changedCourse.getId());
+		Course expected = null;		
+		Course actual = null;
+		
+		try {
+			expected = dao.update(changedCourse);
+			actual = dao.findById(changedCourse.getId());
+		} catch (NotFoundException | AlreadyExistsException e) {
+			fail(e);
+		}		
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test
+	void updateShouldThrowsDaoAlreadyExistsExceptionWhenNewUpdatingCourseNameHasAlreadyExisted() {
+		
+		Course course = getCourse(2L, "Математика", "Общий курс физики");
+		
+		assertThrows(AlreadyExistsException.class, () -> dao.update(course));
 	}
 	
 	List<Course> getAllCourses() {

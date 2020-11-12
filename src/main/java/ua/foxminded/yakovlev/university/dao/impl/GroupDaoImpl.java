@@ -1,6 +1,10 @@
 package ua.foxminded.yakovlev.university.dao.impl;
 
 import java.sql.PreparedStatement;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,9 +13,12 @@ import org.springframework.stereotype.Component;
 import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.GroupDao;
 import ua.foxminded.yakovlev.university.entity.Group;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
 
 @Component
 public class GroupDaoImpl extends AbstractDao<Group, Long> implements GroupDao {
+	
+	private static final Logger logger = LoggerFactory.getLogger(GroupDaoImpl.class);
 
 	private static final String FIND_ALL = "SELECT * FROM public.groups;";
 	private static final String SAVE = "INSERT INTO public.groups(group_name) VALUES (?);";
@@ -34,7 +41,13 @@ public class GroupDaoImpl extends AbstractDao<Group, Long> implements GroupDao {
 
 	@Override
 	public Group findGroupByName(String groupName) {
-		return jdbcTemplate.queryForObject(FIND_BY_GROUP_NAME, groupMapper, groupName);
+		
+		try {
+			return jdbcTemplate.queryForObject(FIND_BY_GROUP_NAME, groupMapper, groupName);
+		} catch (EmptyResultDataAccessException e) {
+			logger.error("Group is not found", e);
+			throw new NotFoundException("Group is not found");
+		}
 	}
 
 	@Override

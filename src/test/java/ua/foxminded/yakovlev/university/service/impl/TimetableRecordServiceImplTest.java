@@ -14,20 +14,20 @@ import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.entity.Position;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
-import ua.foxminded.yakovlev.university.init.AppConfiguration;
+import ua.foxminded.yakovlev.university.init.TimetableRecordDaoTestConfiguration;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
-import ua.foxminded.yakovlev.university.testutil.TestDatabaseGenerator;
+import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
 
 class TimetableRecordServiceImplTest {
 
 	private static AnnotationConfigApplicationContext context;
-	private static TestDatabaseGenerator generator;
+	private static DatabaseGenerator generator;
 	private static TimetableRecordService service;
 
 	@BeforeAll
 	static void initTestCase() {
-		context = new AnnotationConfigApplicationContext(AppConfiguration.class);
-		generator = context.getBean("databaseGenerator", TestDatabaseGenerator.class);
+		context = new AnnotationConfigApplicationContext(TimetableRecordDaoTestConfiguration.class);
+		generator = context.getBean("databaseGenerator", DatabaseGenerator.class);
 		service = context.getBean("timetableRecordService", TimetableRecordServiceImpl.class);
 	}
 

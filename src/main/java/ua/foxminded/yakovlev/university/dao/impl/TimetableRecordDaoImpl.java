@@ -4,6 +4,9 @@ import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -14,9 +17,12 @@ import ua.foxminded.yakovlev.university.dao.AbstractDao;
 import ua.foxminded.yakovlev.university.dao.TimetableRecordDao;
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
+import ua.foxminded.yakovlev.university.exception.ConstrainException;
 
 @Component
 public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> implements TimetableRecordDao {
+	
+	private static final Logger logger = LoggerFactory.getLogger(TimetableRecordDaoImpl.class);
 
 	private static final String FIND_ALL = "SELECT t.*, l.*, c.*, p.*, ps.* "
 			+ "FROM public.timetable_records t "
@@ -158,7 +164,10 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 		
 		List<Group> groupList = record.getGroupList();
 		TimetableRecord savedRecord = super.save(record);
-		groupList.forEach(g -> addGroupToTimeableRecordGroups(g.getId(), savedRecord.getId()));
+		
+		for (Group g : groupList) {
+			addGroupToTimeableRecordGroups(g.getId(), savedRecord.getId());
+		}
 		
 		return findById(savedRecord.getId());
 	}
@@ -196,12 +205,17 @@ public class TimetableRecordDaoImpl extends AbstractDao<TimetableRecord, Long> i
 		
 	private void addGroupToTimeableRecordGroups(Long groupId, Long timetableId) {
 		
+		try {
 		jdbcTemplate.update(connection -> {
 			PreparedStatement ps = connection.prepareStatement(ADD_TO_TIMETABLE);
 			ps.setLong(1, timetableId);
 			ps.setLong(2, groupId);
 			return ps;
 		});
+		} catch (DataIntegrityViolationException e) {
+			logger.error("There is a constrain preventing of a group adding", e);
+			throw new ConstrainException("There is a constrain preventing of a group adding");
+		}
 	}
 		
 	private void removeGroupFromTimeableRecordGroups(Long groupId, Long timetableId) {

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import ua.foxminded.yakovlev.university.exception.DaoRuntimeException;
+import ua.foxminded.yakovlev.university.exception.CantUpdateException;
 
 @Component
 public class FileReader {
@@ -19,22 +19,22 @@ public class FileReader {
 		try {
 			return Files.readAllLines(path);
 		} catch (IOException e) {			
-			throw new DaoRuntimeException("can't read " + path.toString(), e);
+			throw new CantUpdateException("can't read " + path.toString(), e);
 		}		
 	}
 	
 	private void checkFile(Path path) {
 		
 		if (path == null) {
-			throw new DaoRuntimeException("file is null");
+			throw new CantUpdateException("file is null");
 		}
 		
 		if (!Files.exists(path)) {
-			throw new DaoRuntimeException(path.toString() + " does not exist");
+			throw new CantUpdateException(path.toString() + " does not exist");
 		}
 		
 		if (!Files.isReadable(path)) {
-			throw new DaoRuntimeException(path.toString() + " is not readable");
+			throw new CantUpdateException(path.toString() + " is not readable");
 		}
 	}
 }
