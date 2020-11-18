@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="resources/css/bootstrap.min.css" >
+    <title>Lecturers</title>
+</head>
+
+<body>
+
+	<div th:include="~{header :: header}"></div>
+
+	      
+    <div class="container">
+    	<div class="row">
+			<div class="col-12">
+				<h1>Все преподаватели</h1>
+			</div>
+		</div>
+        <div class="row">
+            <div class="col-12">
+            	<table class="table table-bordered">
+            		<thead>
+    					<tr>
+      						<th scope="col">Имя</th>
+      						<th scope="col">Фамилия</th>
+      						<th scope="col">Должность</th>
+    					</tr>
+  					</thead>
+  					<tbody>
+                		<tr th:each="lecturer : ${lecturers}">                	
+                			<td>
+                				<a th:href="@{/lecturers/{id}(id=${lecturer.getLecturerId()})}" th:text="${lecturer.getFirstName()}">lecturer</a>
+                			</td>
+                			<td>
+                				<a href="#" th:text="${lecturer.getLastName()}">lecturer</a>
+                			</td>
+                			<td>
+                				<a href="#" th:text="${lecturer.getPosition().getName()}">lecturer</a>
+                			</td>
+                		</tr>
+                	</tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
