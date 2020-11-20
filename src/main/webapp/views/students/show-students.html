@@ -20,8 +20,8 @@
 		</div>
         <div class="row">
             <div class="col-12">
-            <div class="table-wrapper-scroll-y my-custom-scrollbar">
-            	<table class="table table-bordered my-custom-scrollbar">
+            <div class="table-wrapper-scroll-y">
+            	<table class="table table-bordered">
             		<thead>
     					<tr>
       						<th scope="col">Имя</th>
@@ -29,7 +29,7 @@
       						<th scope="col">Группа</th>
     					</tr>
   					</thead>
-  					<tbody max-height="500">
+  					<tbody>
                 		<tr th:each="student : ${students}">                	
                 			<td>
                 				<a th:href="@{/students/{id}(id=${student.getStudentId()})}" th:text="${student.getFirstName()}">student</a>
