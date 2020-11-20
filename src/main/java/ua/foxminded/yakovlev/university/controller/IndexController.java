@@ -1,6 +1,5 @@
 package ua.foxminded.yakovlev.university.controller;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/")
 public class IndexController {
 	
-	public IndexController(ApplicationContext context) {
+	public IndexController() {
 	}
 
 	@GetMapping()
