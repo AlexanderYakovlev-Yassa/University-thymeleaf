@@ -22,7 +22,7 @@ public class StudentController {
 	private final GroupService groupService;
 	
 	@GetMapping()
-    public String showStudents(Model model) {
+    public String show(Model model) {
 		
 		model.addAttribute("students", studentService.findAll());
 		model.addAttribute("groups", groupService.findAll());
@@ -32,7 +32,7 @@ public class StudentController {
     }
 	
 	@PostMapping("/new")
-    public String newStudents(
+    public String save(
     		@RequestParam(name = "first-name") String firstName,
     		@RequestParam(name = "last-name") String lastName,
     		@RequestParam(name = "group-id") Long groupId,
@@ -57,7 +57,7 @@ public class StudentController {
     }
 	
 	@PostMapping("/edit")
-    public String newStudents(
+    public String edit(
     		@RequestParam(name = "student-id") Long studentId,
     		@RequestParam(name = "person-id") Long personId,
     		@RequestParam(name = "group-id") Long groupId,
