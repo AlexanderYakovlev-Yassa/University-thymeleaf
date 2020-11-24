@@ -3,49 +3,233 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="resources/css/bootstrap.min.css" >
-    <title>Lecturers</title>
+    <link rel="stylesheet" href="resources/css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+	<title>Lecturers</title>
 </head>
 
 <body>
 
 	<div th:include="~{header :: header}"></div>
-
+	
+	<!-- SAVE lecturer modal -->
+	<div id="save-modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Добавить преподавателя</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form method="POST" action="lecturers/new">
+				<div class="modal-body d-flex flex-column">
+					<input type="hidden" id="modal-save-position-id" name="position-id"/>
+					<input class="form-control" id="modal-save-lecturer-first-name" placeholder="Имя" name="first-name"/>
+					<br/>				
+					<input class="form-control" id="modal-save-lecturer-last-name" placeholder="Фамилия" name="last-name"/>
+					<br/>
+					<div class="input-group">
+                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="position-name" id="modal-save-position-name">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор должности</button>
+                            <div class="dropdown-menu">
+                            	<div th:each="position : ${positions}">
+                            		<div onclick="selectPositionForSave(this)">
+                            			<input type="hidden" th:value="${position.getId()}"/>
+                                    	<a class="dropdown-item" href="#" th:text="${position.getName()}">position</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                	</div>
+				</div>
+				<div class="modal-footer">
+    				<input type="submit" class="btn btn-outline-primary" value="Сохранить"/>
+					<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Закрыть</button>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<!-- EDIT student modal -->
+	<div id="edit-modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Редактировать преподавателя</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form method="POST" action="lecturers/edit">
+				<div class="modal-body d-flex flex-column">
+					<input type="hidden" id="modal-edit-lecturer-id" name="lecturer-id"/>
+					<input type="hidden" id="modal-edit-person-id" name="person-id"/>
+					<input type="hidden" id="modal-edit-position-id" name="position-id"/>
+					<input class="form-control" id="modal-edit-lecturer-first-name" placeholder="Имя" name="first-name"/>
+					<br/>				
+					<input class="form-control" id="modal-edit-lecturer-last-name" placeholder="Фамилия" name="last-name"/>
+					<br/>
+					<div class="input-group">
+                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="position-name" id="modal-edit-position-name">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор должности</button>
+                            <div class="dropdown-menu">
+                            	<div th:each="position : ${positions}">
+                            		<div onclick="selectPositionForEdit(this)">
+                            			<input type="hidden" th:value="${position.getId()}"/>
+                                    	<a class="dropdown-item" href="#" th:text="${position.getName()}">position</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                	</div>
+				</div>
+				<div class="modal-footer">
+    				<input type="submit" class="btn btn-outline-primary" value="Изменить"/>
+					<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Закрыть</button>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<!-- DELETE lecturer modal -->
+	<div id="delete-modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Удалить преподавателя</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form method="POST" action="lecturers/delete">
+					<div class="modal-body d-flex flex-column">
+						<input type="hidden" id="modal-delete-lecturer-id" name="id"/>
+						<p>Вы действительно хотите удалить преподавателя?</p>
+						<p id="modal-delete-lecturer-first-name">name</p>
+						<p id="modal-delete-lecturer-last-name">name</p>
+					</div>
+					<div class="modal-footer">
+	    				<input type="submit" class="btn btn-outline-primary" value="Удалить"/>
+						<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Отменить</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 	      
+	<!-- All lecturers table -->
     <div class="container">
     	<div class="row">
 			<div class="col-12">
-				<h1>Все преподаватели</h1>
+				<h4 class="text-primary">Все преподаватели</h4>
 			</div>
 		</div>
         <div class="row">
             <div class="col-12">
-            	<table class="table table-bordered">
-            		<thead>
-    					<tr>
-      						<th scope="col">Имя</th>
-      						<th scope="col">Фамилия</th>
-      						<th scope="col">Должность</th>
-    					</tr>
-  					</thead>
-  					<tbody>
-                		<tr th:each="lecturer : ${lecturers}">                	
-                			<td>
-                				<a th:href="@{/lecturers/{id}(id=${lecturer.getLecturerId()})}" th:text="${lecturer.getFirstName()}">lecturer</a>
-                			</td>
-                			<td>
-                				<a href="#" th:text="${lecturer.getLastName()}">lecturer</a>
-                			</td>
-                			<td>
-                				<a href="#" th:text="${lecturer.getPosition().getName()}">lecturer</a>
-                			</td>
-                		</tr>
-                	</tbody>
-                </table>
+            	<div class="table-wrapper-scroll-y my-custom-scrollbar">
+            		<table class="table table-hover table-striped table-bordered table-sm my-custom-scrollbar">
+	            		<thead>
+	    					<tr>
+	      						<th scope="col">Имя</th>
+	      						<th scope="col">Фамилия</th>
+	      						<th scope="col">Должность</th>
+	    					</tr>
+	  					</thead>
+	  					<tbody>
+                			<div th:each="lecturer : ${lecturers}" >
+		                		<tr onclick="select(this)">
+		                			<td>
+		                				<input type="hidden" th:value="${lecturer.getLecturerId()}" />
+		                				<input type="hidden" th:value="${lecturer.getPersonId()}" />
+		                				<input type="hidden" th:value="${lecturer.getPosition().getId()}" />
+		                				<a href="#" th:text="${lecturer.getFirstName()}">lecturer</a>
+		                			</td>
+		                			<td>
+		                				<a href="#" th:text="${lecturer.getLastName()}">lecturer</a>
+		                			</td>
+		                			<td>
+		                				<a href="#" th:text="${lecturer.getPosition().getName()}">lecturer</a>
+		                			</td>
+		                		</tr>
+                			</div>
+	                	</tbody>
+                	</table>
+                </div>
             </div>
         </div>
     </div>
-
+    <hr/>
+    <div class="container">
+        		
+		<div class="row">
+			<div class="col-12 ">
+				<button class="btn btn-outline-primary" onclick="showSaveModal()">Добавить</button>
+				<button class="btn btn-outline-primary" onclick="showEditModal()">Редактировать</button>
+				<button class="btn btn-outline-primary" onclick="showDeleteModal()">Удалить</button>
+			</div>
+		</div>
+    </div>
+    <hr/>
+    
+<script>
+	
+	function showSaveModal() {
+        $("#save-modal").modal('show');
+    }
+	
+	function showDeleteModal() {
+		
+		var elements = document.getElementsByClassName("selected");
+		
+		if (elements.length == 0 ) {
+			alert("Необходимо выбрать преподавателя для удаления!");
+			return;
+		}
+		
+		document.getElementById("modal-delete-lecturer-id").value =  elements[0].getElementsByTagName("input")[0].value;
+		document.getElementById("modal-delete-lecturer-first-name").innerText = elements[0].getElementsByTagName("a")[0].innerText;
+		document.getElementById("modal-delete-lecturer-last-name").innerText = elements[0].getElementsByTagName("a")[1].innerText;
+		
+        $("#delete-modal").modal('show');
+    }
+	
+	function showEditModal() {
+		
+		var elements = document.getElementsByClassName("selected");
+		
+		if (elements.length == 0 ) {
+			alert("Необходимо выбрать студента для редактирования!");
+			return;
+		}
+		
+		document.getElementById("modal-edit-lecturer-id").value = elements[0].getElementsByTagName("input")[0].value;
+		document.getElementById("modal-edit-person-id").value = elements[0].getElementsByTagName("input")[1].value;
+		document.getElementById("modal-edit-position-id").value = elements[0].getElementsByTagName("input")[2].value;
+		document.getElementById("modal-edit-lecturer-first-name").value = elements[0].getElementsByTagName("a")[0].innerText;
+		document.getElementById("modal-edit-lecturer-last-name").value = elements[0].getElementsByTagName("a")[1].innerText;
+		document.getElementById("modal-edit-position-name").value = elements[0].getElementsByTagName("a")[2].innerText;
+		
+        $("#edit-modal").modal('show');
+    }
+    
+    function selectPositionForSave(element) {
+        document.getElementById("modal-save-position-id").value = element.getElementsByTagName("input")[0].value;
+        document.getElementById("modal-save-position-name").value = element.getElementsByTagName("a")[0].innerText;
+    }
+    
+    function selectPositionForEdit(element) {
+        document.getElementById("modal-edit-position-id").value = element.getElementsByTagName("input")[0].value;
+        document.getElementById("modal-edit-position-name").value = element.getElementsByTagName("a")[0].innerText;
+    }
+</script>
+<script src="resources/js/main.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" 	crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 </body>
 
 </html>
