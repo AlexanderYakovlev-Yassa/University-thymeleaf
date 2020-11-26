@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../resources/css/main.css">
+    <link rel="stylesheet" href="../resources/css/bootstrap.min.css">
+    <link rel="icon" href="../resources/img/logo.png" type="image/icon type" />
+    <title>Timetable</title>
+</head>
+
+<body>
+
+	<div th:include="~{header :: header}"></div>
+
+    <!-- Timetable -->
+    <div class="container">
+    	<div class="row">
+			<div class="col-12">
+				<h4 class="text-primary">Добавление нового занятия в рассписание</h4>
+			</div>
+		</div>
+		<div class="row pt-3">
+			<div class="col-4">
+				<label for="date" class="text text-primary">Дата</label><br/>
+				<input type="date" class="text text-primary" id="date-picker" onchange="setDate(this)"/>
+			</div>
+			<div class="col-4">
+				<label for="time" class="text text-primary">Время</label><br/>
+				<input type="time" class="text text-primary" id="time-picker" onchange="setTime(this)"/>
+			</div>
+		</div>
+        <div class="row  pt-3">
+            <div class="col-12">
+            <div class="d-flex flex-column">
+            	<label class="text text-primary">Учебный курс</label>
+            	<div class="input-group">
+                    <input type="text" class="form-control" aria-label="Text input with dropdown button" id="course-name" readonly>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор учебного курса</button>
+                        <div class="dropdown-menu">
+                        	<div th:each="course : ${courses}">
+                        		<div onclick="selectCourse(this)">
+                        			<input type="hidden" th:value="${course.getId()}"/>
+                        			<input type="hidden" th:value="${course.getDescription()}"/>
+                                	<a class="dropdown-item" href="#" th:text="${course.getName()}">course</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+               	</div>
+            	<label class="text text-primary">Описание учебного курса</label>
+               	<textarea rows="2" cols="auto" id="course-description" readonly></textarea><br/>
+            	<label class="text text-primary">Преподаватель</label>
+            	<div class="input-group">
+                    <input type="text" class="form-control" aria-label="Text input with dropdown button" id="lecturer" readonly>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор преподавателя</button>
+                        <div class="dropdown-menu">
+                        	<div th:each="lecturer : ${lecturers}">
+                        		<div onclick="selectLecturer(this)">
+                        			<input type="hidden" th:value="${lecturer.getLecturerId()}"/>
+                                	<a class="dropdown-item" href="#" th:text="${lecturer.getPosition().getName() + ' - ' + lecturer.getFirstName() + ' ' + lecturer.getLastName()}">lecturer</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+               	</div>
+               	<br/>
+            	<label class="text text-primary">Группы</label>
+            	<div>
+            		<table class="table table-hover table-striped table-bordered table-sm">
+	            		<thead>
+	    					<tr>
+	      						<th scope="col">Наименование группы</th>
+	    					</tr>
+	  					</thead>
+	  					<tbody id="table-of-grops">
+                			
+		                		<tr>		                			
+		                			<td>
+		                				<div class="dropdown">
+  											<button class="btn btn-link" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    											...добавить группу
+  											</button>
+										  	<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+											    <div th:each="group : ${groups}">
+											    	<div>
+												    	<input type="hidden" th:value="${group.getId()}"/>
+												    	<a class="dropdown-item" href="#" th:text="${group.getName()}" onclick="addGroup(this)">group</a>
+											    	</div>
+											    </div>
+										  	</div>
+										</div>
+		                			</td>
+		                		</tr>
+                			
+	                	</tbody>
+                	</table>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">        		
+		<div class="row pt-3">
+			<div class="col-12 d-flex">
+				<form method="POST" action="new" id="new-record">
+					<input type="hidden" id="date" name="date"/>
+					<input type="hidden" id="lecturer-id" name="lecturer-id"/>
+					<input type="hidden" id="course-id" name="course-id"/>
+					<input type="hidden" id="groups-id" name="groups-id"/>
+					<a href="#" onclick="submitForm(this)" class="btn btn-outline-primary">Добавить</a>
+				</form>
+				<a href="/university/timetable" class="btn btn-outline-primary">Назад</a>			
+			</div>
+		</div>
+    </div>
+    <hr/>
+    
+<script>
+	
+initPage();
+
+	function submitForm(element) {
+		if (checkFieldsToBeSubmitted()) {			
+			element.parentNode.submit();
+		}
+	}
+	
+	function checkFieldsToBeSubmitted() {
+		
+		if (document.getElementById("date").value == ""
+				| document.getElementById("lecturer-id").value == ""
+				| document.getElementById("course-id").value == ""
+				| document.getElementById("groups-id").value == "") {
+			
+			alert("Все поля должны быть заполнены!");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	function selectLecturer(element) {		
+		document.getElementById("lecturer").value = element.getElementsByTagName("a")[0].innerText;
+		document.getElementById("lecturer-id").value = element.getElementsByTagName("input")[0].value;
+	}
+	
+	function selectCourse(element) {		
+		document.getElementById("course-name").value = element.getElementsByTagName("a")[0].innerText;
+		document.getElementById("course-description").innerText = element.getElementsByTagName("input")[1].value;
+		document.getElementById("course-id").value = element.getElementsByTagName("input")[0].value;
+	}
+	
+	function addGroup(element) {
+		
+		let table = document.getElementById("table-of-grops");
+		let rows = table.getElementsByTagName("p");
+		let previousHTML = table.innerHTML;
+		let groupName = element.innerText;
+		
+		for (let i = 0; i < rows.length; i++) {
+			if (rows[i].innerText == groupName) {
+				alert("Такая группа уже есть в списке");
+				return;
+			}
+		}
+				
+		let groupId = element.parentNode.getElementsByTagName("input")[0].value;
+		let additionHTML = "<tr onclick='removeGroup(this)' ><td><input type='hidden' value='" + groupId + "'></input><p>" + groupName + "</p></td></tr>";
+		table.innerHTML = additionHTML + previousHTML;
+		
+		refresh();
+	}
+	
+	function refresh() {
+		
+		let table = document.getElementById("table-of-grops");
+		let elementGroupsForSubmit = document.getElementById("groups-id");
+		let groupsIdText = "";
+		let rows = table.getElementsByTagName("tr");
+		
+		for (let i = 0; i < rows.length - 1; i++) {
+			groupsIdText = groupsIdText + rows[i].getElementsByTagName("input")[0].value + ",";
+		}
+		
+		elementGroupsForSubmit.value = groupsIdText.slice(0, groupsIdText.length - 1);
+	}
+	
+	function removeGroup(element) {
+				
+		let groupName = element.getElementsByTagName("p")[0].innerText;
+		
+		if (confirm("Вы действительно хотите удалить группу " + groupName + "?")) {			
+			element.parentNode.removeChild(element);
+			refresh();
+		}
+	}
+	
+	function setDateTime(dateTime) {
+		let dateElement = document.getElementById("date");
+		let dateeTimeString = dateTime.toISOString();
+		dateElement.value = dateeTimeString.slice(0, dateeTimeString.length - 1);
+	}
+	
+	function setDate(element) {
+		
+		let dateElement = document.getElementById("date");
+		
+		let recordDate = new Date(dateElement.value);
+		let newDate = new Date(element.value);
+
+		recordDate.setDate(newDate.getDate());
+		recordDate.setMonth(newDate.getMonth());
+		recordDate.setFullYear(newDate.getFullYear());
+		
+		setDateTime(recordDate);
+	}
+	
+	function setTime(element) {
+		
+		let dateElement = document.getElementById("date");		
+		let recordDate = new Date(dateElement.value);		
+		let newTimeParts = element.value.split(":");
+				
+		recordDate.setUTCHours(newTimeParts[0]);
+		recordDate.setMinutes(newTimeParts[1]);
+		
+		setDateTime(recordDate);;
+	}
+	
+	function initPage() {
+		let newDate = new Date();
+		newDate.setSeconds("0");
+		newDate.setMilliseconds("0");
+		
+		setDateTime(newDate);
+		document.getElementById("date-picker").value = newDate.toISOString().split("T")[0];
+		let currentTimeElements = newDate.toISOString().split("T")[1].split(":");
+		document.getElementById("time-picker").value = currentTimeElements[0] + ":" + currentTimeElements[1] + ":00.000";
+	}
+</script>
+<script src="../resources/js/main.js"></script>
+<script src="../resources/js/jquery.js"></script>
+<script src="../resources/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
