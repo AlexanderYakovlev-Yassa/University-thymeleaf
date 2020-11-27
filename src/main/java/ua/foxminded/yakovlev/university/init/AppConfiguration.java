@@ -1,12 +1,13 @@
 package ua.foxminded.yakovlev.university.init;
 
-import org.springframework.beans.factory.annotation.Value;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jndi.JndiTemplate;
 
 import ua.foxminded.yakovlev.university.dao.CourseDao;
 import ua.foxminded.yakovlev.university.dao.GroupDao;
@@ -39,43 +40,23 @@ import ua.foxminded.yakovlev.university.service.impl.LecturerServiceImpl;
 import ua.foxminded.yakovlev.university.service.impl.PositionServiceImpl;
 import ua.foxminded.yakovlev.university.service.impl.StudentServiceImpl;
 import ua.foxminded.yakovlev.university.service.impl.TimetableRecordServiceImpl;
-import ua.foxminded.yakovlev.university.util.DatabaseGenerator;
-import ua.foxminded.yakovlev.university.util.FileReader;
 
 @Configuration
 @ComponentScan("ua.foxminded.yakovlev.university")
-@PropertySource("university_db.properties")
 public class AppConfiguration {
 
-	@Value("${driver}")
-	private String driver;
-	@Value("${url}")
-	private String url;
-	@Value("${user}")
-	private String user;
-	@Value("${password}")
-	private String password;
-	@Value("${database_script_path}")
-	private String databaseScriptPath;
-
 	@Bean (name="jdbcTemplate")
-	public JdbcTemplate getJdbcTemplate() {
-
-		DriverManagerDataSource driverManagerDataSource = 
-				new DriverManagerDataSource(url, user, password);
-		driverManagerDataSource.setDriverClassName(driver);
+	public JdbcTemplate getJdbcTemplate() throws NamingException {
 		
-		return new JdbcTemplate(driverManagerDataSource);
+		JndiTemplate jndiTemplate = new JndiTemplate();
+		DataSource dataSource = (DataSource) jndiTemplate.lookup("java:comp/env/jdbc/UniversityDB");
+		
+		return new JdbcTemplate(dataSource);
 	}
 	
 	@Bean (name="scriptExecutor")
 	public ScriptExecutor getScriptExecutor(JdbcTemplate jdbcTemplate) {
 		return new ScriptExecutor(jdbcTemplate);
-	}
-	
-	@Bean (name="databaseGenerator")
-	public DatabaseGenerator getDatabaseGenerator(FileReader fileReader, ScriptExecutor scriptExecutor) {
-		return new DatabaseGenerator(fileReader, scriptExecutor, databaseScriptPath);		
 	}
 	
 	@Bean (name="courseDao")
