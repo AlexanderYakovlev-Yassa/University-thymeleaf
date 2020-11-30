@@ -1,14 +1,14 @@
 package ua.foxminded.yakovlev.university.service.impl;
 
-import ua.foxminded.yakovlev.university.dao.CourseDao;
 import ua.foxminded.yakovlev.university.entity.Course;
+import ua.foxminded.yakovlev.university.jpaDao.CourseRepository;
 import ua.foxminded.yakovlev.university.service.CourseService;
 
-public class CourseServiceImpl extends AbstractService<Course, Long> implements CourseService {
+public class CourseServiceImpl extends AbstractServiceJpa<Course, Long> implements CourseService {
 	
-	private final CourseDao dao;
+	private final CourseRepository dao;
 
-	public CourseServiceImpl(CourseDao courseDao) {
+	public CourseServiceImpl(CourseRepository courseDao) {
 		super(courseDao);
 		this.dao = courseDao;
 	}

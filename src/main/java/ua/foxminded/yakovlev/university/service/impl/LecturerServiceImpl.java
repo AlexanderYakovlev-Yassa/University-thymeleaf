@@ -4,16 +4,16 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import ua.foxminded.yakovlev.university.dao.LecturerDao;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
+import ua.foxminded.yakovlev.university.jpaDao.LecturerRepository;
 import ua.foxminded.yakovlev.university.service.LecturerService;
 
 @Component
-public class LecturerServiceImpl extends AbstractService<Lecturer, Long> implements LecturerService {
+public class LecturerServiceImpl extends AbstractServiceJpa<Lecturer, Long> implements LecturerService {
 
-	private final LecturerDao dao;
+	private final LecturerRepository dao;
 	
-	public LecturerServiceImpl(LecturerDao lecturerDao)  {
+	public LecturerServiceImpl(LecturerRepository lecturerDao)  {
 		super(lecturerDao);
 		this.dao = lecturerDao;
 	}

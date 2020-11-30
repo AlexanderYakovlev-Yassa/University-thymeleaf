@@ -2,16 +2,16 @@ package ua.foxminded.yakovlev.university.service.impl;
 
 import org.springframework.stereotype.Component;
 
-import ua.foxminded.yakovlev.university.dao.GroupDao;
 import ua.foxminded.yakovlev.university.entity.Group;
+import ua.foxminded.yakovlev.university.jpaDao.GroupRepository;
 import ua.foxminded.yakovlev.university.service.GroupService;
 
 @Component
-public class GroupServiceImpl extends AbstractService<Group, Long> implements GroupService {
+public class GroupServiceImpl extends AbstractServiceJpa<Group, Long> implements GroupService {
 
-	private final GroupDao dao;
+	private final GroupRepository dao;
 	
-	public GroupServiceImpl(GroupDao groupDao)  {
+	public GroupServiceImpl(GroupRepository groupDao) {
 		super(groupDao);
 		this.dao = groupDao;
 	}
