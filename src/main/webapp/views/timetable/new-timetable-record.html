@@ -59,7 +59,7 @@
                         <div class="dropdown-menu">
                         	<div th:each="lecturer : ${lecturers}">
                         		<div onclick="selectLecturer(this)">
-                        			<input type="hidden" th:value="${lecturer.getLecturerId()}"/>
+                        			<input type="hidden" th:value="${lecturer.getPersonId()}"/>
                                 	<a class="dropdown-item" href="#" th:text="${lecturer.getPosition().getName() + ' - ' + lecturer.getFirstName() + ' ' + lecturer.getLastName()}">lecturer</a>
                                 </div>
                             </div>
