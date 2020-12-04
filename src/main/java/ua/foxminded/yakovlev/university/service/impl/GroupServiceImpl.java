@@ -1,12 +1,14 @@
 package ua.foxminded.yakovlev.university.service.impl;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.jpaDao.GroupRepository;
 import ua.foxminded.yakovlev.university.service.GroupService;
 
-@Component
+@Service
+@Transactional
 public class GroupServiceImpl extends AbstractServiceJpa<Group, Long> implements GroupService {
 
 	private final GroupRepository dao;

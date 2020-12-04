@@ -1,9 +1,12 @@
 package ua.foxminded.yakovlev.university.service.impl;
 
+import org.springframework.stereotype.Service;
+
 import ua.foxminded.yakovlev.university.entity.Position;
 import ua.foxminded.yakovlev.university.jpaDao.PositionRepository;
 import ua.foxminded.yakovlev.university.service.PositionService;
 
+@Service
 public class PositionServiceImpl extends AbstractServiceJpa<Position, Long> implements PositionService {
 	
 	private final PositionRepository dao;

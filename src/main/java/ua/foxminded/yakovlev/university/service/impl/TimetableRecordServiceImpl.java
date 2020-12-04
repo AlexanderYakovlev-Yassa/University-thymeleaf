@@ -2,20 +2,22 @@ package ua.foxminded.yakovlev.university.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import ua.foxminded.yakovlev.university.dao.TimetableRecordDao;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
+import ua.foxminded.yakovlev.university.jpaDao.TimetableRecordRepository;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
 
-@Component
-public class TimetableRecordServiceImpl extends AbstractService<TimetableRecord, Long> implements TimetableRecordService {
+@Service
+@Transactional
+public class TimetableRecordServiceImpl extends AbstractServiceJpa<TimetableRecord, Long> implements TimetableRecordService {
 
-	private final TimetableRecordDao dao;
+	private final TimetableRecordRepository dao;
 	
-	public TimetableRecordServiceImpl(TimetableRecordDao timetableRecordDao)  {
-		super(timetableRecordDao);
-		this.dao = timetableRecordDao;
+	public TimetableRecordServiceImpl(TimetableRecordRepository timetableRecordRepository)  {
+		super(timetableRecordRepository);
+		this.dao = timetableRecordRepository;
 	}
 
 	@Override
@@ -24,22 +26,12 @@ public class TimetableRecordServiceImpl extends AbstractService<TimetableRecord,
 	}
 
 	@Override
-	public TimetableRecord addGroup(Long groupId, Long timetableId) {		
-		return dao.addGroup(groupId, timetableId);
-	}
-
-	@Override
-	public TimetableRecord removeGroup(Long groupId, Long timetableId) {		
-		return dao.removeGroup(groupId, timetableId);
-	}
-
-	@Override
 	public List<TimetableRecord> findByLecturer(Long lecturerId, LocalDateTime periodStart, LocalDateTime periodFinish) {		
 		return dao.findByLecturer(lecturerId, periodStart, periodFinish);
 	}
 
 	@Override
-	public List<TimetableRecord> findByStudent(Long studentId, LocalDateTime periodStart, LocalDateTime periodFinish) {
+	public List<TimetableRecord> findByGroup(Long studentId, LocalDateTime periodStart, LocalDateTime periodFinish) {
 		return dao.findByStudent(studentId, periodStart, periodFinish);
 	}
 }

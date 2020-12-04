@@ -2,13 +2,16 @@ package ua.foxminded.yakovlev.university.service.impl;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+import javax.transaction.Transactional;
+
+import org.springframework.stereotype.Service;
 
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.jpaDao.LecturerRepository;
 import ua.foxminded.yakovlev.university.service.LecturerService;
 
-@Component
+@Service
+@Transactional
 public class LecturerServiceImpl extends AbstractServiceJpa<Lecturer, Long> implements LecturerService {
 
 	private final LecturerRepository dao;

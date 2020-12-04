@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import ua.foxminded.yakovlev.university.service.EntityService;
 
 public class AbstractServiceJpa<E, ID> implements EntityService<E, ID>{
+	
 	private JpaRepository<E, ID> dao;
 	
 	public AbstractServiceJpa(JpaRepository<E, ID> daoEntity) {
@@ -22,7 +23,7 @@ public class AbstractServiceJpa<E, ID> implements EntityService<E, ID>{
 	@Override
 	public E findById(ID id) {
 		
-		return dao.getOne(id);
+		return dao.findById(id).orElse(null);
 	}
 
 	@Override
