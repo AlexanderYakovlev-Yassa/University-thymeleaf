@@ -1,10 +1,9 @@
 package ua.foxminded.yakovlev.university.entity;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import lombok.Data;
@@ -14,13 +13,12 @@ import lombok.EqualsAndHashCode;
 @Data 
 @Entity
 @Table (name="students")
+@PrimaryKeyJoinColumn(name = "student_person_id")
 public class Student extends Person {
 
-	@Id
-    @Column(name = "student_id")
-	private Long studentId;
+	private static final long serialVersionUID = 1L;
 	
 	@ManyToOne
-    @JoinColumn(name="student_group_id", nullable=false)
+    @JoinColumn(name="student_group_id")
     private Group group;
 }
