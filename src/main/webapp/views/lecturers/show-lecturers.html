@@ -66,7 +66,6 @@
 				</div>
 				<form method="POST" action="lecturers/edit">
 				<div class="modal-body d-flex flex-column">
-					<input type="hidden" id="modal-edit-lecturer-id" name="lecturer-id"/>
 					<input type="hidden" id="modal-edit-person-id" name="person-id"/>
 					<input type="hidden" id="modal-edit-position-id" name="position-id"/>
 					<input class="form-control" id="modal-edit-lecturer-first-name" placeholder="Имя" name="first-name"/>
@@ -109,7 +108,7 @@
 				</div>
 				<form method="POST" action="lecturers/delete">
 					<div class="modal-body d-flex flex-column">
-						<input type="hidden" id="modal-delete-lecturer-id" name="id"/>
+						<input type="hidden" id="modal-delete-person-id" name="id"/>
 						<p>Вы действительно хотите удалить преподавателя?</p>
 						<p id="modal-delete-lecturer-first-name">name</p>
 						<p id="modal-delete-lecturer-last-name">name</p>
@@ -145,7 +144,6 @@
                 			<div th:each="lecturer : ${lecturers}" >
 		                		<tr onclick="select(this)">
 		                			<td>
-		                				<input type="hidden" th:value="${lecturer.getLecturerId()}" />
 		                				<input type="hidden" th:value="${lecturer.getPersonId()}" />
 		                				<input type="hidden" th:value="${lecturer.getPosition().getId()}" />
 		                				<a href="#" th:text="${lecturer.getFirstName()}">lecturer</a>
@@ -192,7 +190,7 @@
 			return;
 		}
 		
-		document.getElementById("modal-delete-lecturer-id").value =  elements[0].getElementsByTagName("input")[0].value;
+		document.getElementById("modal-delete-person-id").value =  elements[0].getElementsByTagName("input")[0].value;
 		document.getElementById("modal-delete-lecturer-first-name").innerText = elements[0].getElementsByTagName("a")[0].innerText;
 		document.getElementById("modal-delete-lecturer-last-name").innerText = elements[0].getElementsByTagName("a")[1].innerText;
 		
@@ -208,9 +206,8 @@
 			return;
 		}
 		
-		document.getElementById("modal-edit-lecturer-id").value = elements[0].getElementsByTagName("input")[0].value;
-		document.getElementById("modal-edit-person-id").value = elements[0].getElementsByTagName("input")[1].value;
-		document.getElementById("modal-edit-position-id").value = elements[0].getElementsByTagName("input")[2].value;
+		document.getElementById("modal-edit-person-id").value = elements[0].getElementsByTagName("input")[0].value;
+		document.getElementById("modal-edit-position-id").value = elements[0].getElementsByTagName("input")[1].value;
 		document.getElementById("modal-edit-lecturer-first-name").value = elements[0].getElementsByTagName("a")[0].innerText;
 		document.getElementById("modal-edit-lecturer-last-name").value = elements[0].getElementsByTagName("a")[1].innerText;
 		document.getElementById("modal-edit-position-name").value = elements[0].getElementsByTagName("a")[2].innerText;
