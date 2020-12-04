@@ -1,14 +1,19 @@
 package ua.foxminded.yakovlev.university.service.impl;
 
-import ua.foxminded.yakovlev.university.dao.CourseDao;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import ua.foxminded.yakovlev.university.entity.Course;
+import ua.foxminded.yakovlev.university.jpaDao.CourseRepository;
 import ua.foxminded.yakovlev.university.service.CourseService;
 
-public class CourseServiceImpl extends AbstractService<Course, Long> implements CourseService {
+@Service
+@Transactional
+public class CourseServiceImpl extends AbstractServiceJpa<Course, Long> implements CourseService {
 	
-	private final CourseDao dao;
+	private final CourseRepository dao;
 
-	public CourseServiceImpl(CourseDao courseDao) {
+	public CourseServiceImpl(CourseRepository courseDao) {
 		super(courseDao);
 		this.dao = courseDao;
 	}

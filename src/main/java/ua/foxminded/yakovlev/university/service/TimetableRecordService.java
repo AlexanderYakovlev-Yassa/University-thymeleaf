@@ -10,8 +10,5 @@ public interface TimetableRecordService extends EntityService<TimetableRecord, L
 	List<TimetableRecord> findByPeriodOfTime(LocalDateTime periodStart, LocalDateTime periodFinish);
 	
 	List<TimetableRecord> findByLecturer(Long lecturerId, LocalDateTime periodStart, LocalDateTime periodFinish);
-	List<TimetableRecord> findByStudent(Long studentId, LocalDateTime periodStart, LocalDateTime periodFinish);
-	
-	TimetableRecord addGroup(Long groupId, Long timetableId);
-	TimetableRecord removeGroup(Long studentId, Long timetableId);
+	List<TimetableRecord> findByGroup(Long groupId, LocalDateTime periodStart, LocalDateTime periodFinish);
 }

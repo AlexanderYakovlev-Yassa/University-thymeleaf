@@ -63,7 +63,7 @@
                         <div class="dropdown-menu">
                         	<div th:each="lecturer : ${lecturers}">
                         		<div onclick="selectLecturer(this)">
-                        			<input type="hidden" th:value="${lecturer.getLecturerId()}"/>
+                        			<input type="hidden" th:value="${lecturer.getPersonId()}"/>
                                 	<a class="dropdown-item" href="#" th:text="${lecturer.getPosition().getName() + ' - ' + lecturer.getFirstName() + ' ' + lecturer.getLastName()}">lecturer</a>
                                 </div>
                             </div>
@@ -118,7 +118,7 @@
 				<form method="POST" action="edit">
 					<input type="hidden" id="record-id" name="record-id" th:value="${timetableRecord.getId()}"/>
 					<input type="hidden" id="date" name="date"/>
-					<input type="hidden" id="lecturer-id" name="lecturer-id" th:value="${timetableRecord.getLecturer().getLecturerId()}"/>
+					<input type="hidden" id="lecturer-id" name="lecturer-id" th:value="${timetableRecord.getLecturer().getPersonId()}"/>
 					<input type="hidden" id="course-id" name="course-id" th:value="${timetableRecord.getCourse().getId()}"/>
 					<input type="hidden" id="groups-id" name="groups-id"/>
 					<a href="#" class="btn btn-outline-primary" onclick="submitForm(this)">Изменить</a>

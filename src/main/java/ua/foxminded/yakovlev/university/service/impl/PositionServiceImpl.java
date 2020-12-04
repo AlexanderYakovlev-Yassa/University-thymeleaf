@@ -1,14 +1,17 @@
 package ua.foxminded.yakovlev.university.service.impl;
 
-import ua.foxminded.yakovlev.university.dao.PositionDao;
+import org.springframework.stereotype.Service;
+
 import ua.foxminded.yakovlev.university.entity.Position;
+import ua.foxminded.yakovlev.university.jpaDao.PositionRepository;
 import ua.foxminded.yakovlev.university.service.PositionService;
 
-public class PositionServiceImpl extends AbstractService<Position, Long> implements PositionService {
+@Service
+public class PositionServiceImpl extends AbstractServiceJpa<Position, Long> implements PositionService {
 	
-	private final PositionDao dao;
+	private final PositionRepository dao;
 
-	public PositionServiceImpl(PositionDao positionDao) {
+	public PositionServiceImpl(PositionRepository positionDao) {
 		super(positionDao);
 		this.dao = positionDao;
 	}

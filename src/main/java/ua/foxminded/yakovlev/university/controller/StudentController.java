@@ -51,14 +51,13 @@ public class StudentController {
 	}
 	
 	@PostMapping("/delete")
-    public String delete(@RequestParam(name = "student-to-be-deleted-id") long id) {
+    public String delete(@RequestParam(name = "person-to-be-deleted-id") long id) {
         studentService.delete(id);
         return "redirect:/students";
     }
 	
 	@PostMapping("/edit")
     public String edit(
-    		@RequestParam(name = "student-id") Long studentId,
     		@RequestParam(name = "person-id") Long personId,
     		@RequestParam(name = "group-id") Long groupId,
     		@RequestParam(name = "first-name") String firstName,
@@ -67,7 +66,6 @@ public class StudentController {
 		
 		Student student = new Student();
 		student.setPersonId(personId);
-		student.setStudentId(studentId);
 		student.setFirstName(firstName);
 		student.setLastName(lastName);
 		Group group = new Group();
