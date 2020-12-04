@@ -55,7 +55,6 @@ public class LecturerController {
 	
 	@PostMapping("/edit")
     public String edit(
-    		@RequestParam(name = "lecturer-id") Long lecturerId,
     		@RequestParam(name = "person-id") Long personId,
     		@RequestParam(name = "position-id") Long positionId,
     		@RequestParam(name = "first-name") String firstName,
@@ -64,7 +63,6 @@ public class LecturerController {
 		
 		Lecturer lecturer = new Lecturer();
 		lecturer.setPersonId(personId);
-		lecturer.setLecturerId(lecturerId);
 		lecturer.setFirstName(firstName);
 		lecturer.setLastName(lastName);
 		Position position = new Position();

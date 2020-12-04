@@ -47,7 +47,7 @@ public class TimetableController {
 	}
 	
 	@GetMapping("/detail")
-    public String showDetailPage(Model model, @RequestParam(name = "record-id") long recordId) {
+    public String showDetailPage(Model model, @RequestParam(name = "record-id") long recordId) {		
 		
 		model.addAttribute("timetableRecord", timetableRecordService.findById(recordId));
 		
@@ -63,7 +63,7 @@ public class TimetableController {
 		
 		TimetableRecord newTimetableRecord = new TimetableRecord();
 		Lecturer lecturer = new Lecturer();
-		lecturer.setLecturerId(lecturerId);
+		lecturer.setPersonId(lecturerId);
 		Course course = new Course();
 		course.setId(courseId);		
 		List<Group> groups = parseGroupList(groupsId);
@@ -101,7 +101,7 @@ public class TimetableController {
 		TimetableRecord editedTimetableRecord = new TimetableRecord();
 		editedTimetableRecord.setId(id);
 		Lecturer lecturer = new Lecturer();
-		lecturer.setLecturerId(lecturerId);
+		lecturer.setPersonId(lecturerId);
 		Course course = new Course();
 		course.setId(courseId);		
 		List<Group> groups = parseGroupList(groupsId);
