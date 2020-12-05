@@ -85,7 +85,7 @@ CREATE TABLE public.timetable_records
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
     CONSTRAINT timetable_record_lecturer_id_fkey FOREIGN KEY (timetable_record_lecturer_id)
-        REFERENCES public.lecturers (lecturer_id)
+        REFERENCES public.persons (person_id)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
@@ -162,9 +162,9 @@ VALUES
 
 INSERT INTO timetable_records(timetable_record_time, timetable_record_lecturer_id, timetable_record_course_id)
 VALUES
-('2020-10-16 09:00:00', 1, 3),
-('2020-10-16 10:00:00', 2, 2),
-('2020-10-16 12:00:00', 3, 1);
+('2020-10-16 09:00:00', 6, 3),
+('2020-10-16 10:00:00', 7, 2),
+('2020-10-16 12:00:00', 8, 1);
 
 INSERT INTO timetable_record_groups(timetable_record_group_timetable_record_id, timetable_record_group_group_id)
 VALUES
