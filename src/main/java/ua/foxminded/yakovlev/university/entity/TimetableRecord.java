@@ -35,7 +35,7 @@ public class TimetableRecord {
     @JoinColumn(name="timetable_record_course_id")    
 	private Course course;
 	
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+	@ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "timetable_record_groups",
             joinColumns = {@JoinColumn(name = "timetable_record_group_timetable_record_id")},
