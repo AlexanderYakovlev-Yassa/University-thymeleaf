@@ -10,4 +10,7 @@ public interface StudentRepository extends JpaRepository<Student, Long>{
 	
 	@Query("select s from Student s  where s.group.id = ?1")
     List<Student> findByGroupId(Long groupId);
+	
+	@Query("select s from Student s  where s.group.id = null")
+	List<Student> findStudentsWithoutGroup();
 }

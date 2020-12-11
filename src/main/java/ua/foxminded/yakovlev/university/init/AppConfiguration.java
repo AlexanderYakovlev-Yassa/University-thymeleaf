@@ -60,8 +60,10 @@ public class AppConfiguration {
 	}
 
 	private Properties additionalProperties() {		
-		ResourceBundle resourceBundle = ResourceBundle.getBundle("app_config");		
-		Properties properties = new Properties();		
+		ResourceBundle resourceBundle = ResourceBundle.getBundle("app_config");	
+		Properties properties = new Properties();
+		properties.setProperty("hibernate.show_sql", resourceBundle.getString("hibernate.show_sql"));
+		properties.setProperty("hibernate.hbm2ddl.auto", resourceBundle.getString("hibernate.hbm2ddl.auto"));
 		properties.setProperty("hibernate.dialect", resourceBundle.getString("hibernate.dialect"));
 		return properties;
 	}

@@ -18,6 +18,8 @@ import ua.foxminded.yakovlev.university.service.StudentService;
 @RequestMapping("/students")
 public class StudentController {
 	
+	private static final String TABLE_NAME = "Все студенты";
+	
 	private final StudentService studentService;
 	private final GroupService groupService;
 	
@@ -27,6 +29,7 @@ public class StudentController {
 		model.addAttribute("students", studentService.findAll());
 		model.addAttribute("groups", groupService.findAll());
 		model.addAttribute("selectedStudent", new Student());
+		model.addAttribute("tableName", TABLE_NAME);
 		
         return "students/show-students";
     }
