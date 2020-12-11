@@ -1,4 +1,4 @@
-package ua.foxminded.yakovlev.university.main;
+package ua.foxminded.yakovlev.university;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
