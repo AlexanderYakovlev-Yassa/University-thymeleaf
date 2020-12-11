@@ -1,0 +1,16 @@
+create table courses (course_id  bigserial not null, course_description varchar(1024), course_name varchar(255), primary key (course_id));
+create table groups (group_id  bigserial not null, group_name varchar(255), primary key (group_id));
+create table lecturers (lecturer_person_id int8 not null, lecturer_position_id int8, primary key (lecturer_person_id));
+create table persons (person_id  bigserial not null, person_first_name varchar(255), person_last_name varchar(255), primary key (person_id));
+create table positions (position_id  bigserial not null, position_name varchar(255), primary key (position_id));
+create table students (student_person_id int8 not null, student_group_id int8, primary key (student_person_id));
+create table timetable_record_groups (timetable_record_group_timetable_record_id int8 not null, timetable_record_group_group_id int8 not null);
+create table timetable_records (timetable_record_id  bigserial not null, timetable_record_time timestamp, timetable_record_course_id int8, timetable_record_lecturer_id int8, primary key (timetable_record_id));
+alter table lecturers add constraint position_id_fk foreign key (lecturer_position_id) references positions;
+alter table lecturers add constraint lecturer_person_id_fk foreign key (lecturer_person_id) references persons;
+alter table students add constraint student_group_id_fk foreign key (student_group_id) references groups;
+alter table students add constraint student_person_id_fk foreign key (student_person_id) references persons;
+alter table timetable_record_groups add constraint timetable_record_group_group_id_fk foreign key (timetable_record_group_group_id) references groups;
+alter table timetable_record_groups add constraint timetable_record_group_timetable_record_id_fk foreign key (timetable_record_group_timetable_record_id) references timetable_records;
+alter table timetable_records add constraint timetable_record_course_id_fk foreign key (timetable_record_course_id) references courses;
+alter table timetable_records add constraint timetable_record_lecturer_id_fk foreign key (timetable_record_lecturer_id) references lecturers;
