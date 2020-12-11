@@ -30,15 +30,16 @@ function getTime(dateTime) {
 		return digits.format(date.getHours()) + ":" + digits.format(date.getMinutes());
 }
 	
-function getDate(dateTime) {
-		
+function getDate(dateTime) {		
 		const date = new Date(dateTime);
-		
-		const digit_month = date.getMonth();
-		const day = date.getDate();
-		const year = date.getFullYear();
-		
-		let month;
-		
 		return Intl.DateTimeFormat('ru-RU').format(date)
+}
+
+function sortTable(tableId, column) {
+	
+	let table = this.document.getElementById(tableId);
+    	let row = Array.from(table.rows)
+    		.slice(1)
+    		.sort((rowA, rowB) => rowA.getElementsByTagName('td')[column].innerText > rowB.getElementsByTagName('td')[column].innerText ? 1 : -1);
+    	table.tBodies[0].append(...row);
 }
