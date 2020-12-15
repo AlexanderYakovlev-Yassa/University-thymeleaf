@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
-import ua.foxminded.yakovlev.university.jpaDao.TimetableRecordRepository;
+import ua.foxminded.yakovlev.university.repository.TimetableRecordRepository;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
 
 @Service

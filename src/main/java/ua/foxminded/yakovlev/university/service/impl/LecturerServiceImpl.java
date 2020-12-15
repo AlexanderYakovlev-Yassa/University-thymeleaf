@@ -7,7 +7,7 @@ import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import ua.foxminded.yakovlev.university.entity.Lecturer;
-import ua.foxminded.yakovlev.university.jpaDao.LecturerRepository;
+import ua.foxminded.yakovlev.university.repository.LecturerRepository;
 import ua.foxminded.yakovlev.university.service.LecturerService;
 
 @Service

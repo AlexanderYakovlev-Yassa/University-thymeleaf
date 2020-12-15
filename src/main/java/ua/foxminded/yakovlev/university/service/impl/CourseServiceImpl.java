@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ua.foxminded.yakovlev.university.entity.Course;
-import ua.foxminded.yakovlev.university.jpaDao.CourseRepository;
+import ua.foxminded.yakovlev.university.repository.CourseRepository;
 import ua.foxminded.yakovlev.university.service.CourseService;
 
 @Service

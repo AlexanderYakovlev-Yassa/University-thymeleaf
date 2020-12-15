@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ua.foxminded.yakovlev.university.entity.Student;
-import ua.foxminded.yakovlev.university.jpaDao.GroupRepository;
-import ua.foxminded.yakovlev.university.jpaDao.StudentRepository;
+import ua.foxminded.yakovlev.university.repository.GroupRepository;
+import ua.foxminded.yakovlev.university.repository.StudentRepository;
 import ua.foxminded.yakovlev.university.service.StudentService;
 
 @Service
@@ -53,6 +53,6 @@ public class StudentServiceImpl extends AbstractServiceJpa<Student, Long> implem
 
 	@Override
 	public List<Student> findStudentsWithoutGroup() {
-		return studentDao.findStudentsWithoutGroup();
+		return studentDao.findByGroupId(null);
 	}
 }

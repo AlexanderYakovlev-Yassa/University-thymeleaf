@@ -1,4 +1,4 @@
-package ua.foxminded.yakovlev.university.jpaDao;
+package ua.foxminded.yakovlev.university.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
