@@ -13,6 +13,34 @@
 
 	<div th:include="~{header :: header}"></div>
 	
+	<input type="hidden" id="active-modal-window" th:value="${activeWindow}"/>
+	
+	<!-- ERROR MESSAGE MODAL -->
+	<div id="error-message-modal" class="modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Ошибка!</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				
+				<div class="modal-body d-flex flex-column" id="error-message">
+					<div th:each="message : ${errorMessageList}">
+						<h4 th:text="'-- ' + ${message}">Error message</h4>
+					</div>
+				</div>
+				
+				<div class="modal-footer">    				
+					<button type="button" class="btn btn-outline-primary" data-dismiss="modal" onclick="showActiveModal()">O.K.</button>
+					<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Закрыть</button>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	
 	<!-- SAVE student modal -->
 	<div id="save-modal" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
@@ -25,16 +53,21 @@
 				</div>
 				<form method="POST" action="students/new">
 				<div class="modal-body d-flex flex-column">
-					<input type="hidden" id="modal-save-group-id" name="group-id"/>
-					<input class="form-control" id="modal-save-student-first-name" placeholder="Имя" name="first-name"/>
+					<input type="hidden" id="modal-save-group-id" name="group-id" th:value="${editingStudentGroupId}"/>
+					<input class="form-control" id="modal-save-student-first-name" placeholder="Имя" name="first-name" th:value="${editingStudentFirstName}"/>
+					<div class="invalid-feedback">Example invalid custom select feedback</div>
 					<br/>				
-					<input class="form-control" id="modal-save-student-last-name" placeholder="Фамилия" name="last-name"/>
+					<input class="form-control" id="modal-save-student-last-name" placeholder="Фамилия" name="last-name" th:value="${editingStudentLastName}"/>
 					<br/>
 					<div class="input-group">
-                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="group-name" id="modal-save-group-name">
+                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="group-name" id="modal-save-group-name"  th:value="${editingStudentGroupName}">
                         <div class="input-group-append">
                             <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор группы</button>
                             <div class="dropdown-menu">
+                            	<div onclick="selectGroupForSave(this)">
+                           			<input type="hidden" value=""/>
+                                   	<a class="dropdown-item" href="#">не распределен</a>
+                                </div>
                             	<div th:each="group : ${groups}">
                             		<div onclick="selectGroupForSave(this)">
                             			<input type="hidden" th:value="${group.getId()}"/>
@@ -145,14 +178,14 @@
                 		<tr onclick="select(this)">
                 			<td>
                 				<input type="hidden" th:value="${student.getPersonId()}" />
-                				<input type="hidden" th:value="${student.getGroup().getId()}" />
+                				<input type="hidden" th:value="${student.getGroup()} ? ${student.getGroup().getId()} : ''" />
                 				<a href="#" th:text="${student.getFirstName()}">student</a>
                 			</td>
                 			<td>
                 				<a href="#" th:text="${student.getLastName()}">student</a>
                 			</td>
                 			<td>
-                				<a href="#" th:text="${student.getGroup().getName()}">group</a>
+                				<a href="#" th:text="${student.getGroup()} ? ${student.getGroup().getName()} : 'не распределен'">group</a>
                 			</td>
                 		</tr>
                 	</div>
@@ -175,6 +208,11 @@
     </div>
     <hr/>
     
+<script src="resources/js/jquery.js"></script>
+<script src="resources/js/main.js"></script>
+<script src="resources/js/jquery.js"></script>
+<script src="resources/js/bootstrap.bundle.min.js"></script>
+
 <script>
 	
 	function showSaveModal() {
@@ -231,12 +269,29 @@
     		.slice(1)
     		.sort((rowA, rowB) => rowA.getElementsByTagName('td')[0].innerText > rowB.getElementsByTagName('td')[0].innerText ? 1 : -1);
     	table.tBodies[0].append(...row);
-    	console.log(row[0].getElementsByTagName('td')[0].innerText);
     }
+    
+    function init() {
+
+    	if (document.getElementById("error-message").children.length != 0) {
+    		$("#error-message-modal").modal('show');
+    	}
+    }
+    
+    function showActiveModal() {
+    	
+    	let activeModalWindow = document.getElementById("active-modal-window").value;
+    	
+    	console.log("active window is " + activeModalWindow);
+    	
+    	if (activeModalWindow == "save") {
+    		console.log("if triggered");
+    		$("#save-modal").modal('show');
+    	}
+    }
+    
+    init();
 </script>
-<script src="resources/js/main.js"></script>
-<script src="resources/js/jquery.js"></script>
-<script src="resources/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
