@@ -12,6 +12,9 @@
 <body>
 
 	<div th:include="~{header :: header}"></div>
+	<div th:include="~{error-modal :: error-modal}"></div>
+	
+	<input type="hidden" id="active-modal-window" th:value="${activeWindow}"/>
 	      
 	<!-- SAVE course modal -->
 	<div id="save-modal" class="modal" tabindex="-1" role="dialog">
@@ -25,7 +28,7 @@
 				</div>
 				<form method="POST" action="groups/new">
 					<div class="modal-body d-flex flex-column">
-						<input class="form-control" id="modal-save-name" placeholder="Наименование" name="name"/>				
+						<input class="form-control" id="modal-save-name" placeholder="Наименование" name="name" th:value="${editingGroupName}"/>				
 					</div>
 					<div class="modal-footer">
 	    				<input type="submit" class="btn btn-outline-primary" value="Сохранить"/>
@@ -47,9 +50,9 @@
 					</button>
 				</div>
 				<form method="POST" action="groups/edit">
-					<input type="hidden" id="modal-edit-id" name="id"/>
+					<input type="hidden" id="modal-edit-id" name="id" th:value="${editingGroupId}"/>
 					<div class="modal-body d-flex flex-column">
-						<input class="form-control" id="modal-edit-name" placeholder="Наименование" name="name"/>				
+						<input class="form-control" id="modal-edit-name" placeholder="Наименование" name="name" th:value="${editingGroupName}"/>				
 					</div>
 					<div class="modal-footer">
 	    				<input type="submit" class="btn btn-outline-primary" value="Изменить"/>
@@ -134,6 +137,9 @@
     </div>
     <hr/>
     
+<script src="resources/js/main.js"></script>
+<script src="resources/js/jquery.js"></script>
+<script src="resources/js/bootstrap.bundle.min.js"></script>
 <script>
 	
 	function showSaveModal() {
@@ -182,10 +188,29 @@
 		document.getElementById("selected-group-id").value = elements[0].getElementsByTagName("input")[0].value;
 		document.getElementById("form-students-by-group-id").submit();
 	}
+    
+    function init() {
+
+    	if (document.getElementById("error-message").children.length != 0) {
+    		$("#error-message-modal").modal('show');
+    	}
+    }
+    
+    function showActiveModal() {
+    	
+    	let activeModalWindow = document.getElementById("active-modal-window").value;
+    	
+    	console.log("active window is " + activeModalWindow);
+    	
+    	if (activeModalWindow == "save") {
+    		$("#save-modal").modal('show');
+    	} else if (activeModalWindow == "edit") {
+    		$("#edit-modal").modal('show');
+    	}
+    }
+    
+    init();
 </script>
-<script src="resources/js/main.js"></script>
-<script src="resources/js/jquery.js"></script>
-<script src="resources/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
