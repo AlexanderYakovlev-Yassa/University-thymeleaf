@@ -12,6 +12,9 @@
 <body>
 
 	<div th:include="~{header :: header}"></div>
+	<div th:include="~{error-modal :: error-modal}"></div>
+	
+	<input type="hidden" id="active-modal-window" th:value="${activeWindow}"/>
 	
 	<!-- SAVE lecturer modal -->
 	<div id="save-modal" class="modal" tabindex="-1" role="dialog">
@@ -25,13 +28,13 @@
 				</div>
 				<form method="POST" action="lecturers/new">
 				<div class="modal-body d-flex flex-column">
-					<input type="hidden" id="modal-save-position-id" name="position-id"/>
-					<input class="form-control" id="modal-save-lecturer-first-name" placeholder="Имя" name="first-name"/>
+					<input type="hidden" id="modal-save-position-id" name="position-id" th:value="${editingLecturerPositionId}"/>
+					<input class="form-control" id="modal-save-lecturer-first-name" placeholder="Имя" name="first-name" th:value="${editingLecturerFirstName}"/>
 					<br/>				
-					<input class="form-control" id="modal-save-lecturer-last-name" placeholder="Фамилия" name="last-name"/>
+					<input class="form-control" id="modal-save-lecturer-last-name" placeholder="Фамилия" name="last-name" th:value="${editingLecturerLastName}"/>
 					<br/>
 					<div class="input-group">
-                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="position-name" id="modal-save-position-name">
+                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="position-name" id="modal-save-position-name" th:value="${editingLecturerPositionName}" disabled>
                         <div class="input-group-append">
                             <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор должности</button>
                             <div class="dropdown-menu">
@@ -66,17 +69,17 @@
 				</div>
 				<form method="POST" action="lecturers/edit">
 				<div class="modal-body d-flex flex-column">
-					<input type="hidden" id="modal-edit-person-id" name="person-id"/>
-					<input type="hidden" id="modal-edit-position-id" name="position-id"/>
+					<input type="hidden" id="modal-edit-person-id" name="person-id" th:value="${editingPersonId}"/>
+					<input type="hidden" id="modal-edit-position-id" name="position-id" th:value="${editingLecturerPositionId}"/>
 					<input class="form-control" id="modal-edit-lecturer-first-name" placeholder="Имя" name="first-name"/>
 					<br/>				
-					<input class="form-control" id="modal-edit-lecturer-last-name" placeholder="Фамилия" name="last-name"/>
+					<input class="form-control" id="modal-edit-lecturer-last-name" placeholder="Фамилия" name="last-name" th:value="${editingLecturerLastName}"/>
 					<br/>
 					<div class="input-group">
-                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="position-name" id="modal-edit-position-name">
+                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="position-name" id="modal-edit-position-name" th:value="${editingLecturerPositionName}" disabled>
                         <div class="input-group-append">
                             <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор должности</button>
-                            <div class="dropdown-menu">
+                            <div class="dropdown-menu">                            	
                             	<div th:each="position : ${positions}">
                             		<div onclick="selectPositionForEdit(this)">
                             			<input type="hidden" th:value="${position.getId()}"/>
@@ -175,6 +178,9 @@
     </div>
     <hr/>
     
+<script src="resources/js/main.js"></script>
+<script src="resources/js/jquery.js"></script>
+<script src="resources/js/bootstrap.bundle.min.js"></script>
 <script>
 	
 	function showSaveModal() {
@@ -224,10 +230,29 @@
         document.getElementById("modal-edit-position-id").value = element.getElementsByTagName("input")[0].value;
         document.getElementById("modal-edit-position-name").value = element.getElementsByTagName("a")[0].innerText;
     }
+    
+    function init() {
+
+    	if (document.getElementById("error-message").children.length != 0) {
+    		$("#error-message-modal").modal('show');
+    	}
+    }
+    
+    function showActiveModal() {
+    	
+    	let activeModalWindow = document.getElementById("active-modal-window").value;
+    	
+    	console.log("active window is " + activeModalWindow);
+    	
+    	if (activeModalWindow == "save") {
+    		$("#save-modal").modal('show');
+    	} else if (activeModalWindow == "edit") {
+    		$("#edit-modal").modal('show');
+    	}
+    }
+    
+    init();
 </script>
-<script src="resources/js/main.js"></script>
-<script src="resources/js/jquery.js"></script>
-<script src="resources/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
