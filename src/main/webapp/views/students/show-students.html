@@ -20,7 +20,7 @@
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">Ошибка!</h5>
+					<h5 class="modal-title text-danger">Ошибка!</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
@@ -28,12 +28,12 @@
 				
 				<div class="modal-body d-flex flex-column" id="error-message">
 					<div th:each="message : ${errorMessageList}">
-						<h4 th:text="'-- ' + ${message}">Error message</h4>
+						<h4 class="text-danger" th:text="'-- ' + ${message}">Error message</h4>
 					</div>
 				</div>
 				
 				<div class="modal-footer">    				
-					<button type="button" class="btn btn-outline-primary" data-dismiss="modal" onclick="showActiveModal()">O.K.</button>
+					<button type="button" class="btn btn-outline-primary" data-dismiss="modal" onclick="showActiveModal()">Исправить</button>
 					<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Закрыть</button>
 				</div>
 				
@@ -125,14 +125,14 @@
 				</div>
 				<form method="POST" action="students/edit">
 				<div class="modal-body d-flex flex-column">
-					<input type="hidden" id="modal-edit-person-id" name="person-id"/>
-					<input type="hidden" id="modal-edit-group-id" name="group-id"/>
-					<input class="form-control" id="modal-edit-student-first-name" placeholder="Имя" name="first-name"/>
+					<input type="hidden" id="modal-edit-person-id" name="person-id" th:value="${editingPersonId}"/>
+					<input type="hidden" id="modal-edit-group-id" name="group-id" th:value="${editingStudentGroupId}"/>
+					<input class="form-control" id="modal-edit-student-first-name" placeholder="Имя" name="first-name" th:value="${editingStudentFirstName}"/>
 					<br/>				
-					<input class="form-control" id="modal-edit-student-last-name" placeholder="Фамилия" name="last-name"/>
+					<input class="form-control" id="modal-edit-student-last-name" placeholder="Фамилия" name="last-name" th:value="${editingStudentLastName}"/>
 					<br/>
 					<div class="input-group">
-                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="group-name" id="modal-edit-group-name">
+                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="group-name" id="modal-edit-group-name" th:value="${editingStudentGroupName}">
                         <div class="input-group-append">
                             <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор группы</button>
                             <div class="dropdown-menu">
@@ -159,7 +159,7 @@
     <div class="container">
     	<div class="row">
 			<div class="col-12">
-				<h4 class="text-primary" th:text="${tableName}">Table name</h4>
+				<h4 class="text-primary">Все студенты</h4>
 			</div>
 		</div>
         <div class="row">
@@ -285,8 +285,9 @@
     	console.log("active window is " + activeModalWindow);
     	
     	if (activeModalWindow == "save") {
-    		console.log("if triggered");
     		$("#save-modal").modal('show');
+    	} else if (activeModalWindow == "edit") {
+    		$("#edit-modal").modal('show');
     	}
     }
     

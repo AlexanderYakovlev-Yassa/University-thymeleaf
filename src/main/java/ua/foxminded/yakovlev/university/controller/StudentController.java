@@ -27,7 +27,6 @@ import ua.foxminded.yakovlev.university.validator.StudentValidator;
 @RequestMapping("/students")
 public class StudentController {
 
-	private static final String TABLE_NAME = "Все студенты";
 	private final StudentService studentService;
 	private final GroupService groupService;	
 	private final StudentValidator studentValidator;
@@ -38,6 +37,7 @@ public class StudentController {
 	public String show(
 			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
 			@RequestParam(name = "activeWindow", required = false) String activeWindow,
+			@RequestParam(name = "editingPersonId", required = false) Long editingPersonId,
 			@RequestParam(name = "editingStudentFirstName", required = false) String editingStudentFirstName,
 			@RequestParam(name = "editingStudentLastName", required = false) String editingStudentLastName,
 			@RequestParam(name = "editingStudentGroupId", required = false) Long editingStudentGroupId,
@@ -47,9 +47,9 @@ public class StudentController {
 		model.addAttribute("students", studentService.findAll());
 		model.addAttribute("groups", groupService.findAll());
 		model.addAttribute("selectedStudent", new Student());
-		model.addAttribute("tableName", TABLE_NAME);
 		model.addAttribute("errorMessageList", errorMessageList);
 		model.addAttribute("activeWindow", activeWindow);
+		model.addAttribute("editingPersonId", editingPersonId);
 		model.addAttribute("editingStudentFirstName", editingStudentFirstName);
 		model.addAttribute("editingStudentLastName", editingStudentLastName);
 		model.addAttribute("editingStudentGroupId", editingStudentGroupId);
@@ -71,6 +71,10 @@ public class StudentController {
 		student.setFirstName(firstName);
 		student.setLastName(lastName);
 		
+		if (groupId != null) {
+			student.setGroup(createGroup(groupId, groupName));
+		}
+		
 		final DataBinder dataBinder = new DataBinder(student);
 		dataBinder.addValidators(studentValidator);
 		dataBinder.validate();
@@ -91,13 +95,6 @@ public class StudentController {
 			return "redirect:/students";
 		}
 		
-		if (groupId != null) {
-			Group group = new Group();
-			group.setId(groupId);
-			group.setName(groupName);
-			student.setGroup(group);
-		}
-		
 		studentService.save(student);
 
 		return "redirect:/students";
@@ -110,21 +107,53 @@ public class StudentController {
 	}
 
 	@PostMapping("/edit")
-	public String edit(@RequestParam(name = "person-id") Long personId, @RequestParam(name = "group-id") Long groupId,
-			@RequestParam(name = "first-name") String firstName, @RequestParam(name = "last-name") String lastName,
-			@RequestParam(name = "group-name") String groupName) {
+	public String edit(
+			RedirectAttributes redirectAttributes,
+			@RequestParam(name = "person-id") Long personId, 
+			@RequestParam(name = "group-id", required = false) Long groupId,
+			@RequestParam(name = "first-name", required = false) String firstName, 
+			@RequestParam(name = "last-name", required = false) String lastName,
+			@RequestParam(name = "group-name", required = false) String groupName) {
 
 		Student student = new Student();
 		student.setPersonId(personId);
 		student.setFirstName(firstName);
 		student.setLastName(lastName);
-		Group group = new Group();
-		group.setId(groupId);
-		group.setName(groupName);
-		student.setGroup(group);
+		
+		if (groupId != null) {
+			student.setGroup(createGroup(groupId, groupName));
+		}
 
+		final DataBinder dataBinder = new DataBinder(student);
+		dataBinder.addValidators(studentValidator);
+		dataBinder.validate();
+		
+		if (dataBinder.getBindingResult().hasErrors()) {
+			
+			List<String> errorMessageList = dataBinder.getBindingResult().getAllErrors().stream().
+					map(e -> (messageSource.getMessage(e, Locale.getDefault())))
+					.collect(Collectors.toList());
+			
+			redirectAttributes.addAttribute("errorMessage", errorMessageList);
+			redirectAttributes.addAttribute("activeWindow", "edit");
+			redirectAttributes.addAttribute("editingPersonId", personId);
+			redirectAttributes.addAttribute("editingStudentFirstName", firstName);
+			redirectAttributes.addAttribute("editingStudentLastName", lastName);
+			redirectAttributes.addAttribute("editingStudentGroupId", groupId);
+			redirectAttributes.addAttribute("editingStudentGroupName", groupName);
+			
+			return "redirect:/students";
+		}
+		
 		studentService.update(student);
 
 		return "redirect:/students";
+	}
+	
+	private Group createGroup(Long groupId, String groupName) {
+		Group group = new Group();
+		group.setId(groupId);
+		group.setName(groupName);
+		return group;
 	}
 }
