@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../resources/css/main.css">
+    <link rel="stylesheet" href="../resources/css/bootstrap.min.css">
+    <link rel="icon" href="../resources/img/logo.png" type="image/png" />
+    <title>Courses</title>
+</head>
+
+<body>
+
+	<div th:include="~{header :: header}"></div>
+	<div th:include="~{error-modal :: error-modal}"></div>
+	
+	<div class="card" style="width: 30rem;">
+		<div class="card-body">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Редактировать курс</h5>
+					</button>
+				</div>
+				<form method="POST" th:action="@{edit}" th:object="${course}">
+				<div class="modal-body d-flex flex-column">
+					<input type="hidden" th:field="*{id}"/>
+					<input class="form-control" placeholder="Наименование" th:field="*{name}"/>
+					<br/>				
+					<textarea rows="5" class="form-control" id="modal-save-description" placeholder="Описание" th:field="*{description}"></textarea>				
+				</div>
+				<div class="modal-footer">
+    				<input type="submit" class="btn btn-outline-primary" value="Изменить"/>
+					<a href="/university/courses">Отменить</button>
+				</div>
+				</form>
+			</div>
+		</div>
+	</div>
+    
+<script src="../resources/js/main.js"></script>
+<script src="../resources/js/jquery.js"></script>
+<script src="../resources/js/bootstrap.bundle.min.js"></script>
+<script>
+
+function init() {
+
+	if (document.getElementById("error-message").children.length != 0) {
+		$("#error-message-modal").modal('show');
+	}
+}
+
+function cancel() {
+	window.location.href = "courses";
+}
+
+init();
+</script>
+</body>
+
+</html>
