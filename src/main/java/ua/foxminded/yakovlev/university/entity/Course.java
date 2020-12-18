@@ -27,7 +27,6 @@ public class Course implements Serializable {
 	
 	@Column(name = "course_name")
 	@NotBlank(message="validator.message.empty_course_name")
-	//@NotBlank(message="vvv")
 	private String name;
 	
 	@Column(name = "course_description")
