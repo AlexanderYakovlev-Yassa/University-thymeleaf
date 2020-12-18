@@ -2,19 +2,15 @@ package ua.foxminded.yakovlev.university.controller;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 
-import org.hibernate.internal.build.AllowSysOut;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -82,13 +78,20 @@ public class CourseController {
 		courseService.save(course);
 		
 		return "redirect:/courses";
-	}	
+	}
 	
-	@PostMapping("/delete")
-    public String delete(@RequestParam(name = "id") long id) {
-        courseService.delete(id);
-        return "redirect:/courses";
-    }
+	@GetMapping("/edit")
+    public String edit(
+			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
+    		@RequestParam(name = "id") Long id,
+    		Model model
+    		) {		
+		
+		model.addAttribute("course", courseService.findById(id));
+		model.addAttribute("errorMessageList", errorMessageList);
+		
+		return "courses/edit-course";
+	}
 	
 	@PostMapping("/edit")
 	public String showEdit(
@@ -111,18 +114,11 @@ public class CourseController {
 		courseService.update(course);
 		
 		return "redirect:/courses";
-	}
+	}	
 	
-	@GetMapping("/edit")
-    public String edit(
-			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
-    		@RequestParam(name = "id") Long id,
-    		Model model
-    		) {		
-		
-		model.addAttribute("course", courseService.findById(id));
-		model.addAttribute("errorMessageList", errorMessageList);
-		
-		return "courses/new-course";
-	}
+	@PostMapping("/delete")
+    public String delete(@RequestParam(name = "id") long id) {
+        courseService.delete(id);
+        return "redirect:/courses";
+    }
 }
