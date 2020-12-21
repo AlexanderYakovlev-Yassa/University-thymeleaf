@@ -4,12 +4,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,75 +32,100 @@ import ua.foxminded.yakovlev.university.validator.StudentValidator;
 public class StudentController {
 
 	private final StudentService studentService;
-	private final GroupService groupService;	
-	private final StudentValidator studentValidator;
+	private final GroupService groupService;
 	@Qualifier(value="messageSource")
 	private final ResourceBundleMessageSource messageSource;
 
 	@GetMapping()
 	public String show(
-			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
-			@RequestParam(name = "activeWindow", required = false) String activeWindow,
-			@RequestParam(name = "editingPersonId", required = false) Long editingPersonId,
-			@RequestParam(name = "editingStudentFirstName", required = false) String editingStudentFirstName,
-			@RequestParam(name = "editingStudentLastName", required = false) String editingStudentLastName,
-			@RequestParam(name = "editingStudentGroupId", required = false) Long editingStudentGroupId,
-			@RequestParam(name = "editingStudentGroupName", required = false) String editingStudentGroupName,
 			Model model) {
 		
 		model.addAttribute("students", studentService.findAll());
-		model.addAttribute("groups", groupService.findAll());
-		model.addAttribute("selectedStudent", new Student());
-		model.addAttribute("errorMessageList", errorMessageList);
-		model.addAttribute("activeWindow", activeWindow);
-		model.addAttribute("editingPersonId", editingPersonId);
-		model.addAttribute("editingStudentFirstName", editingStudentFirstName);
-		model.addAttribute("editingStudentLastName", editingStudentLastName);
-		model.addAttribute("editingStudentGroupId", editingStudentGroupId);
-		model.addAttribute("editingStudentGroupName", editingStudentGroupName);
 
 		return "students/show-students";
 	}
-
-	@PostMapping("/new")
-	public String save(
-			RedirectAttributes redirectAttributes,
-			@RequestParam(name = "first-name", required = false) String firstName,
-			@RequestParam(name = "last-name", required = false) String lastName, 
-			@RequestParam(name = "group-id", required = false) Long groupId,
-			@RequestParam(name = "group-name", required = false) String groupName
+	
+	@GetMapping("/new")
+    public String create(
+			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
+			Model model
 			) {
-
-		Student student = new Student();
-		student.setFirstName(firstName);
-		student.setLastName(lastName);
 		
-		if (groupId != null) {
-			student.setGroup(createGroup(groupId, groupName));
-		}
+		model.addAttribute("newStudent", new Student());
+		model.addAttribute("groups", groupService.findAll());
+		model.addAttribute("errorMessageList", errorMessageList);
 		
-		final DataBinder dataBinder = new DataBinder(student);
-		dataBinder.addValidators(studentValidator);
-		dataBinder.validate();
+		return "students/new-student";
+	}
+	
+	@PostMapping("/new")
+    public String save(
+			RedirectAttributes redirectAttributes,
+			@RequestParam(name = "groupId", required = false) Long groupId,
+			@Valid@ModelAttribute("newStudent") Student  newStudent,
+    		BindingResult bindingResult) {
 		
-		if (dataBinder.getBindingResult().hasErrors()) {
+		if (bindingResult.hasErrors()) {
 			
-			List<String> errorMessageList = dataBinder.getBindingResult().getAllErrors().stream().
-					map(e -> (messageSource.getMessage(e, Locale.getDefault())))
+			List<String> errorMessageList = bindingResult.getAllErrors().stream().
+					map(e -> (messageSource.getMessage(e.getDefaultMessage(), null, Locale.getDefault())))
 					.collect(Collectors.toList());
 			
 			redirectAttributes.addAttribute("errorMessage", errorMessageList);
-			redirectAttributes.addAttribute("activeWindow", "save");
-			redirectAttributes.addAttribute("editingStudentFirstName", firstName);
-			redirectAttributes.addAttribute("editingStudentLastName", lastName);
-			redirectAttributes.addAttribute("editingStudentGroupId", groupId);
-			redirectAttributes.addAttribute("editingStudentGroupName", groupName);
 			
-			return "redirect:/students";
+			return "redirect:/students/new";
 		}
 		
-		studentService.save(student);
+		if (groupId != null) {
+			Group group = groupService.findById(groupId);
+			newStudent.setGroup(group);
+		}
+		
+		studentService.save(newStudent);
+		
+		return "redirect:/students";
+	}
+	
+	@GetMapping("/edit")
+    public String showEditPage(
+			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
+    		@RequestParam(name = "id") Long id,
+    		Model model
+    		) {	
 
+		model.addAttribute("student", studentService.findById(id));
+		model.addAttribute("groups", groupService.findAll());
+		model.addAttribute("errorMessageList", errorMessageList);
+		
+		return "students/edit-student";
+	}
+	
+	@PostMapping("/edit")
+    public String edit(
+			RedirectAttributes redirectAttributes,
+			@RequestParam(name = "groupId", required = false) Long groupId,
+			@Valid@ModelAttribute("student") Student student,
+    		BindingResult bindingResult) {
+		
+		if (bindingResult.hasErrors()) {
+			
+			List<String> errorMessageList = bindingResult.getAllErrors().stream().
+					map(e -> (messageSource.getMessage(e.getDefaultMessage(), null, Locale.getDefault())))
+					.collect(Collectors.toList());
+			
+			redirectAttributes.addAttribute("errorMessage", errorMessageList);
+			redirectAttributes.addAttribute("id", student.getPersonId());
+			
+			return "redirect:/students/edit";
+		}
+		
+		if (groupId != null) {
+			Group group = groupService.findById(groupId);
+			student.setGroup(group);
+		}		
+		
+		studentService.update(student);
+		
 		return "redirect:/students";
 	}
 
@@ -104,56 +133,5 @@ public class StudentController {
 	public String delete(@RequestParam(name = "person-to-be-deleted-id") long id) {
 		studentService.delete(id);
 		return "redirect:/students";
-	}
-
-	@PostMapping("/edit")
-	public String edit(
-			RedirectAttributes redirectAttributes,
-			@RequestParam(name = "person-id") Long personId, 
-			@RequestParam(name = "group-id", required = false) Long groupId,
-			@RequestParam(name = "first-name", required = false) String firstName, 
-			@RequestParam(name = "last-name", required = false) String lastName,
-			@RequestParam(name = "group-name", required = false) String groupName) {
-
-		Student student = new Student();
-		student.setPersonId(personId);
-		student.setFirstName(firstName);
-		student.setLastName(lastName);
-		
-		if (groupId != null) {
-			student.setGroup(createGroup(groupId, groupName));
-		}
-
-		final DataBinder dataBinder = new DataBinder(student);
-		dataBinder.addValidators(studentValidator);
-		dataBinder.validate();
-		
-		if (dataBinder.getBindingResult().hasErrors()) {
-			
-			List<String> errorMessageList = dataBinder.getBindingResult().getAllErrors().stream().
-					map(e -> (messageSource.getMessage(e, Locale.getDefault())))
-					.collect(Collectors.toList());
-			
-			redirectAttributes.addAttribute("errorMessage", errorMessageList);
-			redirectAttributes.addAttribute("activeWindow", "edit");
-			redirectAttributes.addAttribute("editingPersonId", personId);
-			redirectAttributes.addAttribute("editingStudentFirstName", firstName);
-			redirectAttributes.addAttribute("editingStudentLastName", lastName);
-			redirectAttributes.addAttribute("editingStudentGroupId", groupId);
-			redirectAttributes.addAttribute("editingStudentGroupName", groupName);
-			
-			return "redirect:/students";
-		}
-		
-		studentService.update(student);
-
-		return "redirect:/students";
-	}
-	
-	private Group createGroup(Long groupId, String groupName) {
-		Group group = new Group();
-		group.setId(groupId);
-		group.setName(groupName);
-		return group;
 	}
 }
