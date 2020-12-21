@@ -1,83 +1,137 @@
 package ua.foxminded.yakovlev.university.controller;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import lombok.RequiredArgsConstructor;
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.Student;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.service.StudentService;
+import ua.foxminded.yakovlev.university.validator.StudentValidator;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/students")
 public class StudentController {
-	
-	private static final String TABLE_NAME = "Все студенты";
-	
+
 	private final StudentService studentService;
 	private final GroupService groupService;
-	
+	@Qualifier(value="messageSource")
+	private final ResourceBundleMessageSource messageSource;
+
 	@GetMapping()
-    public String show(Model model) {
+	public String show(
+			Model model) {
 		
 		model.addAttribute("students", studentService.findAll());
-		model.addAttribute("groups", groupService.findAll());
-		model.addAttribute("selectedStudent", new Student());
-		model.addAttribute("tableName", TABLE_NAME);
+
+		return "students/show-students";
+	}
+	
+	@GetMapping("/new")
+    public String create(
+			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
+			Model model
+			) {
 		
-        return "students/show-students";
-    }
+		model.addAttribute("newStudent", new Student());
+		model.addAttribute("groups", groupService.findAll());
+		model.addAttribute("errorMessageList", errorMessageList);
+		
+		return "students/new-student";
+	}
 	
 	@PostMapping("/new")
     public String save(
-    		@RequestParam(name = "first-name") String firstName,
-    		@RequestParam(name = "last-name") String lastName,
-    		@RequestParam(name = "group-id") Long groupId,
-    		@RequestParam(name = "group-name") String groupName) {
+			RedirectAttributes redirectAttributes,
+			@RequestParam(name = "groupId", required = false) Long groupId,
+			@Valid@ModelAttribute("newStudent") Student  newStudent,
+    		BindingResult bindingResult) {
 		
-		Student student = new Student();
-		student.setFirstName(firstName);
-		student.setLastName(lastName);
-		Group group = new Group();
-		group.setId(groupId);
-		group.setName(groupName);
-		student.setGroup(group);
-		studentService.save(student);
+		if (bindingResult.hasErrors()) {
+			
+			List<String> errorMessageList = bindingResult.getAllErrors().stream().
+					map(e -> (messageSource.getMessage(e.getDefaultMessage(), null, Locale.getDefault())))
+					.collect(Collectors.toList());
+			
+			redirectAttributes.addAttribute("errorMessage", errorMessageList);
+			
+			return "redirect:/students/new";
+		}
+		
+		if (groupId != null) {
+			Group group = groupService.findById(groupId);
+			newStudent.setGroup(group);
+		}
+		
+		studentService.save(newStudent);
 		
 		return "redirect:/students";
 	}
 	
-	@PostMapping("/delete")
-    public String delete(@RequestParam(name = "person-to-be-deleted-id") long id) {
-        studentService.delete(id);
-        return "redirect:/students";
-    }
+	@GetMapping("/edit")
+    public String showEditPage(
+			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
+    		@RequestParam(name = "id") Long id,
+    		Model model
+    		) {	
+
+		model.addAttribute("student", studentService.findById(id));
+		model.addAttribute("groups", groupService.findAll());
+		model.addAttribute("errorMessageList", errorMessageList);
+		
+		return "students/edit-student";
+	}
 	
 	@PostMapping("/edit")
     public String edit(
-    		@RequestParam(name = "person-id") Long personId,
-    		@RequestParam(name = "group-id") Long groupId,
-    		@RequestParam(name = "first-name") String firstName,
-    		@RequestParam(name = "last-name") String lastName,
-    		@RequestParam(name = "group-name") String groupName) {
+			RedirectAttributes redirectAttributes,
+			@RequestParam(name = "groupId", required = false) Long groupId,
+			@Valid@ModelAttribute("student") Student student,
+    		BindingResult bindingResult) {
 		
-		Student student = new Student();
-		student.setPersonId(personId);
-		student.setFirstName(firstName);
-		student.setLastName(lastName);
-		Group group = new Group();
-		group.setId(groupId);
-		group.setName(groupName);
-		student.setGroup(group);
+		if (bindingResult.hasErrors()) {
+			
+			List<String> errorMessageList = bindingResult.getAllErrors().stream().
+					map(e -> (messageSource.getMessage(e.getDefaultMessage(), null, Locale.getDefault())))
+					.collect(Collectors.toList());
+			
+			redirectAttributes.addAttribute("errorMessage", errorMessageList);
+			redirectAttributes.addAttribute("id", student.getPersonId());
+			
+			return "redirect:/students/edit";
+		}
+		
+		if (groupId != null) {
+			Group group = groupService.findById(groupId);
+			student.setGroup(group);
+		}		
 		
 		studentService.update(student);
 		
+		return "redirect:/students";
+	}
+
+	@PostMapping("/delete")
+	public String delete(@RequestParam(name = "person-to-be-deleted-id") long id) {
+		studentService.delete(id);
 		return "redirect:/students";
 	}
 }

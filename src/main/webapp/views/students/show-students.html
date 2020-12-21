@@ -13,47 +13,6 @@
 
 	<div th:include="~{header :: header}"></div>
 	
-	<!-- SAVE student modal -->
-	<div id="save-modal" class="modal" tabindex="-1" role="dialog">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Добавить студента</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<form method="POST" action="students/new">
-				<div class="modal-body d-flex flex-column">
-					<input type="hidden" id="modal-save-group-id" name="group-id"/>
-					<input class="form-control" id="modal-save-student-first-name" placeholder="Имя" name="first-name"/>
-					<br/>				
-					<input class="form-control" id="modal-save-student-last-name" placeholder="Фамилия" name="last-name"/>
-					<br/>
-					<div class="input-group">
-                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="group-name" id="modal-save-group-name">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор группы</button>
-                            <div class="dropdown-menu">
-                            	<div th:each="group : ${groups}">
-                            		<div onclick="selectGroupForSave(this)">
-                            			<input type="hidden" th:value="${group.getId()}"/>
-                                    	<a class="dropdown-item" href="#" th:text="${group.getName()}">group</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                	</div>
-				</div>
-				<div class="modal-footer">
-    				<input type="submit" class="btn btn-outline-primary" value="Сохранить"/>
-					<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Закрыть</button>
-				</div>
-				</form>
-			</div>
-		</div>
-	</div>
-	
 	<!-- DELETE student modal -->
 	<div id="delete-modal" class="modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog" role="document">
@@ -79,54 +38,12 @@
 			</div>
 		</div>
 	</div>
-	
-	<!-- EDIT student modal -->
-	<div id="edit-modal" class="modal" tabindex="-1" role="dialog">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Редактировать студента</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<form method="POST" action="students/edit">
-				<div class="modal-body d-flex flex-column">
-					<input type="hidden" id="modal-edit-person-id" name="person-id"/>
-					<input type="hidden" id="modal-edit-group-id" name="group-id"/>
-					<input class="form-control" id="modal-edit-student-first-name" placeholder="Имя" name="first-name"/>
-					<br/>				
-					<input class="form-control" id="modal-edit-student-last-name" placeholder="Фамилия" name="last-name"/>
-					<br/>
-					<div class="input-group">
-                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="group-name" id="modal-edit-group-name">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор группы</button>
-                            <div class="dropdown-menu">
-                            	<div th:each="group : ${groups}">
-                            		<div onclick="selectGroupForEdit(this)">
-                            			<input type="hidden" th:value="${group.getId()}"/>
-                                    	<a class="dropdown-item" href="#" th:text="${group.getName()}">group</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                	</div>
-				</div>
-				<div class="modal-footer">
-    				<input type="submit" class="btn btn-outline-primary" value="Изменить"/>
-					<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Закрыть</button>
-				</div>
-				</form>
-			</div>
-		</div>
-	</div>
 	      
 	<!-- All students table -->
     <div class="container">
     	<div class="row">
 			<div class="col-12">
-				<h4 class="text-primary" th:text="${tableName}">Table name</h4>
+				<h4 class="text-primary">Все студенты</h4>
 			</div>
 		</div>
         <div class="row">
@@ -145,14 +62,14 @@
                 		<tr onclick="select(this)">
                 			<td>
                 				<input type="hidden" th:value="${student.getPersonId()}" />
-                				<input type="hidden" th:value="${student.getGroup().getId()}" />
+                				<input type="hidden" th:value="${student.getGroup()} ? ${student.getGroup().getId()} : ''" />
                 				<a href="#" th:text="${student.getFirstName()}">student</a>
                 			</td>
                 			<td>
                 				<a href="#" th:text="${student.getLastName()}">student</a>
                 			</td>
                 			<td>
-                				<a href="#" th:text="${student.getGroup().getName()}">group</a>
+                				<a href="#" th:text="${student.getGroup()} ? ${student.getGroup().getName()} : 'не распределен'">group</a>
                 			</td>
                 		</tr>
                 	</div>
@@ -162,24 +79,40 @@
             </div>
         </div>		
     </div>
-    <hr/>
-    <div class="container">
-        		
+    <hr/>    
+	<form id="edit-form" method="GET" th:action="@{students/edit}">
+          	<input type="hidden" id="selected-id" name="id">
+	</form>
+    <div class="container">        		
 		<div class="row">
 			<div class="col-12 ">
-				<button class="btn btn-outline-primary" onclick="showSaveModal()">Добавить</button>
-				<button class="btn btn-outline-primary" onclick="showEditModal()">Редактировать</button>
+				<a href="students/new" class="btn btn-outline-primary d-inline">Добавить</a>
+				<a href="#" class="btn btn-outline-primary d-inline" onclick="showEditPage()">Редактировать</a>
 				<button class="btn btn-outline-primary" onclick="showDeleteModal()">Удалить</button>
 			</div>
 		</div>
     </div>
     <hr/>
     
+<script src="resources/js/jquery.js"></script>
+<script src="resources/js/main.js"></script>
+<script src="resources/js/jquery.js"></script>
+<script src="resources/js/bootstrap.bundle.min.js"></script>
+
 <script>
+
+	function showEditPage() {
+		
+		var elements = document.getElementsByClassName("selected");
 	
-	function showSaveModal() {
-        $("#save-modal").modal('show');
-    }
+		if (elements.length == 0 ) {
+			alert("Необходимо выбрать студента для редактирования!");
+			return;
+		}
+	
+		document.getElementById("selected-id").value = elements[0].getElementsByTagName("input")[0].value;
+		document.getElementById("edit-form").submit();
+	}
 	
 	function showDeleteModal() {
 		
@@ -196,29 +129,6 @@
 		
         $("#delete-modal").modal('show');
     }
-	
-	function showEditModal() {
-		
-		var elements = document.getElementsByClassName("selected");
-		
-		if (elements.length == 0 ) {
-			alert("Необходимо выбрать студента для редактирования!");
-			return;
-		}
-		
-		document.getElementById("modal-edit-person-id").value = elements[0].getElementsByTagName("input")[0].value;
-		document.getElementById("modal-edit-group-id").value = elements[0].getElementsByTagName("input")[1].value;
-		document.getElementById("modal-edit-student-first-name").value = elements[0].getElementsByTagName("a")[0].innerText;
-		document.getElementById("modal-edit-student-last-name").value = elements[0].getElementsByTagName("a")[1].innerText;
-		document.getElementById("modal-edit-group-name").value = elements[0].getElementsByTagName("a")[2].innerText;
-		
-        $("#edit-modal").modal('show');
-    }
-    
-    function selectGroupForSave(element) {
-        document.getElementById("modal-save-group-id").value = element.getElementsByTagName("input")[0].value;
-        document.getElementById("modal-save-group-name").value = element.getElementsByTagName("a")[0].innerText;
-    }
     
     function selectGroupForEdit(element) {
         document.getElementById("modal-edit-group-id").value = element.getElementsByTagName("input")[0].value;
@@ -231,12 +141,8 @@
     		.slice(1)
     		.sort((rowA, rowB) => rowA.getElementsByTagName('td')[0].innerText > rowB.getElementsByTagName('td')[0].innerText ? 1 : -1);
     	table.tBodies[0].append(...row);
-    	console.log(row[0].getElementsByTagName('td')[0].innerText);
     }
 </script>
-<script src="resources/js/main.js"></script>
-<script src="resources/js/jquery.js"></script>
-<script src="resources/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

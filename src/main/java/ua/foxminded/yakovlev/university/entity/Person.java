@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.persistence.InheritanceType;
 import lombok.Data;
 
@@ -26,8 +27,10 @@ public class Person implements Serializable{
 	private Long personId;
 	
 	@Column(name = "person_first_name")
+	@NotBlank(message="validator.message.empty_person_first_name")
 	private String firstName;
 	
 	@Column(name = "person_last_name")
+	@NotBlank(message="validator.message.empty_person_last_name")
 	private String lastName;
 }
