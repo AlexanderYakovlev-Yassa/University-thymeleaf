@@ -12,92 +12,6 @@
 <body>
 
 	<div th:include="~{header :: header}"></div>
-	<div th:include="~{error-modal :: error-modal}"></div>
-	
-	<input type="hidden" id="active-modal-window" th:value="${activeWindow}"/>
-	
-	<!-- SAVE lecturer modal -->
-	<div id="save-modal" class="modal" tabindex="-1" role="dialog">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Добавить преподавателя</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<form method="POST" action="lecturers/new">
-				<div class="modal-body d-flex flex-column">
-					<input type="hidden" id="modal-save-position-id" name="position-id" th:value="${editingLecturerPositionId}"/>
-					<input class="form-control" id="modal-save-lecturer-first-name" placeholder="Имя" name="first-name" th:value="${editingLecturerFirstName}"/>
-					<br/>				
-					<input class="form-control" id="modal-save-lecturer-last-name" placeholder="Фамилия" name="last-name" th:value="${editingLecturerLastName}"/>
-					<br/>
-					<div class="input-group">
-                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="position-name" id="modal-save-position-name" th:value="${editingLecturerPositionName}" disabled>
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор должности</button>
-                            <div class="dropdown-menu">
-                            	<div th:each="position : ${positions}">
-                            		<div onclick="selectPositionForSave(this)">
-                            			<input type="hidden" th:value="${position.getId()}"/>
-                                    	<a class="dropdown-item" href="#" th:text="${position.getName()}">position</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                	</div>
-				</div>
-				<div class="modal-footer">
-    				<input type="submit" class="btn btn-outline-primary" value="Сохранить"/>
-					<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Закрыть</button>
-				</div>
-				</form>
-			</div>
-		</div>
-	</div>
-	
-	<!-- EDIT student modal -->
-	<div id="edit-modal" class="modal" tabindex="-1" role="dialog">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Редактировать преподавателя</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<form method="POST" action="lecturers/edit">
-				<div class="modal-body d-flex flex-column">
-					<input type="hidden" id="modal-edit-person-id" name="person-id" th:value="${editingPersonId}"/>
-					<input type="hidden" id="modal-edit-position-id" name="position-id" th:value="${editingLecturerPositionId}"/>
-					<input class="form-control" id="modal-edit-lecturer-first-name" placeholder="Имя" name="first-name"/>
-					<br/>				
-					<input class="form-control" id="modal-edit-lecturer-last-name" placeholder="Фамилия" name="last-name" th:value="${editingLecturerLastName}"/>
-					<br/>
-					<div class="input-group">
-                    <input type="text" class="form-control" aria-label="Text input with dropdown button" name="position-name" id="modal-edit-position-name" th:value="${editingLecturerPositionName}" disabled>
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор должности</button>
-                            <div class="dropdown-menu">                            	
-                            	<div th:each="position : ${positions}">
-                            		<div onclick="selectPositionForEdit(this)">
-                            			<input type="hidden" th:value="${position.getId()}"/>
-                                    	<a class="dropdown-item" href="#" th:text="${position.getName()}">position</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                	</div>
-				</div>
-				<div class="modal-footer">
-    				<input type="submit" class="btn btn-outline-primary" value="Изменить"/>
-					<button type="button" class="btn btn-outline-primary" data-dismiss="modal">Закрыть</button>
-				</div>
-				</form>
-			</div>
-		</div>
-	</div>
 	
 	<!-- DELETE lecturer modal -->
 	<div id="delete-modal" class="modal" tabindex="-1" role="dialog">
@@ -165,13 +79,16 @@
             </div>
         </div>
     </div>
-    <hr/>
+    <hr/>  
+	<form id="edit-form" method="GET" th:action="@{lecturers/edit}">
+          	<input type="hidden" id="selected-id" name="id">
+	</form>
     <div class="container">
         		
 		<div class="row">
 			<div class="col-12 ">
-				<button class="btn btn-outline-primary" onclick="showSaveModal()">Добавить</button>
-				<button class="btn btn-outline-primary" onclick="showEditModal()">Редактировать</button>
+				<a href="lecturers/new" class="btn btn-outline-primary d-inline">Добавить</a>
+				<a href="#" class="btn btn-outline-primary d-inline" onclick="showEditPage()">Редактировать</a>
 				<button class="btn btn-outline-primary" onclick="showDeleteModal()">Удалить</button>
 			</div>
 		</div>
@@ -182,10 +99,19 @@
 <script src="resources/js/jquery.js"></script>
 <script src="resources/js/bootstrap.bundle.min.js"></script>
 <script>
+
+	function showEditPage() {
+		
+		var elements = document.getElementsByClassName("selected");
 	
-	function showSaveModal() {
-        $("#save-modal").modal('show');
-    }
+		if (elements.length == 0 ) {
+			alert("Необходимо выбрать преподавателя для редактирования!");
+			return;
+		}
+	
+		document.getElementById("selected-id").value = elements[0].getElementsByTagName("input")[0].value;
+		document.getElementById("edit-form").submit();
+	}
 	
 	function showDeleteModal() {
 		
@@ -202,56 +128,6 @@
 		
         $("#delete-modal").modal('show');
     }
-	
-	function showEditModal() {
-		
-		var elements = document.getElementsByClassName("selected");
-		
-		if (elements.length == 0 ) {
-			alert("Необходимо выбрать студента для редактирования!");
-			return;
-		}
-		
-		document.getElementById("modal-edit-person-id").value = elements[0].getElementsByTagName("input")[0].value;
-		document.getElementById("modal-edit-position-id").value = elements[0].getElementsByTagName("input")[1].value;
-		document.getElementById("modal-edit-lecturer-first-name").value = elements[0].getElementsByTagName("a")[0].innerText;
-		document.getElementById("modal-edit-lecturer-last-name").value = elements[0].getElementsByTagName("a")[1].innerText;
-		document.getElementById("modal-edit-position-name").value = elements[0].getElementsByTagName("a")[2].innerText;
-		
-        $("#edit-modal").modal('show');
-    }
-    
-    function selectPositionForSave(element) {
-        document.getElementById("modal-save-position-id").value = element.getElementsByTagName("input")[0].value;
-        document.getElementById("modal-save-position-name").value = element.getElementsByTagName("a")[0].innerText;
-    }
-    
-    function selectPositionForEdit(element) {
-        document.getElementById("modal-edit-position-id").value = element.getElementsByTagName("input")[0].value;
-        document.getElementById("modal-edit-position-name").value = element.getElementsByTagName("a")[0].innerText;
-    }
-    
-    function init() {
-
-    	if (document.getElementById("error-message").children.length != 0) {
-    		$("#error-message-modal").modal('show');
-    	}
-    }
-    
-    function showActiveModal() {
-    	
-    	let activeModalWindow = document.getElementById("active-modal-window").value;
-    	
-    	console.log("active window is " + activeModalWindow);
-    	
-    	if (activeModalWindow == "save") {
-    		$("#save-modal").modal('show');
-    	} else if (activeModalWindow == "edit") {
-    		$("#edit-modal").modal('show');
-    	}
-    }
-    
-    init();
 </script>
 </body>
 
