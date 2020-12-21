@@ -49,7 +49,7 @@ public class CourseController {
 	@GetMapping("/new")
 	public String create(
 			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
-			Model model) {
+			Model model) {		
 		
 		model.addAttribute("course", new Course());
 		model.addAttribute("errorMessageList", errorMessageList);
@@ -61,8 +61,7 @@ public class CourseController {
     public String save(
 			RedirectAttributes redirectAttributes,
     		@Valid@ModelAttribute("course") Course  course,
-    		BindingResult bindingResult,
-			Model model) {		
+    		BindingResult bindingResult) {		
 		
 		if (bindingResult.hasErrors()) {
 			
