@@ -4,26 +4,23 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import lombok.AllArgsConstructor;
+import ua.foxminded.yakovlev.university.exception.NotFoundException;
 import ua.foxminded.yakovlev.university.service.EntityService;
 
-public class AbstractServiceJpa<E, ID> implements EntityService<E, ID>{
+@AllArgsConstructor
+public abstract class AbstractServiceJpa<E, ID> implements EntityService<E, ID>{
 	
 	private JpaRepository<E, ID> dao;
-	
-	public AbstractServiceJpa(JpaRepository<E, ID> daoEntity) {
-		this.dao = daoEntity;
-	}
-	
-	@Override
-	public E save(E entity) {
 		
+	@Override
+	public E save(E entity) {				
 		return dao.save(entity);
 	}
 
 	@Override
 	public E findById(ID id) {
-		
-		return dao.findById(id).orElse(null);
+		return dao.findById(id).orElseThrow(() -> new NotFoundException(getEntityName() + " with ID " + id + " is not found!"));
 	}
 
 	@Override
@@ -40,6 +37,8 @@ public class AbstractServiceJpa<E, ID> implements EntityService<E, ID>{
 
 	@Override
 	public void delete(ID id) {
-		dao.delete(findById(id));;		
+		dao.delete(findById(id));
 	}
+	
+	protected abstract String getEntityName();
 }

@@ -13,6 +13,8 @@ import ua.foxminded.yakovlev.university.service.TimetableRecordService;
 @Transactional
 public class TimetableRecordServiceImpl extends AbstractServiceJpa<TimetableRecord, Long> implements TimetableRecordService {
 
+	private static final String ENTITY_NAME = "Timetable record";
+	
 	private final TimetableRecordRepository dao;
 	
 	public TimetableRecordServiceImpl(TimetableRecordRepository timetableRecordRepository)  {
@@ -33,5 +35,11 @@ public class TimetableRecordServiceImpl extends AbstractServiceJpa<TimetableReco
 	@Override
 	public List<TimetableRecord> findByGroup(Long studentId, LocalDateTime periodStart, LocalDateTime periodFinish) {
 		return dao.findByStudent(studentId, periodStart, periodFinish);
+	}
+
+	@Override
+	protected String getEntityName() {
+		
+		return ENTITY_NAME;
 	}
 }

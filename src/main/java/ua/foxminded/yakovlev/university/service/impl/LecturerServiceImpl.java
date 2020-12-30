@@ -14,6 +14,8 @@ import ua.foxminded.yakovlev.university.service.LecturerService;
 @Transactional
 public class LecturerServiceImpl extends AbstractServiceJpa<Lecturer, Long> implements LecturerService {
 
+	private static final String ENTITY_NAME = "Lecturer";
+	
 	private final LecturerRepository dao;
 	
 	public LecturerServiceImpl(LecturerRepository lecturerDao)  {
@@ -24,5 +26,11 @@ public class LecturerServiceImpl extends AbstractServiceJpa<Lecturer, Long> impl
 	@Override
 	public List<Lecturer> findByPositionId(Long positionId) {
 		return dao.findByPositionId(positionId);
+	}
+
+	@Override
+	protected String getEntityName() {
+		
+		return ENTITY_NAME;
 	}
 }
