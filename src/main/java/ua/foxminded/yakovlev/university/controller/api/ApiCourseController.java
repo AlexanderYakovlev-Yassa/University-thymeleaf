@@ -1,14 +1,12 @@
 package ua.foxminded.yakovlev.university.controller.api;
 
 import java.util.List;
-import java.util.Locale;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,17 +22,14 @@ import ua.foxminded.yakovlev.university.dto.CourseDto;
 import ua.foxminded.yakovlev.university.entity.Course;
 import ua.foxminded.yakovlev.university.mapper.CourseMapper;
 import ua.foxminded.yakovlev.university.service.CourseService;
-import ua.foxminded.yakovlev.university.util.ErrorMessageHandler;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/courses")
 public class ApiCourseController {
 	
-	private static final String NOT_FOUND = "api.message.course_not_found";
 	private final CourseService courseService;
 	private final CourseMapper courseMapper;
-	private final ErrorMessageHandler errorMessageHandler;
 	@Qualifier(value="messageSource")
 	private final ResourceBundleMessageSource messageSource;
 	
@@ -45,12 +40,7 @@ public class ApiCourseController {
     }
 	
 	@PostMapping
-    public ResponseEntity<?> create(@Valid@RequestBody CourseDto courseDto,
-    		BindingResult bindingResult) {
-		
-		if (bindingResult.hasErrors()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessageHandler.handle(bindingResult));
-		}
+    public ResponseEntity<?> create(@Valid@RequestBody CourseDto courseDto) {
 		
         Course course = courseService.save(courseMapper.toCourse(courseDto));
         
@@ -61,22 +51,13 @@ public class ApiCourseController {
     public ResponseEntity<?> findById(@PathVariable Long id) {
 
         Course course = courseService.findById(id);
-        
-        if (course == null) {
-        	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageSource.getMessage(NOT_FOUND, null, Locale.getDefault()));
-        }
                
         return ResponseEntity.ok(courseMapper.toCourseDto(course));
     }
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @Valid@RequestBody CourseDto courseDto, 
-    		BindingResult bindingResult) {
-
-		if (bindingResult.hasErrors()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessageHandler.handle(bindingResult));
-		}
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid@RequestBody CourseDto courseDto) {
 		
 		Course course = courseMapper.toCourse(courseDto);
 		course.setId(id);

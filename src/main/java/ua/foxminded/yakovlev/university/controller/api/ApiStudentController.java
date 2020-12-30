@@ -1,14 +1,12 @@
 package ua.foxminded.yakovlev.university.controller.api;
 
 import java.util.List;
-import java.util.Locale;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,17 +22,14 @@ import ua.foxminded.yakovlev.university.dto.StudentDto;
 import ua.foxminded.yakovlev.university.entity.Student;
 import ua.foxminded.yakovlev.university.mapper.StudentMapper;
 import ua.foxminded.yakovlev.university.service.StudentService;
-import ua.foxminded.yakovlev.university.util.ErrorMessageHandler;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/students")
 public class ApiStudentController {
-	
-	private static final String NOT_FOUND = "api.message.student_not_found";
+
 	private final StudentService studentService;
 	private final StudentMapper studentMapper;
-	private final ErrorMessageHandler errorMessageHandler;
 	@Qualifier(value="messageSource")
 	private final ResourceBundleMessageSource messageSource;
 	
@@ -45,12 +40,10 @@ public class ApiStudentController {
     }
 	
 	@PostMapping
-    public ResponseEntity<?> create(@Valid@RequestBody StudentDto studentDto,
-    		BindingResult bindingResult) {
+    public ResponseEntity<?> create(@Valid@RequestBody StudentDto studentDto) {
 		
-		if (bindingResult.hasErrors()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessageHandler.handle(bindingResult));
-		}
+		System.out.println(studentDto);
+		System.out.println(studentMapper.toStudent(studentDto));
 		
         Student student = studentService.save(studentMapper.toStudent(studentDto));
         
@@ -61,22 +54,13 @@ public class ApiStudentController {
     public ResponseEntity<?> findById(@PathVariable Long id) {
 
         Student student = studentService.findById(id);
-        
-        if (student == null) {
-        	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageSource.getMessage(NOT_FOUND, null, Locale.getDefault()));
-        }
                
         return ResponseEntity.ok(studentMapper.toStudentDto(student));
     }
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @Valid@RequestBody StudentDto studentDto, 
-    		BindingResult bindingResult) {
-
-		if (bindingResult.hasErrors()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessageHandler.handle(bindingResult));
-		}
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid@RequestBody StudentDto studentDto) {
 		
         Student student = studentMapper.toStudent(studentDto);
         student.setPersonId(id);
@@ -90,5 +74,10 @@ public class ApiStudentController {
         studentService.delete(id);
         
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-    }	
+    }
+	
+	@GetMapping("/group/{id}")
+    public ResponseEntity<List<StudentDto>> findByGroup(@PathVariable Long id) {		
+        return ResponseEntity.ok(studentMapper.toStudentDtos(studentService.findByGroupId(id)));
+    }
 }

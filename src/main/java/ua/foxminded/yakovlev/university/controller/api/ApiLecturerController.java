@@ -1,7 +1,6 @@
 package ua.foxminded.yakovlev.university.controller.api;
 
 import java.util.List;
-import java.util.Locale;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,17 +23,14 @@ import ua.foxminded.yakovlev.university.dto.LecturerDto;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.mapper.LecturerMapper;
 import ua.foxminded.yakovlev.university.service.LecturerService;
-import ua.foxminded.yakovlev.university.util.ErrorMessageHandler;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/lecturers")
 public class ApiLecturerController {
 	
-	private static final String NOT_FOUND = "api.message.lecturer_not_found";
 	private final LecturerService lecturerService;
 	private final LecturerMapper lecturerMapper;
-	private final ErrorMessageHandler errorMessageHandler;
 	@Qualifier(value="messageSource")
 	private final ResourceBundleMessageSource messageSource;
 	
@@ -45,38 +41,20 @@ public class ApiLecturerController {
     }
 	
 	@PostMapping
-    public ResponseEntity<?> create(@Valid@RequestBody LecturerDto lecturerDto,
-    		BindingResult bindingResult) {
-		
-		if (bindingResult.hasErrors()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessageHandler.handle(bindingResult));
-		}
-		
-        Lecturer lecturer = lecturerService.save(lecturerMapper.toLecturer(lecturerDto));
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(lecturerMapper.toLecturerDto(lecturer));
+    public ResponseEntity<?> create(@Valid@RequestBody LecturerDto lecturerDto) {        
+        return ResponseEntity.status(HttpStatus.CREATED)
+        		.body(lecturerMapper.toLecturerDto(lecturerService.save(lecturerMapper.toLecturer(lecturerDto))));
     }
 	
 	@GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
-
-        Lecturer lecturer = lecturerService.findById(id);
-        
-        if (lecturer == null) {
-        	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageSource.getMessage(NOT_FOUND, null, Locale.getDefault()));
-        }
-               
-        return ResponseEntity.ok(lecturerMapper.toLecturerDto(lecturer));
+    public ResponseEntity<?> findById(@PathVariable Long id) {               
+        return ResponseEntity.ok(lecturerMapper.toLecturerDto(lecturerService.findById(id)));
     }
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @Valid@RequestBody LecturerDto lecturerDto, 
     		BindingResult bindingResult) {
-
-		if (bindingResult.hasErrors()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessageHandler.handle(bindingResult));
-		}
 		
         Lecturer lecturer = lecturerMapper.toLecturer(lecturerDto);
         lecturer.setPersonId(id);
@@ -87,8 +65,14 @@ public class ApiLecturerController {
 	@CrossOrigin(methods = RequestMethod.DELETE)
 	@DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
+		
         lecturerService.delete(id);
         
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-    }	
+    }
+	
+	@GetMapping("/position/{id}")
+    public ResponseEntity<List<LecturerDto>> findByPosition(@PathVariable Long id) {		
+        return ResponseEntity.ok(lecturerMapper.toLecturerDtos(lecturerService.findByPositionId(id)));
+    }
 }
