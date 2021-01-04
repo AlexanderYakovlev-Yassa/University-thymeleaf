@@ -9,6 +9,8 @@ import ua.foxminded.yakovlev.university.service.PositionService;
 @Service
 public class PositionServiceImpl extends AbstractServiceJpa<Position, Long> implements PositionService {
 	
+	private static final String ENTITY_NAME = "Position";
+	
 	private final PositionRepository dao;
 
 	public PositionServiceImpl(PositionRepository positionDao) {
@@ -19,5 +21,11 @@ public class PositionServiceImpl extends AbstractServiceJpa<Position, Long> impl
 	@Override
 	public Position findPositionByName(String positionName) {		
 		return dao.findPositionByName(positionName);
+	}
+
+	@Override
+	protected String getEntityName() {
+		
+		return ENTITY_NAME;
 	}
 }

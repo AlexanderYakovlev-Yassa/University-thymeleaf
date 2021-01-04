@@ -11,6 +11,7 @@ import ua.foxminded.yakovlev.university.service.CourseService;
 @Transactional
 public class CourseServiceImpl extends AbstractServiceJpa<Course, Long> implements CourseService {
 	
+	private static final String ENTITY_NAME = "Course";
 	private final CourseRepository dao;
 
 	public CourseServiceImpl(CourseRepository courseDao) {
@@ -21,5 +22,10 @@ public class CourseServiceImpl extends AbstractServiceJpa<Course, Long> implemen
 	@Override
 	public Course findCourseByName(String courseName) {		
 		return dao.findCourseByName(courseName);
+	}
+
+	@Override
+	protected String getEntityName() {		
+		return ENTITY_NAME;
 	}
 }

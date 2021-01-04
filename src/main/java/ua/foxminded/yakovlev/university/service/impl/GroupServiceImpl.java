@@ -11,6 +11,8 @@ import ua.foxminded.yakovlev.university.service.GroupService;
 @Transactional
 public class GroupServiceImpl extends AbstractServiceJpa<Group, Long> implements GroupService {
 
+	private static final String ENTITY_NAME = "Group";
+	
 	private final GroupRepository dao;
 	
 	public GroupServiceImpl(GroupRepository groupDao) {
@@ -21,5 +23,11 @@ public class GroupServiceImpl extends AbstractServiceJpa<Group, Long> implements
 	@Override
 	public Group findGroupByName(String groupName) {		
 		return dao.findGroupByName(groupName);
+	}
+
+	@Override
+	protected String getEntityName() {
+		
+		return ENTITY_NAME;
 	}
 }
