@@ -40,7 +40,7 @@ public class ApiPositionController {
     }
 	
 	@PostMapping
-    public ResponseEntity<?> create(@Valid@RequestBody PositionDto positionDto) {
+    public ResponseEntity<PositionDto> create(@Valid@RequestBody PositionDto positionDto) {
 		
         Position position = positionService.save(positionMapper.toPosition(positionDto));
         
@@ -48,7 +48,7 @@ public class ApiPositionController {
     }
 	
 	@GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
+    public ResponseEntity<PositionDto> findById(@PathVariable Long id) {
 
         Position position = positionService.findById(id);
                
@@ -57,7 +57,7 @@ public class ApiPositionController {
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @Valid@RequestBody PositionDto positionDto) {
+    public ResponseEntity<PositionDto> update(@PathVariable Long id, @Valid@RequestBody PositionDto positionDto) {
 				
 		Position position = positionMapper.toPosition(positionDto);
 		position.setId(id);

@@ -40,7 +40,7 @@ public class ApiCourseController {
     }
 	
 	@PostMapping
-    public ResponseEntity<?> create(@Valid@RequestBody CourseDto courseDto) {
+    public ResponseEntity<CourseDto> create(@Valid@RequestBody CourseDto courseDto) {
 		
         Course course = courseService.save(courseMapper.toCourse(courseDto));
         
@@ -48,7 +48,7 @@ public class ApiCourseController {
     }
 	
 	@GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
+    public ResponseEntity<CourseDto> findById(@PathVariable Long id) {
 
         Course course = courseService.findById(id);
                
@@ -57,7 +57,7 @@ public class ApiCourseController {
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @Valid@RequestBody CourseDto courseDto) {
+    public ResponseEntity<CourseDto> update(@PathVariable Long id, @Valid@RequestBody CourseDto courseDto) {
 		
 		Course course = courseMapper.toCourse(courseDto);
 		course.setId(id);
