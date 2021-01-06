@@ -22,6 +22,7 @@ import ua.foxminded.yakovlev.university.dto.GroupDto;
 import ua.foxminded.yakovlev.university.dto.StudentDto;
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.mapper.GroupMapper;
+import ua.foxminded.yakovlev.university.mapper.StudentMapper;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.service.StudentService;
 
@@ -33,6 +34,7 @@ public class ApiGroupController {
 	private final GroupService groupService;
 	private final StudentService studentService;
 	private final GroupMapper groupMapper;
+	private final StudentMapper studentMapper;
 	@Qualifier(value="messageSource")
 	private final ResourceBundleMessageSource messageSource;
 	
@@ -43,7 +45,7 @@ public class ApiGroupController {
     }
 	
 	@PostMapping
-    public ResponseEntity<?> create(@Valid@RequestBody GroupDto groupDto) {
+    public ResponseEntity<GroupDto> create(@Valid@RequestBody GroupDto groupDto) {
 		
         Group group = groupService.save(groupMapper.toGroup(groupDto));
         
@@ -51,7 +53,7 @@ public class ApiGroupController {
     }
 	
 	@GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
+    public ResponseEntity<GroupDto> findById(@PathVariable Long id) {
 
         Group group = groupService.findById(id);
                
@@ -79,21 +81,21 @@ public class ApiGroupController {
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}/add-student")
-    public ResponseEntity<?> addStudent(@PathVariable Long id, @RequestBody StudentDto studentDto) {
+    public ResponseEntity<List<StudentDto>> addStudent(@PathVariable Long id, @RequestBody StudentDto studentDto) {
 		
 		Long studentId = studentDto.getPersonId();
 		studentService.addGroup(studentId, id);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(studentService.findByGroupId(id));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(studentMapper.toStudentDtos(studentService.findByGroupId(id)));
     }
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}/remove-student")
-    public ResponseEntity<?> removeStudent(@PathVariable Long id, @RequestBody StudentDto studentDto) {
+    public ResponseEntity<List<StudentDto>> removeStudent(@PathVariable Long id, @RequestBody StudentDto studentDto) {
 		
 		Long studentId = studentDto.getPersonId();
 		studentService.removeGroup(studentId, id);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(studentService.findByGroupId(id));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(studentMapper.toStudentDtos(studentService.findByGroupId(id)));
     }
 }

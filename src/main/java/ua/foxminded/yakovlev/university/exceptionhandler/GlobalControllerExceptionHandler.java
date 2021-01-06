@@ -17,9 +17,10 @@ import java.lang.IllegalArgumentException;
 @ControllerAdvice
 class GlobalControllerExceptionHandler {
     
+	@ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
     @ResponseBody
-    public ExceptionInfo handleNotFound(HttpServletRequest req, NotFoundException exception) {    	    	
+    public ExceptionInfo handleNotFound(HttpServletRequest req, NotFoundException exception) {    	
 		return new ExceptionInfo(req.getRequestURI(), exception.getMessage());
     }
     
@@ -30,6 +31,7 @@ class GlobalControllerExceptionHandler {
 		return new ExceptionInfo(req.getRequestURI(), exception.getMessage());
     }
     
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
     public ExceptionInfo handleMethodArgumentNotValid(HttpServletRequest req, MethodArgumentNotValidException exception) {
@@ -42,6 +44,7 @@ class GlobalControllerExceptionHandler {
             return new ExceptionInfo(req.getRequestURI(), errorsMessage);
     }
     
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseBody
     public ExceptionInfo MethodArgumentTypeMismatchException(HttpServletRequest req, MethodArgumentTypeMismatchException exception) {

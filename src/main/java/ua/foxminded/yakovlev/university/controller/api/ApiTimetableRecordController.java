@@ -42,19 +42,19 @@ public class ApiTimetableRecordController {
     }
 	
 	@PostMapping
-    public ResponseEntity<?> create(@Valid@RequestBody TimetableRecordDto timetableRecordDto) {        
+    public ResponseEntity<TimetableRecordDto> create(@Valid@RequestBody TimetableRecordDto timetableRecordDto) {        
         return ResponseEntity.status(HttpStatus.CREATED).body(timetableRecordMapper
         		.toTimetableRecordDto(timetableRecordService.save(timetableRecordMapper.toTimetableRecord(timetableRecordDto))));
     }
 	
 	@GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {               
+    public ResponseEntity<TimetableRecordDto> findById(@PathVariable Long id) {               
         return ResponseEntity.ok(timetableRecordMapper.toTimetableRecordDto(timetableRecordService.findById(id)));
     }
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @Valid@RequestBody TimetableRecordDto timetableRecordDto) {
+    public ResponseEntity<TimetableRecordDto> update(@PathVariable Long id, @Valid@RequestBody TimetableRecordDto timetableRecordDto) {
 		
         TimetableRecord timetableRecord = timetableRecordMapper.toTimetableRecord(timetableRecordDto);
         timetableRecord.setId(id);

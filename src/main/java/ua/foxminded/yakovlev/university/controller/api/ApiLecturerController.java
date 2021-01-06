@@ -41,19 +41,19 @@ public class ApiLecturerController {
     }
 	
 	@PostMapping
-    public ResponseEntity<?> create(@Valid@RequestBody LecturerDto lecturerDto) {        
+    public ResponseEntity<LecturerDto> create(@Valid@RequestBody LecturerDto lecturerDto) {        
         return ResponseEntity.status(HttpStatus.CREATED)
         		.body(lecturerMapper.toLecturerDto(lecturerService.save(lecturerMapper.toLecturer(lecturerDto))));
     }
 	
 	@GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {               
+    public ResponseEntity<LecturerDto> findById(@PathVariable Long id) {               
         return ResponseEntity.ok(lecturerMapper.toLecturerDto(lecturerService.findById(id)));
     }
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @Valid@RequestBody LecturerDto lecturerDto, 
+    public ResponseEntity<LecturerDto> update(@PathVariable Long id, @Valid@RequestBody LecturerDto lecturerDto, 
     		BindingResult bindingResult) {
 		
         Lecturer lecturer = lecturerMapper.toLecturer(lecturerDto);

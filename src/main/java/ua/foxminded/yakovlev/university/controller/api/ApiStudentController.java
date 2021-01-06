@@ -40,7 +40,7 @@ public class ApiStudentController {
     }
 	
 	@PostMapping
-    public ResponseEntity<?> create(@Valid@RequestBody StudentDto studentDto) {
+    public ResponseEntity<StudentDto> create(@Valid@RequestBody StudentDto studentDto) {
 		
 		System.out.println(studentDto);
 		System.out.println(studentMapper.toStudent(studentDto));
@@ -51,7 +51,7 @@ public class ApiStudentController {
     }
 	
 	@GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id) {
+    public ResponseEntity<StudentDto> findById(@PathVariable Long id) {
 
         Student student = studentService.findById(id);
                
@@ -60,7 +60,7 @@ public class ApiStudentController {
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @Valid@RequestBody StudentDto studentDto) {
+    public ResponseEntity<StudentDto> update(@PathVariable Long id, @Valid@RequestBody StudentDto studentDto) {
 		
         Student student = studentMapper.toStudent(studentDto);
         student.setPersonId(id);
