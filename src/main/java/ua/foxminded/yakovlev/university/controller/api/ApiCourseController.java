@@ -25,7 +25,7 @@ import ua.foxminded.yakovlev.university.service.CourseService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/courses")
+@RequestMapping(value="/api/courses", produces = "application/json")
 public class ApiCourseController {
 	
 	private final CourseService courseService;
@@ -62,7 +62,7 @@ public class ApiCourseController {
 		Course course = courseMapper.toCourse(courseDto);
 		course.setId(id);
 		
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(courseMapper.toCourseDto(courseService.save(course)));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(courseMapper.toCourseDto(courseService.update(course)));
     }
 
 	@CrossOrigin(methods = RequestMethod.DELETE)
