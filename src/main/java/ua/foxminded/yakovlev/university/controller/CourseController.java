@@ -21,7 +21,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import lombok.RequiredArgsConstructor;
 import ua.foxminded.yakovlev.university.entity.Course;
 import ua.foxminded.yakovlev.university.service.CourseService;
-import ua.foxminded.yakovlev.university.validator.CourseValidator;
 
 @Controller
 @RequiredArgsConstructor
@@ -29,19 +28,13 @@ import ua.foxminded.yakovlev.university.validator.CourseValidator;
 public class CourseController {
 	
 	private final CourseService courseService;
-	private final CourseValidator courseValidator;
 	@Qualifier(value="messageSource")
 	private final ResourceBundleMessageSource messageSource;
 	
 	@GetMapping()
-    public String show(
-			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
-			@RequestParam(name = "editingCourseId", required = false) Course editingCourse,
-			Model model) {
+    public String show(Model model) {
 
 		model.addAttribute("courses", courseService.findAll());
-		model.addAttribute("errorMessageList", errorMessageList);
-		model.addAttribute("editingCourse", editingCourse);
 		
         return "courses/show-courses";
     }
@@ -84,7 +77,7 @@ public class CourseController {
 			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
     		@RequestParam(name = "id") Long id,
     		Model model
-    		) {		
+    		) {
 		
 		model.addAttribute("course", courseService.findById(id));
 		model.addAttribute("errorMessageList", errorMessageList);
@@ -93,7 +86,7 @@ public class CourseController {
 	}
 	
 	@PostMapping("/edit")
-	public String showEdit(
+	public String update(
 			RedirectAttributes redirectAttributes,
 			@Valid@ModelAttribute("course") Course course,
     		BindingResult bindingResult) {
@@ -116,7 +109,8 @@ public class CourseController {
 	}	
 	
 	@PostMapping("/delete")
-    public String delete(@RequestParam(name = "id") long id) {
+    public String delete(@RequestParam(name = "id") Long id) {
+		
         courseService.delete(id);
         return "redirect:/courses";
     }
