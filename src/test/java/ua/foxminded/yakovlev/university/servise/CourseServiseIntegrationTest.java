@@ -1,5 +1,6 @@
 package ua.foxminded.yakovlev.university.servise;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.*;
@@ -69,16 +70,17 @@ class CourseServiseIntegrationTest {
     
 	@Test
 	void updateShouldSholdReturnUpdatedCourseWhecSuchOneExists() {
+		when(repository.existsById(course.getId())).thenReturn(true);
 		when(repository.saveAndFlush(course)).thenReturn(course);		
 		assertEquals(servise.update(course), course);		
 		verify(repository).saveAndFlush(course);
 	}
     
 	@Test
-	void updateShouldThrowNotFoundExceptionWhenSuchCourseDoesNotExist() {	
-		when(repository.saveAndFlush(course)).thenThrow(NotFoundException.class);
-		assertThrows(NotFoundException.class, () -> servise.update(course));
-		verify(repository).saveAndFlush(course);
+	void updateShouldThrowNotFoundExceptionWhenSuchCourseDoesNotExist() {
+		when(repository.existsById(course.getId())).thenReturn(false);
+		assertThrows(NotFoundException.class, () -> servise.update(course));		
+		verify(repository, never()).saveAndFlush(course);
 	}
 	
 	@Test
