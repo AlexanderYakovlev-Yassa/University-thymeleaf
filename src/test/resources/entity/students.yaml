@@ -1,0 +1,30 @@
+- personId: 1
+  firstName: "Иван"
+  lastName: "Иванов"
+  group: 
+    id: 1
+    name: "aa-01"
+- personId: 2
+  firstName: "Петр"
+  lastName: "Петров"
+  group: 
+    id: 1
+    name: "aa-01"
+- personId: 3
+  firstName: "Сидор"
+  lastName: "Сидоров"
+  group: 
+    id: 1
+    name: "aa-01"
+- personId: 4
+  firstName: "Егор"
+  lastName: "Федотов"
+  group: 
+    id: 2
+    name: "aa-02"
+- personId: 5
+  firstName: "Максим"
+  lastName: "Конев"
+  group: 
+    id: 2
+    name: "aa-02"
