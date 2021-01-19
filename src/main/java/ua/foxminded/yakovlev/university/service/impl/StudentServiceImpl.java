@@ -69,4 +69,9 @@ public class StudentServiceImpl extends AbstractServiceJpa<Student, Long> implem
 	protected String getEntityName() {		
 		return ENTITY_NAME;
 	}
+
+	@Override
+	protected Long getIdentifire(Student student) {
+		return student.getPersonId();
+	}
 }

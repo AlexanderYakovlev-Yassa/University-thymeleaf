@@ -42,4 +42,9 @@ public class TimetableRecordServiceImpl extends AbstractServiceJpa<TimetableReco
 		
 		return ENTITY_NAME;
 	}
+
+	@Override
+	protected Long getIdentifire(TimetableRecord record) {
+		return record.getId();
+	}
 }

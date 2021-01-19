@@ -28,4 +28,9 @@ public class PositionServiceImpl extends AbstractServiceJpa<Position, Long> impl
 		
 		return ENTITY_NAME;
 	}
+
+	@Override
+	protected Long getIdentifire(Position position) {
+		return position.getId();
+	}
 }

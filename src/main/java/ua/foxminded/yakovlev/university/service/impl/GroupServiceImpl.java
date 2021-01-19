@@ -30,4 +30,9 @@ public class GroupServiceImpl extends AbstractServiceJpa<Group, Long> implements
 		
 		return ENTITY_NAME;
 	}
+
+	@Override
+	protected Long getIdentifire(Group group) {
+		return group.getId();
+	}
 }
