@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,13 +52,12 @@ public class ApiLecturerController {
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
-    public ResponseEntity<LecturerDto> update(@PathVariable Long id, @Valid@RequestBody LecturerDto lecturerDto, 
-    		BindingResult bindingResult) {
+    public ResponseEntity<LecturerDto> update(@PathVariable Long id, @Valid@RequestBody LecturerDto lecturerDto) {
 		
         Lecturer lecturer = lecturerMapper.toLecturer(lecturerDto);
         lecturer.setPersonId(id);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(lecturerMapper.toLecturerDto(lecturerService.save(lecturer)));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(lecturerMapper.toLecturerDto(lecturerService.update(lecturer)));
     }
 
 	@CrossOrigin(methods = RequestMethod.DELETE)
