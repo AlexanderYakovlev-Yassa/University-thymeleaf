@@ -11,7 +11,6 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,11 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import lombok.RequiredArgsConstructor;
-import ua.foxminded.yakovlev.university.entity.Course;
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.service.StudentService;
-import ua.foxminded.yakovlev.university.validator.GroupValidator;
 
 @Controller
 @RequiredArgsConstructor
@@ -33,7 +30,6 @@ public class GroupController {
 	
 	private final GroupService groupService;
 	private final StudentService studentService;
-	private final GroupValidator groupValidator;
 	@Qualifier(value="messageSource")
 	private final ResourceBundleMessageSource messageSource;
 	
@@ -141,11 +137,11 @@ public class GroupController {
 	
 	@PostMapping("/remove-student")
     public String removeStudent (RedirectAttributes redirectAttributes,
-    		@RequestParam(name = "groupId") Long groupID,
+    		@RequestParam(name = "groupId") Long groupId,
     		@RequestParam(name = "studentId") Long studentId) {
 		
-		studentService.removeGroup(studentId);
-		redirectAttributes.addAttribute("group-id", groupID);
+		studentService.removeGroup(studentId, groupId);
+		redirectAttributes.addAttribute("group-id", groupId);
 		
 		return "redirect:/groups/manage";
 	}

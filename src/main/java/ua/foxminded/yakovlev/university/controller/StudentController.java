@@ -11,7 +11,6 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +23,6 @@ import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.Student;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.service.StudentService;
-import ua.foxminded.yakovlev.university.validator.StudentValidator;
 
 @Controller
 @RequiredArgsConstructor
