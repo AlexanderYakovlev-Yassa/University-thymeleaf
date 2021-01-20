@@ -57,24 +57,30 @@
       						<th scope="col">Вемя</th>
       						<th scope="col">Курс</th>
       						<th scope="col">Преподаватель</th>
+      						<th scope="col">Группы</th>
     					</tr>
   					</thead>
   					<tbody id="timetable">
   						<div th:each="timetableRecord : ${timetableRecords}">
                 			<tr>
                 				<td>
-    								<input type="hidden" th:value="${timetableRecord.getId()}" />
-    								<input type="hidden" th:value="${timetableRecord.getDate()}" />
+    								<input type="hidden" th:value="${timetableRecord.id}" />
+    								<input type="hidden" th:value="${timetableRecord.date}" />
                 					<a href="#">date</a>
                 				</td>
                 				<td>
                 					<a href="#">time</a>
                 				</td>
                 				<td>
-                					<a href="#" th:text="${timetableRecord.getCourse().getName()}">course</a>
+                					<a href="#" th:text="${timetableRecord.course.name}">course</a>
                 				</td>
                 				<td>
-                					<a href="#" th:text="${timetableRecord.getLecturer().getPosition().getName() + ' - ' + timetableRecord.getLecturer().getFirstName() + ' ' + timetableRecord.getLecturer().getLastName()}">lecturer</a>
+                					<a href="#" th:text="${timetableRecord.lecturer.firstName} + ' ' + ${timetableRecord.lecturer.lastName}">lecturer</a>
+                				</td>
+                				<td>
+                					<span th:each="group : ${timetableRecord.groupList}">
+                						<a href="#" th:text="${group.name}">groups</a><span> </span>
+                					</span>                					
                 				</td>
                 			</tr>
   						</div>
@@ -90,7 +96,7 @@
 			<div class="col-12 d-flex">
 				<div>
 					<form method="GET" action="timetable/detail">
-						<input type="hidden" id="to-be-detailed-record-id" name="record-id"/>
+						<input type="hidden" id="to-be-detailed-record-id" name="recordId"/>
 						<input onclick="submitForm(this, 'to-be-detailed-record-id')" class="btn btn-outline-primary" value="Смотреть подробно"/>
 					</form>
 				</div>
@@ -99,7 +105,7 @@
 				</div>
 				<div>
 					<form method="GET" action="timetable/edit">
-						<input type="hidden" id="to-be-edited-record-id" name="record-id"/>
+						<input type="hidden" id="to-be-edited-record-id" name="recordId"/>
 						<input onclick="submitForm(this, 'to-be-edited-record-id')" class="btn btn-outline-primary" value="Редактировать"/>
 					</form>
 				</div>		

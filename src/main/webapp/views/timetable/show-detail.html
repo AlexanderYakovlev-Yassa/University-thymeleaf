@@ -23,7 +23,8 @@
 		<div class="row pt-3">
 			<div class="col-12">
 				<span class="text-primary">Начало занятия:   </span>
-				<span class="text-primary font-bold" id="date-time" th:text="${timetableRecord.getDate()}"></span>
+				<span class="text-primary font-bold" id="date-time-presentation"></span>
+				<input type="hidden" id="date-time" th:value="${timetableRecord.date}" />
 			</div>
 		</div>
 		<div class="row pt-3">
@@ -63,18 +64,19 @@
     <div class="container">        		
 		<div class="row">
 			<div class="col-12 ">
-				<a href="javascript:history.back()" class="btn btn-outline-primary">Назад</a>	
+				<a href="javascript:history.back()" class="btn btn-outline-primary">Назад</a>
 			</div>
 		</div>
     </div>
     <hr/>
 
 <script src="../resources/js/main.js"></script>
-<script>
-	document.getElementById("date-time").innerText = 'date-time' //parseDateTime(document.getElementById("date-time").innerText);
-</script>
 <script src="../resources/js/jquery.js"></script>
 <script src="../resources/js/bootstrap.bundle.min.js"></script>
+<script>
+	let date = new Date(document.getElementById("date-time").value);
+	document.getElementById("date-time-presentation").innerText = getDate(date) + ' ' + getTime(date);
+</script>
 </body>
 
 </html>

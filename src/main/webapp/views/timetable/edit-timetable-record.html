@@ -12,136 +12,168 @@
 <body>
 
 	<div th:include="~{header :: header}"></div>
+	<div th:include="~{error-modal :: error-modal}"></div>
 
-    <!-- Timetable -->
-    <div class="container">
-    	<div class="row">
-			<div class="col-12">
-				<h4 class="text-primary">Редактироваие учебного занятия</h4>
+   <!-- TimetableRecord -->
+	<form method="POST" action="new" id="new-record-form" th:object="${newRecord}">
+	
+	    <div class="container">
+	    
+	    	<div class="row">
+				<div class="col-12">
+					<h4 class="text-primary">Редактирование существующего занятия в рассписании</h4>
+				</div>
+			</div>		
+			
+			<!-- Date time -->
+			<div class="row pt-3">
+				<div class="col-4">
+					<label for="date-picker" class="text text-primary">Дата</label><br/>
+					<input type="datetime-local" class="text text-primary" id="date-picker" onchange="toTimeInput()"/>
+				</div>
+				<input id="date" class="form-control" th:field="*{date}"/>
 			</div>
-		</div>
-		<div class="row pt-3">
-			<input type="hidden" id="old-date" th:value="${timetableRecord.getDate()}"/>			
-			<div class="col-4">
-				<label for="date" class="text text-primary">Дата</label><br/>
-				<input type="date" class="text text-primary" id="date-picker" onchange="setDate(this)"/>
-			</div>
-			<div class="col-4">
-				<label for="time" class="text text-primary">Время</label><br/>
-				<input type="time" class="text text-primary" id="time-picker" onchange="setTime(this)"/>
-			</div>
-		</div>
-        <div class="row  pt-3">
-            <div class="col-12">
-            <div class="d-flex flex-column">
-            	<label class="text text-primary">Учебный курс</label>
-            	<div class="input-group">
-                    <input type="text" class="form-control" aria-label="Text input with dropdown button" id="course-name" 
-                    	th:value="${timetableRecord.getCourse().getName()}" readonly>
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор учебного курса</button>
-                        <div class="dropdown-menu">
-                        	<div th:each="course : ${courses}">
-                        		<div onclick="selectCourse(this)">
-                        			<input type="hidden" th:value="${course.getId()}"/>
-                        			<input type="hidden" th:value="${course.getDescription()}"/>
-                                	<a class="dropdown-item" href="#" th:text="${course.getName()}">course</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-               	</div>
-            	<label class="text text-primary">Описание учебного курса</label>
-               	<textarea rows="2" cols="auto" id="course-description" 
-               		th:text="${timetableRecord.getCourse().getDescription()}" readonly></textarea><br/>
-            	<label class="text text-primary">Преподаватель</label>
-            	<div class="input-group">
-                    <input type="text" class="form-control" aria-label="Text input with dropdown button" id="lecturer" 
-                    	th:value="${timetableRecord.getLecturer().getPosition().getName() + ' - ' + timetableRecord.getLecturer().getFirstName() + ' ' + timetableRecord.getLecturer().getLastName()}" readonly>
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор преподавателя</button>
-                        <div class="dropdown-menu">
-                        	<div th:each="lecturer : ${lecturers}">
-                        		<div onclick="selectLecturer(this)">
-                        			<input type="hidden" th:value="${lecturer.getPersonId()}"/>
-                                	<a class="dropdown-item" href="#" th:text="${lecturer.getPosition().getName() + ' - ' + lecturer.getFirstName() + ' ' + lecturer.getLastName()}">lecturer</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-               	</div>
-               	<br/>
-            	<label class="text text-primary">Группы</label>
-            	<div>
-            		<table class="table table-hover table-striped table-bordered table-sm">
-	            		<thead>
-	    					<tr>
-	      						<th scope="col">Наименование группы</th>
-	    					</tr>
-	  					</thead>
-	  					<tbody id="table-of-grops">
-                			<div th:each="group : ${timetableRecord.getGroupList()}">
-                				<tr onclick="removeGroup(this)" >
-                					<td>
-                						<input type='hidden' th:value="${group.getId()}"/>
-                						<p th:text="${group.getName()}">group</p>
-                					</td>
-                				</tr>
-                			</div>
-	                		<tr>		                			
-	                			<td>
-	                				<div class="dropdown">
- 											<button class="btn btn-link" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-   											...добавить группу
- 											</button>
-									  	<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-										    <div th:each="group : ${groups}">
-										    	<div>
-											    	<input type="hidden" th:value="${group.getId()}"/>
-											    	<a class="dropdown-item" href="#" th:text="${group.getName()}" onclick="addGroup(this)">group</a>
-										    	</div>
-										    </div>
-									  	</div>
-									</div>
-	                			</td>
-	                		</tr>                			
-	                	</tbody>
-                	</table>
-                </div>
-            </div>
-            </div>
-        </div>
-    </div>
+			
+			<!-- Course -->
+	        <div class="row  pt-3">
+	            <div class="col-12">
+		            <div class="d-flex flex-column">
+		            	<label class="text text-primary">Учебный курс</label>
+		            	<div class="input-group">
+		                    <input type="text" class="form-control" aria-label="Text input with dropdown button" id="course-name" th:value="${newRecord.course.name}" readonly>
+		                    <div class="input-group-append">
+		                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор учебного курса</button>
+		                        <div class="dropdown-menu">
+		                        	<div th:each="course : ${courses}">
+		                        		<div onclick="selectCourse(this)">
+		                        			<input type="hidden" th:value="${course.id}"/>
+		                        			<input type="hidden" th:value="${course.description}"/>
+		                                	<a class="dropdown-item" href="#" th:text="${course.name}">course</a>
+		                                </div>
+		                            </div>
+		                        </div>
+		                    </div>
+		               	</div>
+		               	<input type="hidden" id="field-course-id" th:field="*{course.id}"/>
+		            	<label class="text text-primary">Описание учебного курса</label>
+		               	<textarea rows="2" cols="auto" id="course-description" th:text="${newRecord.course.description}" readonly></textarea><br/>
+	               	</div>
+	             	</div>
+	          	</div>
+	               	
+	        <!-- Lecturer -->       	
+	          	<div class="row  pt-3">
+		            <div class="col-12">
+		            	<div class="d-flex flex-column">
+		            	<label class="text text-primary">Преподаватель</label>
+		            	<div class="input-group">
+		                    <input type="text" class="form-control" aria-label="Text input with dropdown button" id="lecturer" 
+			                    th:value="
+			                    ${newRecord.lecturer.firstName} ? ${newRecord.lecturer.firstName} + ' ' + ${newRecord.lecturer.lastName} : ''
+			                    " readonly>
+		                    <div class="input-group-append">
+		                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Выбор преподавателя</button>
+		                        <div class="dropdown-menu">
+		                        	<div th:each="lecturer : ${lecturers}">
+		                        		<div onclick="selectLecturer(this)">
+		                        			<input type="hidden" th:value="${lecturer.personId}"/>                   			
+		                                	<a class="dropdown-item" href="#" th:text="${lecturer.getPosition().getName() + ' - ' + lecturer.getFirstName() + ' ' + lecturer.getLastName()}">lecturer</a>
+		                                </div>
+		                            </div>
+		                        </div>
+		                    </div>
+		               	</div>     	
+	           			<input type="hidden" id="field-lecturer-id" th:field="*{lecturer.personId}"/>
+		               	</div>
+	              	</div>
+	          	</div>	               	
+	               	
+	        <!-- Group -->       	
+	          	<div class="row  pt-3">
+	            <div class="col-12">
+	            	<div class="d-flex flex-column">
+		            	<label class="text text-primary">Группы</label>
+	            	
+						<div class="dropdown show">
+							<a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							   Выбрать группу
+							</a>
+						
+							<div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+								<div th:each="group : ${groups}">								    	
+							    	<input type="hidden" th:value="${group.id}"/>								    	
+							    	<a class="list-group-item list-group-item-action" href="#" th:text="${group.getName()}" onclick="addGroup(this)">group</a>								    								    	
+						    	</div>
+							</div>
+						</div>
+	            	
+		            	<div class="pt-3">
+		            		<table class="table table-hover table-striped table-bordered table-sm">
+			            		<thead>
+			    					<tr>
+			      						<th scope="col">Наименование группы</th>
+			    					</tr>
+			  					</thead>
+			  					<tbody id="table-of-grops">	    
+			  						<tr onclick="removeGroup(this)" th:each="group : ${newRecord.groupList}">
+			  							<td><input type='hidden' th:value="${group.id}"></input><p th:text="${group.name}"></p></td>
+			  						</tr>         			
+			                	</tbody>
+		                	</table>
+		                	<input type="hidden" id="groups-id" name="groupsId" th:value="${groupsId}"/>
+		                </div>
+	            	</div>
+	            </div>
+	        </div>	        
+	    </div>
+    </form>
     <div class="container">        		
 		<div class="row pt-3">
 			<div class="col-12 d-flex">
-				<form method="POST" action="edit">
-					<input type="hidden" id="record-id" name="record-id" th:value="${timetableRecord.getId()}"/>
-					<input type="hidden" id="date" name="date"/>
-					<input type="hidden" id="lecturer-id" name="lecturer-id" th:value="${timetableRecord.getLecturer().getPersonId()}"/>
-					<input type="hidden" id="course-id" name="course-id" th:value="${timetableRecord.getCourse().getId()}"/>
-					<input type="hidden" id="groups-id" name="groups-id"/>
-					<a href="#" class="btn btn-outline-primary" onclick="submitForm(this)">Изменить</a>
-				</form>
-				<a href="/university/timetable" class="btn btn-outline-primary">Назад</a>			
+				<a href="#" class="btn btn-outline-primary" onclick="submitNewRecordForm()">Сохранить</a>
+				<a href="/university/timetable" class="btn btn-outline-primary">Назад</a>
 			</div>
 		</div>
     </div>
-    <hr/>
-    
+    <hr/>    
+
+<script src="../resources/js/main.js"></script>
+<script src="../resources/js/jquery.js"></script>
+<script src="../resources/js/bootstrap.bundle.min.js"></script>
 <script>
 	
 initPage();
+
+	function submitNewRecordForm() {
+		
+		console.log("pre");
+		document.getElementById("new-record-form").submit();
+		
+	}
+	
+	function checkFieldsToBeSubmitted() {
+		
+		if (document.getElementById("date").value == ""
+				| document.getElementById("lecturer-id").value == ""
+				| document.getElementById("course-id").value == ""
+				| document.getElementById("groups-id").value == "") {
+			
+			alert("Все поля должны быть заполнены!");
+			return false;
+		}
+		
+		return true;
+	}
 	
 	function selectLecturer(element) {		
 		document.getElementById("lecturer").value = element.getElementsByTagName("a")[0].innerText;
-		document.getElementById("lecturer-id").value = element.getElementsByTagName("input")[0].value;
+		document.getElementById("field-lecturer-id").value = element.getElementsByTagName("input")[0].value;
 	}
 	
 	function selectCourse(element) {		
 		document.getElementById("course-name").value = element.getElementsByTagName("a")[0].innerText;
 		document.getElementById("course-description").innerText = element.getElementsByTagName("input")[1].value;
-		document.getElementById("course-id").value = element.getElementsByTagName("input")[0].value;
+		document.getElementById("field-course-id").value = element.getElementsByTagName("input")[0].value;
 	}
 	
 	function addGroup(element) {
@@ -162,17 +194,17 @@ initPage();
 		let additionHTML = "<tr onclick='removeGroup(this)' ><td><input type='hidden' value='" + groupId + "'></input><p>" + groupName + "</p></td></tr>";
 		table.innerHTML = additionHTML + previousHTML;
 		
-		setGroupListForSubmit();
+		refresh();
 	}
 	
-	function setGroupListForSubmit() {
+	function refresh() {
 		
 		let table = document.getElementById("table-of-grops");
 		let elementGroupsForSubmit = document.getElementById("groups-id");
 		let groupsIdText = "";
 		let rows = table.getElementsByTagName("tr");
 		
-		for (let i = 0; i < rows.length - 1; i++) {
+		for (let i = 0; i < rows.length; i++) {
 			groupsIdText = groupsIdText + rows[i].getElementsByTagName("input")[0].value + ",";
 		}
 		
@@ -185,19 +217,20 @@ initPage();
 		
 		if (confirm("Вы действительно хотите удалить группу " + groupName + "?")) {			
 			element.parentNode.removeChild(element);
-			setGroupListForSubmit();
+			refresh();
 		}
 	}
-	
+	/*
 	function setDateTime(dateTime) {
 		let dateElement = document.getElementById("date");
 		let dateeTimeString = dateTime.toISOString();
 		dateElement.value = dateeTimeString.slice(0, dateeTimeString.length - 1);
 	}
 	
-	function setDate(element) {
+	function setDate() {
 		
 		let dateElement = document.getElementById("date");
+		let element = document.getElementById("date-picker");
 		
 		let recordDate = new Date(dateElement.value);
 		let newDate = new Date(element.value);
@@ -209,9 +242,10 @@ initPage();
 		setDateTime(recordDate);
 	}
 	
-	function setTime(element) {
+	function setTime() {
 		
-		let dateElement = document.getElementById("date");		
+		let element = document.getElementById("time-picker");
+		let dateElement = document.getElementById("date");
 		let recordDate = new Date(dateElement.value);		
 		let newTimeParts = element.value.split(":");
 				
@@ -220,43 +254,34 @@ initPage();
 		
 		setDateTime(recordDate);
 	}
-	
-	function submitForm(element) {
-		if (checkFieldsToBeSubmitted()) {
-			element.parentNode.submit();
-		}
+	*/
+	function toDateTimePicker() {	
+		
+		let date = new Date();
+        let srcDate = new Date(document.getElementById("date").value);
+        let offset = date.getTimezoneOffset() * 60000 * (-1);
+        let target = new Date(srcDate.getTime() + offset);
+        
+		document.getElementById("date-picker").value = target.toISOString().slice(0, -8);
 	}
 	
-	function checkFieldsToBeSubmitted() {
+	function toTimeInput() {
 		
-		if (document.getElementById("record-id").value == ""
-				| document.getElementById("date").value == ""
-				| document.getElementById("lecturer-id").value == ""
-				| document.getElementById("course-id").value == ""
-				| document.getElementById("groups-id").value == "") {
-			alert("Все поля должны быть заполнены!");
-			
-			return false;
-		}
-		
-		return true;
+		let date = new Date(document.getElementById("date-picker").value);
+        let offset = date.getTimezoneOffset() * 60000 * (-1);
+        date = new Date(date.getTime() + offset);
+        document.getElementById("date").value = date.toISOString().slice(0, -5);
 	}
 	
 	function initPage() {
-		let oldDate = new Date(document.getElementById("old-date").value);
-		oldDate.setUTCHours(oldDate.getHours());
 		
-		setDateTime(oldDate);
-		document.getElementById("date-picker").value = oldDate.toISOString().split("T")[0];
-		let currentTimeElements = oldDate.toISOString().split("T")[1].split(":");
-		document.getElementById("time-picker").value = currentTimeElements[0] + ":" + currentTimeElements[1] + ":00.000";
+		if (document.getElementById("error-message").children.length != 0) {
+			$("#error-message-modal").modal('show');
+		}
 		
-		setGroupListForSubmit();
+		toDateTimePicker();
 	}
 </script>
-<script src="../resources/js/main.js"></script>
-<script src="../resources/js/jquery.js"></script>
-<script src="../resources/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
