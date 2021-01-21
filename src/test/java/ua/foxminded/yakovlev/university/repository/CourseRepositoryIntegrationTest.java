@@ -4,14 +4,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.jdbc.Sql;
+
 import ua.foxminded.yakovlev.university.entity.Course;
 import ua.foxminded.yakovlev.university.util.CourseGenerator;
-import ua.foxminded.yakovlev.university.util.PersistedEntityCache;
 
 @DataJpaTest
 class CourseRepositoryIntegrationTest {
@@ -23,23 +23,16 @@ class CourseRepositoryIntegrationTest {
 	
     @Autowired
     protected CourseRepository repository;
-
-    List<Course> courseList;
-    
-    @BeforeEach
-    void init() {
-    	PersistedEntityCache cache = new PersistedEntityCache(testEntityManager);
-    	courseList = COURSE_GENERATOR.getCourseList();
-    	cache.persistCourseList(courseList);
-    }
-    
+        
     @Test
-    void findCourseByNameShoudReturnCourseIfOneExists() {    	
-    	String expectedName = courseList.get(0).getName();  	
+    @Sql("createCourses.sql")
+    void findCourseByNameShoudReturnCourseIfOneExists() {	
+    	String expectedName = repository.findAll().get(0).getName();
     	assertEquals(expectedName, repository.findCourseByName(expectedName).getName());
     }
     
     @Test
+    @Sql("createCourses.sql")
     void findCourseByNameShoudReturnNullIfOneDoesNotExist() {    	
     	String courseName = "Such name doesn't exist";   	    	
     	Course course = repository.findCourseByName(courseName);    	
@@ -47,13 +40,15 @@ class CourseRepositoryIntegrationTest {
     }
     
     @Test
+    @Sql("createCourses.sql")
     void findByIdShoudReturnOptionalCourseIfOneExists() {
-    	Long id = courseList.get(1).getId();	
-    	String expectedName = courseList.get(1).getName();
+    	Long id = repository.findAll().get(1).getId();	
+    	String expectedName = repository.findAll().get(1).getName();
     	assertEquals(expectedName, repository.findById(id).orElse(new Course()).getName());
     }
     
     @Test
+    @Sql("createCourses.sql")
     void findByIdShoudReturnEmptyOptionalIfOneDoesNotExist() {    	
     	Long id = 999L;
     	Optional<Course> course = repository.findById(id);
@@ -61,11 +56,16 @@ class CourseRepositoryIntegrationTest {
     }
     
     @Test
+    @Sql("createCourses.sql")
     void findAllShouldReturnListOfCourses() {
-    	assertEquals(courseList, repository.findAll());
+    	List<Course> courseList = repository.findAll();
+    	assertEquals(4, courseList.size());
+    	assertNotNull(courseList.get(0).getName());
+    	assertNotNull(courseList.get(0).getDescription());
     }
     
     @Test
+    @Sql("createCourses.sql")
     void saveSholdSaveAndReturnSavedCourse() {    	
     	Course expected = COURSE_GENERATOR.getCourse(null, "New course", "New course description");
     	Course actual = repository.save(expected);
@@ -74,8 +74,9 @@ class CourseRepositoryIntegrationTest {
     }
     
     @Test
+    @Sql("createCourses.sql")
     void saveAndFlushShoudUpdateAndReturnCourse() {
-    	Course expected = courseList.get(0);
+    	Course expected = repository.findAll().get(0);
     	expected.setName("New name");
     	expected.setDescription("New desription");
     	Course actual = repository.saveAndFlush(expected);
@@ -83,9 +84,10 @@ class CourseRepositoryIntegrationTest {
     }
     
     @Test
+    @Sql("createCourses.sql")
     void deleteShouldDeleteCourse() {
     	
-    	List<Course> expected = courseList;
+    	List<Course> expected = repository.findAll();
     	Course course = expected.get(1);
     	expected.remove(1);
     	
