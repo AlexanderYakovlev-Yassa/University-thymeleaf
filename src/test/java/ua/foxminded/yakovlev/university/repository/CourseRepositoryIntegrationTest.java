@@ -25,14 +25,14 @@ class CourseRepositoryIntegrationTest {
     protected CourseRepository repository;
         
     @Test
-    @Sql("createCourses.sql")
+    @Sql("insertCourses.sql")
     void findCourseByNameShoudReturnCourseIfOneExists() {	
     	String expectedName = repository.findAll().get(0).getName();
     	assertEquals(expectedName, repository.findCourseByName(expectedName).getName());
     }
     
     @Test
-    @Sql("createCourses.sql")
+    @Sql("insertCourses.sql")
     void findCourseByNameShoudReturnNullIfOneDoesNotExist() {    	
     	String courseName = "Such name doesn't exist";   	    	
     	Course course = repository.findCourseByName(courseName);    	
@@ -40,7 +40,7 @@ class CourseRepositoryIntegrationTest {
     }
     
     @Test
-    @Sql("createCourses.sql")
+    @Sql("insertCourses.sql")
     void findByIdShoudReturnOptionalCourseIfOneExists() {
     	Long id = repository.findAll().get(1).getId();	
     	String expectedName = repository.findAll().get(1).getName();
@@ -48,7 +48,7 @@ class CourseRepositoryIntegrationTest {
     }
     
     @Test
-    @Sql("createCourses.sql")
+    @Sql("insertCourses.sql")
     void findByIdShoudReturnEmptyOptionalIfOneDoesNotExist() {    	
     	Long id = 999L;
     	Optional<Course> course = repository.findById(id);
@@ -56,7 +56,7 @@ class CourseRepositoryIntegrationTest {
     }
     
     @Test
-    @Sql("createCourses.sql")
+    @Sql("insertCourses.sql")
     void findAllShouldReturnListOfCourses() {
     	List<Course> courseList = repository.findAll();
     	assertEquals(4, courseList.size());
@@ -65,7 +65,7 @@ class CourseRepositoryIntegrationTest {
     }
     
     @Test
-    @Sql("createCourses.sql")
+    @Sql("insertCourses.sql")
     void saveSholdSaveAndReturnSavedCourse() {    	
     	Course expected = COURSE_GENERATOR.getCourse(null, "New course", "New course description");
     	Course actual = repository.save(expected);
@@ -74,7 +74,7 @@ class CourseRepositoryIntegrationTest {
     }
     
     @Test
-    @Sql("createCourses.sql")
+    @Sql("insertCourses.sql")
     void saveAndFlushShoudUpdateAndReturnCourse() {
     	Course expected = repository.findAll().get(0);
     	expected.setName("New name");
@@ -84,7 +84,7 @@ class CourseRepositoryIntegrationTest {
     }
     
     @Test
-    @Sql("createCourses.sql")
+    @Sql("insertCourses.sql")
     void deleteShouldDeleteCourse() {
     	
     	List<Course> expected = repository.findAll();
