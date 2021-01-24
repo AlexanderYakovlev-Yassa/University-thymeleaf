@@ -14,6 +14,7 @@ import ua.foxminded.yakovlev.university.entity.Course;
 import ua.foxminded.yakovlev.university.util.CourseGenerator;
 
 @DataJpaTest
+@Sql("/sqlscripts/insertCourses.sql")
 class CourseRepositoryIntegrationTest {
 	
 	private static final CourseGenerator COURSE_GENERATOR = new CourseGenerator();
@@ -24,39 +25,34 @@ class CourseRepositoryIntegrationTest {
     @Autowired
     protected CourseRepository repository;
         
-    @Test
-    @Sql("insertCourses.sql")
+    @Test    
     void findCourseByNameShoudReturnCourseIfOneExists() {	
     	String expectedName = repository.findAll().get(0).getName();
     	assertEquals(expectedName, repository.findCourseByName(expectedName).getName());
     }
     
-    @Test
-    @Sql("insertCourses.sql")
+    @Test    
     void findCourseByNameShoudReturnNullIfOneDoesNotExist() {    	
     	String courseName = "Such name doesn't exist";   	    	
     	Course course = repository.findCourseByName(courseName);    	
     	assertNull(course);
     }
     
-    @Test
-    @Sql("insertCourses.sql")
+    @Test    
     void findByIdShoudReturnOptionalCourseIfOneExists() {
     	Long id = repository.findAll().get(1).getId();	
     	String expectedName = repository.findAll().get(1).getName();
     	assertEquals(expectedName, repository.findById(id).orElse(new Course()).getName());
     }
     
-    @Test
-    @Sql("insertCourses.sql")
+    @Test    
     void findByIdShoudReturnEmptyOptionalIfOneDoesNotExist() {    	
     	Long id = 999L;
     	Optional<Course> course = repository.findById(id);
     	assertEquals(Optional.empty(), course);
     }
     
-    @Test
-    @Sql("insertCourses.sql")
+    @Test    
     void findAllShouldReturnListOfCourses() {
     	List<Course> courseList = repository.findAll();
     	assertEquals(4, courseList.size());
@@ -64,8 +60,7 @@ class CourseRepositoryIntegrationTest {
     	assertNotNull(courseList.get(0).getDescription());
     }
     
-    @Test
-    @Sql("insertCourses.sql")
+    @Test    
     void saveSholdSaveAndReturnSavedCourse() {    	
     	Course expected = COURSE_GENERATOR.getCourse(null, "New course", "New course description");
     	Course actual = repository.save(expected);
@@ -73,8 +68,7 @@ class CourseRepositoryIntegrationTest {
     	assertEquals(expected, actual);    	
     }
     
-    @Test
-    @Sql("insertCourses.sql")
+    @Test    
     void saveAndFlushShoudUpdateAndReturnCourse() {
     	Course expected = repository.findAll().get(0);
     	expected.setName("New name");
@@ -83,8 +77,7 @@ class CourseRepositoryIntegrationTest {
     	assertEquals(expected, actual);
     }
     
-    @Test
-    @Sql("insertCourses.sql")
+    @Test    
     void deleteShouldDeleteCourse() {
     	
     	List<Course> expected = repository.findAll();
