@@ -1,7 +1,6 @@
 package ua.foxminded.yakovlev.university.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,9 +12,18 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 
 import ua.foxminded.yakovlev.university.entity.Group;
+import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
 
 @DataJpaTest
+@Sql({
+	"/sqlscripts/insertPersons.sql",
+	"/sqlscripts/insertPositions.sql",
+	"/sqlscripts/insertLecturers.sql",
+	"/sqlscripts/insertCourses.sql",
+	"/sqlscripts/insertGroups.sql",
+	"/sqlscripts/insertTimetableRecords.sql",
+	"/sqlscripts/insertTimetableGroups.sql"})
 class TimetableRepositoryIntegrationTest {
 	
     @Autowired
@@ -25,14 +33,6 @@ class TimetableRepositoryIntegrationTest {
     protected GroupRepository groupRepository;
     
     @Test
-    @Sql({
-    	"insertPersons.sql",
-    	"insertPositions.sql",
-    	"insertLecturers.sql",
-    	"insertCourses.sql",
-    	"insertGroups.sql",
-    	"insertTimetableRecords.sql",
-    	"insertTimetableGroups.sql"})
     void findAllShoudReturnTimetableRecordList() {     	
     	
     	List<TimetableRecord> recordList = repository.findAll();//.stream().forEach(System.out::println);   
@@ -43,14 +43,6 @@ class TimetableRepositoryIntegrationTest {
     }
 
     @Test
-    @Sql({
-    	"insertPersons.sql",
-    	"insertPositions.sql",
-    	"insertLecturers.sql",
-    	"insertCourses.sql",
-    	"insertGroups.sql",
-    	"insertTimetableRecords.sql",
-    	"insertTimetableGroups.sql"})
     void findByPeriodOfTimeShoudReturnTimetableRecordList() {     
     	
     	String start = "2020-10-16T00:00:00";
@@ -69,26 +61,24 @@ class TimetableRepositoryIntegrationTest {
     }
 
     @Test
-    @Sql({
-    	"insertPersons.sql",
-    	"insertPositions.sql",
-    	"insertLecturers.sql",
-    	"insertCourses.sql",
-    	"insertGroups.sql",
-    	"insertTimetableRecords.sql",
-    	"insertTimetableGroups.sql"})
     void findByLecturerShoudReturnTimetableRecordList() {     
     	
     	String start = "2020-10-16T00:00:00";
 		String end = "2020-10-18T00:00:00";
 		LocalDateTime startDate = LocalDateTime.parse(start);
 		LocalDateTime endDate = LocalDateTime.parse(end);
+		List<TimetableRecord> all = repository.findAll();
+		
+		if (all.isEmpty()) {		
+			fail("There are no records in DB");
+		}
+		
+		Lecturer lecturer = all.get(0).getLecturer();
     	 
     	List<TimetableRecord> expected = repository.findAll().stream()
     			.filter(t -> startDate.isBefore(t.getDate()))
     			.filter(t -> endDate.isAfter(t.getDate()))
-    			.filter(t -> t.getLecturer().getFirstName().equals("Андрей"))
-    			.filter(t -> t.getLecturer().getLastName().equals("Аксенов"))
+    			.filter(t -> t.getLecturer().equals(lecturer))
     			.collect(Collectors.toList());
     	
     	Long lecturerId = expected.get(0).getLecturer().getPersonId();
@@ -99,14 +89,6 @@ class TimetableRepositoryIntegrationTest {
     }
 
     @Test
-    @Sql({
-    	"insertPersons.sql",
-    	"insertPositions.sql",
-    	"insertLecturers.sql",
-    	"insertCourses.sql",
-    	"insertGroups.sql",
-    	"insertTimetableRecords.sql",
-    	"insertTimetableGroups.sql"})
     void findByCourseShoudReturnTimetableRecordList() {     
     	
     	String start = "2020-10-16T00:00:00";
