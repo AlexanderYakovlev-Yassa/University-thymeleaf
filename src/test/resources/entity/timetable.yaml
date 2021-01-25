@@ -1,0 +1,47 @@
+- id: 1
+  date: "2020-10-16T09:00:00"
+  lecturer:
+    personId: 6
+    firstName: "Андрей"
+    lastName: "Аксенов"
+    position: 
+      id: 7
+      name: "INSTRUCTOR"
+  course:
+    id: 3
+    name: "Музыка"
+    description: "Основы музыкальной грамоты"
+  groupList:
+    - id: 1
+      name: "aa-01"
+    - id: 2
+      name: "aa-02"
+- id: 2      
+  date: "2020-10-16T10:00:00"
+  lecturer:
+    personId: 7
+    firstName: "Мирон"
+    lastName: "Давыдов"
+    position: 
+      id: 7
+      name: "INSTRUCTOR"
+  course:
+    id: 2
+    name: "Физика"
+    description: "Общий курс физики"
+  groupList:
+    - id: 1
+      name: "aa-01"
+- id: 3    
+  date: "2020-10-16T12:00:00"
+  lecturer:
+    personId: 8
+    firstName: "Владимир"
+    lastName: "Ойстрах"
+    position: 
+      id: 8
+      name: "RESEARCH_ASSOCIATE"
+  course:
+    id: 1
+    name: "Математика"
+    description: "Общий курс математики"

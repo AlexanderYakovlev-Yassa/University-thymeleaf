@@ -33,4 +33,9 @@ public class LecturerServiceImpl extends AbstractServiceJpa<Lecturer, Long> impl
 		
 		return ENTITY_NAME;
 	}
+
+	@Override
+	protected Long getIdentifire(Lecturer lecturer) {
+		return lecturer.getPersonId();
+	}
 }

@@ -34,12 +34,17 @@ public class TimetableRecordServiceImpl extends AbstractServiceJpa<TimetableReco
 
 	@Override
 	public List<TimetableRecord> findByGroup(Long studentId, LocalDateTime periodStart, LocalDateTime periodFinish) {
-		return dao.findByStudent(studentId, periodStart, periodFinish);
+		return dao.findByGroup(studentId, periodStart, periodFinish);
 	}
 
 	@Override
 	protected String getEntityName() {
 		
 		return ENTITY_NAME;
+	}
+
+	@Override
+	protected Long getIdentifire(TimetableRecord record) {
+		return record.getId();
 	}
 }

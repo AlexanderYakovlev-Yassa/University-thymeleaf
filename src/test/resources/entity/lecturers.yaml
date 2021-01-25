@@ -1,0 +1,24 @@
+- personId: 6
+  firstName: "Андрей"
+  lastName: "Аксенов"
+  position: 
+    id: 7
+    name: "INSTRUCTOR"
+- personId: 7
+  firstName: "Мирон"
+  lastName: "Давыдов"
+  position: 
+    id: 7
+    name: "INSTRUCTOR"
+- personId: 8
+  firstName: "Владимир"
+  lastName: "Ойстрах"
+  position: 
+    id: 8
+    name: "RESEARCH_ASSOCIATE"
+- personId: 9
+  firstName: "Cтанислав"
+  lastName: "Кудесник"
+  position: 
+    id: 3
+    name: "ASSOCIATE_PROFESSOR"

@@ -59,7 +59,7 @@ public class ApiTimetableRecordController {
         TimetableRecord timetableRecord = timetableRecordMapper.toTimetableRecord(timetableRecordDto);
         timetableRecord.setId(id);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(timetableRecordMapper.toTimetableRecordDto(timetableRecordService.save(timetableRecord)));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(timetableRecordMapper.toTimetableRecordDto(timetableRecordService.update(timetableRecord)));
     }
 
 	@CrossOrigin(methods = RequestMethod.DELETE)
@@ -74,7 +74,7 @@ public class ApiTimetableRecordController {
     public ResponseEntity<List<TimetableRecordDto>> findByDate(
     		@RequestParam(name="start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
     		@RequestParam(name="end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
-    		) {		
+    		) {
         return ResponseEntity.ok(timetableRecordMapper.toTimetableRecordDtos(timetableRecordService.findByPeriodOfTime(start, end)));
     }
 	
@@ -83,7 +83,7 @@ public class ApiTimetableRecordController {
     		@RequestParam(name="start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
     		@RequestParam(name="end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
     		@RequestParam(name="group-id") Long groupId
-    		) {		
+    		){
         return ResponseEntity.ok(timetableRecordMapper.toTimetableRecordDtos(timetableRecordService.findByGroup(groupId, start, end)));
     }
 	

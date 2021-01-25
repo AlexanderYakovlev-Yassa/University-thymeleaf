@@ -28,4 +28,9 @@ public class CourseServiceImpl extends AbstractServiceJpa<Course, Long> implemen
 	protected String getEntityName() {		
 		return ENTITY_NAME;
 	}
+
+	@Override
+	protected Long getIdentifire(Course course) {
+		return course.getId();
+	}
 }

@@ -17,5 +17,5 @@ public interface TimetableRecordRepository extends JpaRepository<TimetableRecord
 	List<TimetableRecord> findByLecturer(Long lecturerId, LocalDateTime periodStart, LocalDateTime periodFinish);
 	
 	@Query("select t from TimetableRecord t join t.groupList g where g.id = ?1 and t.date >= ?2 and t.date < ?3")
-	List<TimetableRecord> findByStudent(Long groupId, LocalDateTime periodStart, LocalDateTime periodFinish);
+	List<TimetableRecord> findByGroup(Long groupId, LocalDateTime periodStart, LocalDateTime periodFinish);
 }

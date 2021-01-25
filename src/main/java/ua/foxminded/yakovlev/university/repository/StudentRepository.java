@@ -8,6 +8,4 @@ import ua.foxminded.yakovlev.university.entity.Student;
 public interface StudentRepository extends JpaRepository<Student, Long>{
 
     List<Student> findByGroupId(Long groupId);
-
-	List<Student> getByGroup_Id(Long id);
 }

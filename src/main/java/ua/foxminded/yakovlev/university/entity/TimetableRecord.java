@@ -14,6 +14,10 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 import lombok.Data;
 
@@ -28,10 +32,13 @@ public class TimetableRecord {
 	private Long id;
 	
 	@Column(name = "timetable_record_time")
+	@DateTimeFormat(iso = ISO.DATE_TIME)
+	@NotNull(message="validator.message.empty_timetable_record_date")
 	private LocalDateTime date;
 	
 	@ManyToOne
-    @JoinColumn(name="timetable_record_course_id")    
+    @JoinColumn(name="timetable_record_course_id")
+	@NotNull(message="validator.message.empty_timetable_record_course")
 	private Course course;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
@@ -44,5 +51,6 @@ public class TimetableRecord {
 		
 	@ManyToOne
     @JoinColumn(name="timetable_record_lecturer_id")
+	@NotNull(message="validator.message.empty_timetable_record_lecturer")
 	private Lecturer lecturer;
 }

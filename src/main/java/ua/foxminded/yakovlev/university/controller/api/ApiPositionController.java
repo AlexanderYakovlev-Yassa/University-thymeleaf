@@ -62,7 +62,7 @@ public class ApiPositionController {
 		Position position = positionMapper.toPosition(positionDto);
 		position.setId(id);
 		
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(positionMapper.toPositionDto(positionService.save(position)));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(positionMapper.toPositionDto(positionService.update(position)));
     }
 
 	@CrossOrigin(methods = RequestMethod.DELETE)

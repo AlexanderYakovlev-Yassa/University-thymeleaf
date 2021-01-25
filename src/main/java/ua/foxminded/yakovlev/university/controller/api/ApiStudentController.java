@@ -42,9 +42,6 @@ public class ApiStudentController {
 	@PostMapping
     public ResponseEntity<StudentDto> create(@Valid@RequestBody StudentDto studentDto) {
 		
-		System.out.println(studentDto);
-		System.out.println(studentMapper.toStudent(studentDto));
-		
         Student student = studentService.save(studentMapper.toStudent(studentDto));
         
         return ResponseEntity.status(HttpStatus.CREATED).body(studentMapper.toStudentDto(student));
@@ -65,7 +62,7 @@ public class ApiStudentController {
         Student student = studentMapper.toStudent(studentDto);
         student.setPersonId(id);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(studentMapper.toStudentDto(studentService.save(student)));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(studentMapper.toStudentDto(studentService.update(student)));
     }
 
 	@CrossOrigin(methods = RequestMethod.DELETE)
