@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,6 +33,7 @@ public class CourseController {
 	private final ResourceBundleMessageSource messageSource;
 	
 	@GetMapping()
+	@PreAuthorize("hasAuthority('READ_COURSE')")
     public String show(Model model) {
 
 		model.addAttribute("courses", courseService.findAll());
@@ -40,6 +42,7 @@ public class CourseController {
     }
 	
 	@GetMapping("/new")
+	@PreAuthorize("hasAuthority('MANAGE_COURSE')")
 	public String create(
 			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
 			Model model) {		
@@ -51,6 +54,7 @@ public class CourseController {
 	}
 	
 	@PostMapping("/new")
+	@PreAuthorize("hasAuthority('MANAGE_COURSE')")
     public String save(
 			RedirectAttributes redirectAttributes,
     		@Valid@ModelAttribute("course") Course  course,
@@ -73,6 +77,7 @@ public class CourseController {
 	}
 	
 	@GetMapping("/edit")
+	@PreAuthorize("hasAuthority('MODIFY_COURSE')")
     public String edit(
 			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
     		@RequestParam(name = "id") Long id,
@@ -86,6 +91,7 @@ public class CourseController {
 	}
 	
 	@PostMapping("/edit")
+	@PreAuthorize("hasAuthority('MODIFY_COURSE')")
 	public String update(
 			RedirectAttributes redirectAttributes,
 			@Valid@ModelAttribute("course") Course course,
@@ -109,6 +115,7 @@ public class CourseController {
 	}	
 	
 	@PostMapping("/delete")
+	@PreAuthorize("hasAuthority('MANAGE_COURSE')")
     public String delete(@RequestParam(name = "id") Long id) {
 		
         courseService.delete(id);
