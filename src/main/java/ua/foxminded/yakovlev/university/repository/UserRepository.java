@@ -6,4 +6,5 @@ import ua.foxminded.yakovlev.university.entity.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
+	User findByName(String username);
 }
