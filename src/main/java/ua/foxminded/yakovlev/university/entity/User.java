@@ -38,12 +38,11 @@ public class User implements Serializable {
 	private String password;
 	
 	@Column(name = "user_enabled")
-	@NotBlank(message="validator.message.empty_password")
 	private Boolean enabled;
 	
 	@ManyToOne
     @JoinColumn(name="user_person_id")
-	@NotBlank(message="validator.message.empty_password")
+	@NotBlank(message="validator.message.empty_person")
 	private Person person;
 	
 	@ManyToMany(fetch = FetchType.EAGER)

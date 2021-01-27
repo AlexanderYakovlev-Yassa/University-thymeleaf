@@ -14,6 +14,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import lombok.Data;
 
 @Data 
@@ -34,9 +36,10 @@ public class Role implements Serializable {
 	
 	@ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "role_autorities",
+            name = "role_authorities",
             joinColumns = {@JoinColumn(name = "role_id")},
-            inverseJoinColumns = {@JoinColumn(name = "autority_id")}
+            inverseJoinColumns = {@JoinColumn(name = "authority_id")}
     )
-	private Set<Autority> autorities;
+	@NotNull(message="validator.message.null_authorities")
+	private Set<Authority> authorities;
 }

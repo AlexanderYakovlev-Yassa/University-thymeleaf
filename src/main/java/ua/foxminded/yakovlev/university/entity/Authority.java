@@ -1,5 +1,7 @@
 package ua.foxminded.yakovlev.university.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,15 +13,17 @@ import lombok.Data;
 
 @Data 
 @Entity
-@Table (name="autorities")
-public class Autority {
+@Table (name="authorities")
+public class Authority implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "autority_id")
+    @Column(name = "authority_id")
 	private Long id;
 	
-	@Column(name = "autority_name")
-	@NotBlank(message="validator.message.empty_autority_name")
+	@Column(name = "authority_name")
+	@NotBlank(message="validator.message.empty_authority_name")
 	private String name;
 }
