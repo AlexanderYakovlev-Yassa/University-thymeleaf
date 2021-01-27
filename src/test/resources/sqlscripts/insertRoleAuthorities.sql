@@ -1,34 +1,34 @@
-INSERT INTO role_autorities(role_id, autority_id)	
+INSERT INTO role_authorities(role_id, authority_id)	
 VALUES 
 (
 select role_id from roles r where r.role_name='STUDENT', 
-select autority_id from autorities a where a.autority_name='Manage students'
+select authority_id from authorities a where a.authority_name='Manage students'
 ),
 (
 select role_id from roles r where r.role_name='LECTURER', 
-select autority_id from autorities a where a.autority_name='Manage students'
+select authority_id from authorities a where a.authority_name='Manage students'
 ),
 (
 select role_id from roles r where r.role_name='LECTURER', 
-select autority_id from autorities a where a.autority_name='Manage lecturers'
+select authority_id from authorities a where a.authority_name='Manage lecturers'
 ),
 (
 select role_id from roles r where r.role_name='LECTURER', 
-select autority_id from autorities a where a.autority_name='Manage timetable'
+select authority_id from authorities a where a.authority_name='Manage timetable'
 ),
 (
 select role_id from roles r where r.role_name='ADMINISTRATOR', 
-select autority_id from autorities a where a.autority_name='Manage students'
+select authority_id from authorities a where a.authority_name='Manage students'
 ),
 (
 select role_id from roles r where r.role_name='ADMINISTRATOR', 
-select autority_id from autorities a where a.autority_name='Manage lecturers'
+select authority_id from authorities a where a.authority_name='Manage lecturers'
 ),
 (
 select role_id from roles r where r.role_name='ADMINISTRATOR', 
-select autority_id from autorities a where a.autority_name='Manage timetable'
+select authority_id from authorities a where a.authority_name='Manage timetable'
 ),
 (
 select role_id from roles r where r.role_name='ADMINISTRATOR', 
-select autority_id from autorities a where a.autority_name='Manage courses'
+select authority_id from authorities a where a.authority_name='Manage courses'
 );

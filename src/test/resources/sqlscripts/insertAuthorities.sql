@@ -1,4 +1,4 @@
-INSERT INTO autorities(autority_name)	
+INSERT INTO authorities(authority_name)	
 VALUES 
 ('Manage students'),
 ('Manage lecturers'),

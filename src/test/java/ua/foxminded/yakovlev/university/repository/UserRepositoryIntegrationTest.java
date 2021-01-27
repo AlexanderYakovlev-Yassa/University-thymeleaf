@@ -8,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.jdbc.Sql;
 
-import ua.foxminded.yakovlev.university.entity.Autority;
+import ua.foxminded.yakovlev.university.entity.Authority;
 import ua.foxminded.yakovlev.university.entity.Role;
 import ua.foxminded.yakovlev.university.entity.User;
 
 @DataJpaTest
-@Sql({ "/sqlscripts/insertAutorities.sql", "/sqlscripts/insertRoles.sql", "/sqlscripts/insertRoleAutorities.sql",
+@Sql({ "/sqlscripts/insertAuthorities.sql", "/sqlscripts/insertRoles.sql", "/sqlscripts/insertRoleAuthorities.sql",
 		"/sqlscripts/insertPersons.sql", "/sqlscripts/insertUsers.sql", "/sqlscripts/insertUserRoles.sql" })
 class UserRepositoryIntegrationTest {
 
@@ -21,7 +21,7 @@ class UserRepositoryIntegrationTest {
 	protected UserRepository userRep;
 
 	@Autowired
-	protected AutorityRepository autorityRep;
+	protected AuthorityRepository authorityRep;
 
 	@Autowired
 	protected RoleRepository roleRep;
@@ -42,9 +42,9 @@ class UserRepositoryIntegrationTest {
 			for (Role r : u.getRoleSet()) {
 				
 				assertNotNull(r.getName());
-				assertNotNull(r.getAutorities());
+				assertNotNull(r.getAuthorities());
 				
-				for (Autority a : r.getAutorities()) {
+				for (Authority a : r.getAuthorities()) {
 					
 					assertNotNull(a.getName());
 				}

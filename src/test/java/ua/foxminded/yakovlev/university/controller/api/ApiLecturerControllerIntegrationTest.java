@@ -23,8 +23,11 @@ import ua.foxminded.yakovlev.university.service.LecturerService;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.service.StudentService;
 import ua.foxminded.yakovlev.university.service.PositionService;
+import ua.foxminded.yakovlev.university.service.RoleService;
+import ua.foxminded.yakovlev.university.service.AuthorityService;
 import ua.foxminded.yakovlev.university.service.CourseService;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
+import ua.foxminded.yakovlev.university.service.impl.UserService;
 import ua.foxminded.yakovlev.university.util.LecturerGenerator;
 
 @WebMvcTest(ApiLecturerController.class)
@@ -43,6 +46,12 @@ class ApiLecturerControllerIntegrationTest {
 	private CourseService cs;
 	@MockBean
 	private TimetableRecordService ts;
+	@MockBean
+	private UserService us;
+	@MockBean
+	private RoleService rs;
+	@MockBean
+	private AuthorityService as;
 	
 	@Autowired
 	private MockMvc mockMvc;
