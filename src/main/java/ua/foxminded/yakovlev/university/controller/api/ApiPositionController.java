@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,12 +35,14 @@ public class ApiPositionController {
 	private final ResourceBundleMessageSource messageSource;
 	
 	@GetMapping
+	@PreAuthorize("hasAuthority('READ_POSITION')")
     public ResponseEntity<List<PositionDto>> findAll() {		
 		
         return ResponseEntity.ok(positionMapper.toPositionDtos(positionService.findAll()));
     }
 	
 	@PostMapping
+	@PreAuthorize("hasAuthority('MANAGE_POSITION')")
     public ResponseEntity<PositionDto> create(@Valid@RequestBody PositionDto positionDto) {
 		
         Position position = positionService.save(positionMapper.toPosition(positionDto));
@@ -48,6 +51,7 @@ public class ApiPositionController {
     }
 	
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('READ_POSITION')")
     public ResponseEntity<PositionDto> findById(@PathVariable Long id) {
 
         Position position = positionService.findById(id);
@@ -57,6 +61,7 @@ public class ApiPositionController {
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('MODIFY_POSITION')")
     public ResponseEntity<PositionDto> update(@PathVariable Long id, @Valid@RequestBody PositionDto positionDto) {
 				
 		Position position = positionMapper.toPosition(positionDto);
@@ -67,6 +72,7 @@ public class ApiPositionController {
 
 	@CrossOrigin(methods = RequestMethod.DELETE)
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAuthority('MANAGE_POSITION')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         positionService.delete(id);
         

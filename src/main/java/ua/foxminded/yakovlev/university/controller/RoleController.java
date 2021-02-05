@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import lombok.RequiredArgsConstructor;
-import ua.foxminded.yakovlev.university.dto.RoleDto;
+import ua.foxminded.yakovlev.university.dto.RoleWhithAuthorityMapDto;
 import ua.foxminded.yakovlev.university.entity.Authority;
 import ua.foxminded.yakovlev.university.entity.Role;
 import ua.foxminded.yakovlev.university.service.AuthorityService;
@@ -51,22 +51,27 @@ public class RoleController {
 	
 	@GetMapping("/new")
 	@PreAuthorize("hasAuthority('MANAGE_ROLE')")
-	public String create(
-			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
-			Model model) {		
+    public String create(
+    		Model model
+    		) {		
 		
-		model.addAttribute("role", new Role());
-		model.addAttribute("errorMessageList", errorMessageList);
+		Role role = new Role();
+		role.setAuthorities(new HashSet<>());
+		RoleWhithAuthorityMapDto roleDto = mapToRoleDto(role);
+		
+		model.addAttribute("role", roleDto);
 		
 		return "roles/new-role";
 	}
 	
 	@PostMapping("/new")
 	@PreAuthorize("hasAuthority('MANAGE_ROLE')")
-    public String save(
+	public String create(
 			RedirectAttributes redirectAttributes,
-    		@Valid@ModelAttribute("role") Role  role,
-    		BindingResult bindingResult) {		
+			@Valid@ModelAttribute("role") RoleWhithAuthorityMapDto roleDto,
+    		BindingResult bindingResult) {
+		
+		Role role = mapToRole(roleDto);		
 		
 		if (bindingResult.hasErrors()) {
 			
@@ -75,6 +80,7 @@ public class RoleController {
 					.collect(Collectors.toList());
 			
 			redirectAttributes.addAttribute("errorMessage", errorMessageList);
+			redirectAttributes.addAttribute("id", roleDto.getId());
 			
 			return "redirect:/roles/new";
 		}
@@ -94,7 +100,7 @@ public class RoleController {
 		
 		
 		Role role = roleService.findById(id);
-		RoleDto roleDto = mapToRoleDto(role);
+		RoleWhithAuthorityMapDto roleDto = mapToRoleDto(role);
 		
 		model.addAttribute("role", roleDto);
 		model.addAttribute("errorMessageList", errorMessageList);
@@ -106,7 +112,7 @@ public class RoleController {
 	@PreAuthorize("hasAuthority('MODIFY_ROLE')")
 	public String update(
 			RedirectAttributes redirectAttributes,
-			@Valid@ModelAttribute("role") RoleDto roleDto,
+			@Valid@ModelAttribute("role") RoleWhithAuthorityMapDto roleDto,
     		BindingResult bindingResult) {
 		
 		Role role = mapToRole(roleDto);		
@@ -136,9 +142,9 @@ public class RoleController {
         return "redirect:/roles";
     }
 	
-	private RoleDto mapToRoleDto(Role role) {
+	private RoleWhithAuthorityMapDto mapToRoleDto(Role role) {
 		
-		RoleDto roleDto = new RoleDto();
+		RoleWhithAuthorityMapDto roleDto = new RoleWhithAuthorityMapDto();
 		
 		roleDto.setId(role.getId());
 		roleDto.setName(role.getName());
@@ -151,7 +157,7 @@ public class RoleController {
 		return roleDto;
 	}
 	
-	private Role mapToRole(RoleDto roleDto) {
+	private Role mapToRole(RoleWhithAuthorityMapDto roleDto) {
 		
 		Role role = new Role();
 		role.setId(roleDto.getId());

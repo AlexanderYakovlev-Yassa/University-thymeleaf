@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,12 +36,14 @@ public class LecturerController {
 	private final ResourceBundleMessageSource messageSource;
 	
 	@GetMapping()
+	@PreAuthorize("hasAuthority('READ_LECTURER')")
     public String showLecturers(Model model) {		
 		model.addAttribute("lecturers", lecturerService.findAll());		
         return "lecturers/show-lecturers";
     }
 	
 	@GetMapping("/new")
+	@PreAuthorize("hasAuthority('MANAGE_LECTURER')")
     public String create(
 			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
 			Model model
@@ -54,6 +57,7 @@ public class LecturerController {
 	}
 	
 	@PostMapping("/new")
+	@PreAuthorize("hasAuthority('MANAGE_LECTURER')")
     public String save(
 			RedirectAttributes redirectAttributes,
 			@RequestParam(name = "positionId", required = false) Long positionId,
@@ -82,6 +86,7 @@ public class LecturerController {
 	}
 	
 	@GetMapping("/edit")
+	@PreAuthorize("hasAuthority('MODIFY_LECTURER')")
     public String showEditPage(
 			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
     		@RequestParam(name = "id") Long id,
@@ -96,6 +101,7 @@ public class LecturerController {
 	}
 	
 	@PostMapping("/edit")
+	@PreAuthorize("hasAuthority('MODIFY_LECTURER')")
     public String edit(
 			RedirectAttributes redirectAttributes,
 			@RequestParam(name = "positionId", required = false) Long positionId,
@@ -125,6 +131,7 @@ public class LecturerController {
 	}
 	
 	@PostMapping("/delete")
+	@PreAuthorize("hasAuthority('MANAGE_LECTURER')")
     public String delete(@RequestParam(name = "id") long id) {
 		lecturerService.delete(id);
         return "redirect:/lecturers";

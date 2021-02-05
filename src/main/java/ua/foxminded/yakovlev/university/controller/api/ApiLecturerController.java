@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,24 +35,28 @@ public class ApiLecturerController {
 	private final ResourceBundleMessageSource messageSource;
 	
 	@GetMapping
+	@PreAuthorize("hasAuthority('READ_LECTURER')")
     public ResponseEntity<List<LecturerDto>> findAll() {		
 		
         return ResponseEntity.ok(lecturerMapper.toLecturerDtos(lecturerService.findAll()));
     }
 	
 	@PostMapping
+	@PreAuthorize("hasAuthority('MANAGE_LECTURER')")
     public ResponseEntity<LecturerDto> create(@Valid@RequestBody LecturerDto lecturerDto) {        
         return ResponseEntity.status(HttpStatus.CREATED)
         		.body(lecturerMapper.toLecturerDto(lecturerService.save(lecturerMapper.toLecturer(lecturerDto))));
     }
 	
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('READ_LECTURER')")
     public ResponseEntity<LecturerDto> findById(@PathVariable Long id) {               
         return ResponseEntity.ok(lecturerMapper.toLecturerDto(lecturerService.findById(id)));
     }
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('MODIFY_LECTURER')")
     public ResponseEntity<LecturerDto> update(@PathVariable Long id, @Valid@RequestBody LecturerDto lecturerDto) {
 		
         Lecturer lecturer = lecturerMapper.toLecturer(lecturerDto);
@@ -62,6 +67,7 @@ public class ApiLecturerController {
 
 	@CrossOrigin(methods = RequestMethod.DELETE)
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAuthority('MANAGE_LECTURER')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
 		
         lecturerService.delete(id);
@@ -70,6 +76,7 @@ public class ApiLecturerController {
     }
 	
 	@GetMapping("/position/{id}")
+	@PreAuthorize("hasAuthority('READ_LECTURER')")
     public ResponseEntity<List<LecturerDto>> findByPosition(@PathVariable Long id) {		
         return ResponseEntity.ok(lecturerMapper.toLecturerDtos(lecturerService.findByPositionId(id)));
     }

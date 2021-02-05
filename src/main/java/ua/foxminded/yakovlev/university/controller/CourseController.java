@@ -29,6 +29,7 @@ import ua.foxminded.yakovlev.university.service.CourseService;
 public class CourseController {
 	
 	private final CourseService courseService;
+	
 	@Qualifier(value="messageSource")
 	private final ResourceBundleMessageSource messageSource;
 	

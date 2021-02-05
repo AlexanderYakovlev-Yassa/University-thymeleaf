@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,6 +33,7 @@ public class PositionController {
 	private final ResourceBundleMessageSource messageSource;
 	
 	@GetMapping()
+	@PreAuthorize("hasAuthority('READ_POSITION')")
     public String showPositions(Model model) {
 		
 		model.addAttribute("positions", positionService.findAll());
@@ -40,6 +42,7 @@ public class PositionController {
     }
 	
 	@GetMapping("/new")
+	@PreAuthorize("hasAuthority('MANAGE_POSITION')")
     public String create(
 			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
 			Model model
@@ -52,6 +55,7 @@ public class PositionController {
 	}
 	
 	@PostMapping("/new")
+	@PreAuthorize("hasAuthority('MANAGE_POSITION')")
     public String save(
 			RedirectAttributes redirectAttributes,			
 			@Valid@ModelAttribute("newPosition") Position newPosition,
@@ -74,6 +78,7 @@ public class PositionController {
 	}
 	
 	@GetMapping("/edit")
+	@PreAuthorize("hasAuthority('MODIFY_POSITION')")
     public String showEditPage(
 			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
     		@RequestParam(name = "id") Long id,
@@ -87,6 +92,7 @@ public class PositionController {
 	}
 	
 	@PostMapping("/edit")
+	@PreAuthorize("hasAuthority('MODIFY_POSITION')")
     public String edit(
 			RedirectAttributes redirectAttributes,
 			@Valid@ModelAttribute("position") Position position,
@@ -110,6 +116,7 @@ public class PositionController {
 	}
 	
 	@PostMapping("/delete")
+	@PreAuthorize("hasAuthority('MANAGE_POSITION')")
     public String delete(@RequestParam(name = "id") long id) {
 		positionService.delete(id);
         return "redirect:/positions";

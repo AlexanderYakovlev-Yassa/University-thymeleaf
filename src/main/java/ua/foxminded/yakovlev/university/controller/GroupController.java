@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,6 +35,7 @@ public class GroupController {
 	private final ResourceBundleMessageSource messageSource;
 	
 	@GetMapping()
+	@PreAuthorize("hasAuthority('READ_GROUP')")
     public String showPositions(
 			Model model) {
 		
@@ -43,6 +45,7 @@ public class GroupController {
     }
 	
 	@GetMapping("/new")
+	@PreAuthorize("hasAuthority('MANAGE_GROUP')")
     public String create(
 			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
 			Model model
@@ -55,6 +58,7 @@ public class GroupController {
 	}
 	
 	@PostMapping("/new")
+	@PreAuthorize("hasAuthority('MANAGE_GROUP')")
     public String save(
 			RedirectAttributes redirectAttributes,			
 			@Valid@ModelAttribute("newGroup") Group  newGroup,
@@ -77,6 +81,7 @@ public class GroupController {
 	}
 	
 	@GetMapping("/edit")
+	@PreAuthorize("hasAuthority('MODIFY_GROUP')")
     public String showEditPage(
 			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
     		@RequestParam(name = "id") Long id,
@@ -90,6 +95,7 @@ public class GroupController {
 	}
 	
 	@PostMapping("/edit")
+	@PreAuthorize("hasAuthority('MODIFY_GROUP')")
     public String edit(
 			RedirectAttributes redirectAttributes,
 			@Valid@ModelAttribute("group") Group group,
@@ -113,6 +119,7 @@ public class GroupController {
 	}
 	
 	@GetMapping("/manage")
+	@PreAuthorize("hasAuthority('MODIFY_GROUP')")
     public String manage(Model model,
     		@RequestParam(name = "group-id") Long groupId) {
 		
@@ -125,6 +132,7 @@ public class GroupController {
 	}
 	
 	@PostMapping("/add-student")
+	@PreAuthorize("hasAuthority('MANAGE_GROUP')")
     public String addStudent (RedirectAttributes redirectAttributes,
     		@RequestParam(name = "groupId") Long groupID,
     		@RequestParam(name = "studentId") Long studentId) {
@@ -136,6 +144,7 @@ public class GroupController {
 	}
 	
 	@PostMapping("/remove-student")
+	@PreAuthorize("hasAuthority('MANAGE_GROUP')")
     public String removeStudent (RedirectAttributes redirectAttributes,
     		@RequestParam(name = "groupId") Long groupId,
     		@RequestParam(name = "studentId") Long studentId) {
@@ -147,6 +156,7 @@ public class GroupController {
 	}
 	
 	@PostMapping("/delete")
+	@PreAuthorize("hasAuthority('MANAGE_GROUP')")
     public String delete(@RequestParam(name = "id") long id) {
 		groupService.delete(id);
         return "redirect:/groups";

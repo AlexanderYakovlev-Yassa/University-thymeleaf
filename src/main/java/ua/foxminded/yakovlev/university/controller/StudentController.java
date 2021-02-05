@@ -8,6 +8,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,6 +36,7 @@ public class StudentController {
 	private final ResourceBundleMessageSource messageSource;
 
 	@GetMapping()
+	@PreAuthorize("hasAuthority('READ_STUDENT')")
 	public String show(
 			Model model) {
 		
@@ -44,6 +46,7 @@ public class StudentController {
 	}
 	
 	@GetMapping("/new")
+	@PreAuthorize("hasAuthority('MANAGE_STUDENT')")
     public String create(
 			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
 			Model model
@@ -57,6 +60,7 @@ public class StudentController {
 	}
 	
 	@PostMapping("/new")
+	@PreAuthorize("hasAuthority('MANAGE_STUDENT')")
     public String save(
 			RedirectAttributes redirectAttributes,
 			@RequestParam(name = "groupId", required = false) Long groupId,
@@ -85,6 +89,7 @@ public class StudentController {
 	}
 	
 	@GetMapping("/edit")
+	@PreAuthorize("hasAuthority('MODIFY_STUDENT')")
     public String showEditPage(
 			@RequestParam(name = "errorMessage", required = false) List<String> errorMessageList,
     		@RequestParam(name = "id") Long id,
@@ -99,6 +104,7 @@ public class StudentController {
 	}
 	
 	@PostMapping("/edit")
+	@PreAuthorize("hasAuthority('MODIFY_STUDENT')")
     public String edit(
 			RedirectAttributes redirectAttributes,
 			@RequestParam(name = "groupId", required = false) Long groupId,
@@ -128,6 +134,7 @@ public class StudentController {
 	}
 
 	@PostMapping("/delete")
+	@PreAuthorize("hasAuthority('MANAGE_STUDENT')")
 	public String delete(@RequestParam(name = "person-to-be-deleted-id") long id) {
 		studentService.delete(id);
 		return "redirect:/students";

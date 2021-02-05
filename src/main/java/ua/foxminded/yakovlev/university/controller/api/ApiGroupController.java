@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,12 +40,14 @@ public class ApiGroupController {
 	private final ResourceBundleMessageSource messageSource;
 	
 	@GetMapping
+	@PreAuthorize("hasAuthority('READ_GROUP')")
     public ResponseEntity<List<GroupDto>> findAll() {		
 		
         return ResponseEntity.ok(groupMapper.toGroupDtos(groupService.findAll()));
     }
 	
 	@PostMapping
+	@PreAuthorize("hasAuthority('MANAGE_GROUP')")
     public ResponseEntity<GroupDto> create(@Valid@RequestBody GroupDto groupDto) {
 		
         Group group = groupService.save(groupMapper.toGroup(groupDto));
@@ -53,6 +56,7 @@ public class ApiGroupController {
     }
 	
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('READ_GROUP')")
     public ResponseEntity<GroupDto> findById(@PathVariable Long id) {
 
         Group group = groupService.findById(id);
@@ -62,6 +66,7 @@ public class ApiGroupController {
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('MODIFY_GROUP')")
     public ResponseEntity<?> update(@PathVariable Long id, @Valid@RequestBody GroupDto groupDto) {
 		
 		Group group = groupMapper.toGroup(groupDto);
@@ -72,6 +77,7 @@ public class ApiGroupController {
 
 	@CrossOrigin(methods = RequestMethod.DELETE)
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAuthority('MANAGE_GROUP')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
 		
         groupService.delete(id);
@@ -81,6 +87,7 @@ public class ApiGroupController {
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}/add-student")
+	@PreAuthorize("hasAuthority('MODIFY_GROUP')")
     public ResponseEntity<List<StudentDto>> addStudent(@PathVariable Long id, @RequestBody StudentDto studentDto) {
 		
 		Long studentId = studentDto.getPersonId();
@@ -91,6 +98,7 @@ public class ApiGroupController {
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}/remove-student")
+	@PreAuthorize("hasAuthority('MANAGE_GROUP')")
     public ResponseEntity<List<StudentDto>> removeStudent(@PathVariable Long id, @RequestBody StudentDto studentDto) {
 		
 		Long studentId = studentDto.getPersonId();

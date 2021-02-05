@@ -12,6 +12,7 @@ import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,12 +52,14 @@ public class TimetableController {
 	private final Validator validator;
 	
 	@GetMapping()
+	@PreAuthorize("hasAuthority('READ_TIMETABLE')")
     public String show(Model model) {
 		model.addAttribute("timetableRecords", timetableRecordService.findAll());		
         return "timetable/show-timetable";
     }
 	
 	@GetMapping("/new")
+	@PreAuthorize("hasAuthority('MANAGE_TIMETABLE')")
     public String showSavePage(
     		@RequestParam(name = "date", required = false) LocalDateTime date,
     		@RequestParam(name = "courseId", required = false) Long courseId,
@@ -84,6 +87,7 @@ public class TimetableController {
 	}
 	
 	@PostMapping("/new")
+	@PreAuthorize("hasAuthority('MANAGE_TIMETABLE')")
     public String save(
 			RedirectAttributes redirectAttributes,
 			@ModelAttribute("newRecord") TimetableRecord record,
@@ -116,6 +120,7 @@ public class TimetableController {
 	}
 	
 	@GetMapping("/detail")
+	@PreAuthorize("hasAuthority('READ_TIMETABLE')")
     public String showDetailPage(Model model, @RequestParam(name = "recordId") Long recordId) {		
 		
 		model.addAttribute("timetableRecord", timetableRecordService.findById(recordId));
@@ -124,6 +129,7 @@ public class TimetableController {
 	}
 	
 	@GetMapping("/edit")
+	@PreAuthorize("hasAuthority('MODIFY_TIMETABLE')")
     public String showEditPage(
     		@RequestParam(name = "recordId", required = false) Long recordId,
     		@RequestParam(name = "date", required = false) LocalDateTime date,
@@ -152,6 +158,7 @@ public class TimetableController {
 	}
 	
 	@PostMapping("/edit")
+	@PreAuthorize("hasAuthority('MODIFY_TIMETABLE')")
     public String edit(
 			RedirectAttributes redirectAttributes,
 			@ModelAttribute("newRecord") TimetableRecord record,
@@ -185,6 +192,7 @@ public class TimetableController {
 	
 	
 	@PostMapping("/delete")
+	@PreAuthorize("hasAuthority('MANAGE_TIMETABLE')")
     public String delete(@RequestParam(name = "id") long id) {
 		timetableRecordService.delete(id);
         return "redirect:/timetable";
