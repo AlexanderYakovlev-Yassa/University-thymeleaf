@@ -10,7 +10,7 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class RoleDto {
+public class RoleWhithAuthorityMapDto {
 
 	private Long id;
 	
