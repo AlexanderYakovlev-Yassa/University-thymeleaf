@@ -15,6 +15,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import lombok.Data;
 
 @Data 
@@ -42,7 +44,7 @@ public class User implements Serializable {
 	
 	@ManyToOne
     @JoinColumn(name="user_person_id")
-	@NotBlank(message="validator.message.empty_person")
+	@NotNull(message="validator.message.empty_person")
 	private Person person;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
