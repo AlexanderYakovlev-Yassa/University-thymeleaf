@@ -1,0 +1,21 @@
+- id: 1
+  name: "ADMIN"
+  authorities: 
+    - id: 1
+      name: authority_1
+    - id: 2
+      name: authority_2
+    - id: 3
+      name: authority_3
+- id: 2
+  name: "LECTURER"
+  authorities: 
+    - id: 1
+      name: authority_1
+    - id: 2
+      name: authority_2
+- id: 3
+  name: "STUDENT"
+  authorities: 
+    - id: 1
+      name: authority_1
