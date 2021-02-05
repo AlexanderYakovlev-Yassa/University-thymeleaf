@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="../resources/css/main.css">
     <link rel="stylesheet" href="../resources/css/bootstrap.min.css">
     <link rel="icon" href="../resources/img/logo.png" type="image/png" />
-    <title>Courses</title>
+    <title>Edit role</title>
 </head>
 
 <body>
@@ -29,7 +29,7 @@
 				<div class="col-12">
 					<div class="d-flex flex-column pb-3">
 						<input type="hidden" th:name="id" th:value="${role.id}" />
-						<input th:name="name" th:value="${role.name}">role</a>
+						<input th:name="name" th:value="${role.name}" />
 					</div>
 				</div>
 			</div>
@@ -53,7 +53,7 @@
 	  					<tbody id="authorities"> 			
 	               			<tr th:each="authority, stats : *{authorities}">
 	               				<td th:text="${authority.key}" name="value" th:value="${authority.key}" readonly="true"></td>
-	               				<td>	               					
+	               				<td>
 	               					<input type="checkbox" th:checked="${authority.value}" th:value="${authority.value}" th:field="*{authorities[__${authority.key}__]}" th:name="value"/>
 	               				</td>
 	               			</tr>  						

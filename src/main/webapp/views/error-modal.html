@@ -18,7 +18,7 @@
 					
 					<div class="modal-body d-flex flex-column" id="error-message">
 						<div th:each="message : ${errorMessageList}">
-							<h4 class="text-danger" th:text="'-- ' + ${message}">Error message</h4>
+							<h4 id="error-message" class="text-danger" th:text="'-- ' + ${message}">Error message</h4>
 						</div>
 					</div>
 					

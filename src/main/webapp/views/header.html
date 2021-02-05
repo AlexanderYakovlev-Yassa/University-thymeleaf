@@ -12,11 +12,10 @@
 						<h3 class="text text-primary font-weight-bold text-left">УНИВЕРСИТЕТ</h3>
 					</div>
 					<div class="col-6 d-flex flex-column">
-						<a href="#" class="text text-primary text-right font-italic" id="username"></a>
+						<a href="javascript: goToPage();" class="text text-primary text-right font-italic" id="username"></a>
 					</div>
 				</div>
-			</div>
-			
+			</div>			
 		
 		<hr/>
     	<div class="container">			
@@ -30,45 +29,38 @@
       	          <a href="/university/positions" class="btn btn-outline-primary">должности</a>
       	          <a href="/university/timetable" class="btn btn-outline-primary">рассписание</a>
       	          <a href="/university/roles" class="btn btn-outline-primary">роли</a>
+      	          <a href="/university/users" class="btn btn-outline-primary">пользователи</a>
       	      </div>
       	  	</div>
     	</div>
     	<hr/>
 	    <script>
-	    function initHeader() {
-	    	
-	    	var xhr = new XMLHttpRequest();
-	
-	    	  xhr.onreadystatechange = function() {
-	    	    if (xhr.readyState === 4) {
-	    	      document.getElementById('username').innerText = xhr.response;
-	    	    }
-	    	  }
-	
-	    	  xhr.open('GET', '/university/user', true);
-	    	  xhr.send('');
-	    }
 	    
-	    initHeader();
+	    	function goToPage() {
+	    		
+	    		get('/university/users/active-user', function(data){
+	    			let user = data;
+	    			if (user.firstName == 'Unregistered') {
+	    				document.location.href = '/university/login';
+	    			} else {
+	    				if (confirm('Вы действительно хотите выйти?')){	  
+	    					document.location.href = '/university/logout';
+	    				}
+	    			}
+	    		});
+	    	}
+	    
+		    function setActiveUser(data) {
+		    	
+		    	let user = data;
+		    	document.getElementById('username').innerText = user.firstName + " " + user.lastName;
+		    }
+		    
+		    window.addEventListener("load", function() {
+		        get('/university/api/users/active-user', setActiveUser);
+		    });
 	    </script>
     </div>
-    <script>
-    function initHeader() {
-    	
-    	var xhr = new XMLHttpRequest();
-
-    	  xhr.onreadystatechange = function() {
-    	    if (xhr.readyState === 4) {
-    	      console.log(xhr.response);
-    	    }
-    	  }
-
-    	  xhr.open('GET', '/university/user', true);
-    	  xhr.send('');
-    }
-    
-    initHeader();
-    </script>
   </body>
   
 </html>
