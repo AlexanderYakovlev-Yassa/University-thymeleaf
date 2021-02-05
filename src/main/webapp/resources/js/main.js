@@ -1,4 +1,41 @@
 
+function executRequest(requestMethod, url, dataToSend, callback) {
+		
+	fetch(url, {
+		  method: requestMethod,
+		  headers: {
+		    'Content-Type': 'application/json',
+		  },
+		  body: JSON.stringify(dataToSend),
+		})
+	.then(response => {
+		if(response.status !== 200 && response.status !== 201 && response.status !== 202) {
+			response.json().then(data => {showErrorModal(data.message)});
+		} else {
+			return Promise.resolve(response);
+		}})
+	.then(response => response.json())
+	.then(data => callback(data))	
+	.catch(error => showErrorModal(error.message));
+}
+
+function showErrorModal(message = '') {
+
+	if (document.getElementById('error-message-modal') != null) {
+		document.getElementById('error-message').innerText = message;
+		$("#error-message-modal").modal('show');
+	} else {
+		alert(message);
+	}
+}
+
+function get(url='', callback) {
+
+	fetch(url)
+	.then(response => response.json())
+	.then(data => callback(data));
+}
+
 function select(element) {
 	
 	let document = element.ownerDocument;
