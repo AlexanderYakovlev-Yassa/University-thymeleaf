@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,6 +70,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_COURSE"})
 	void findAllShouldReturnAllCourses() throws Exception {
 		
 		List<Course> courseList = courseGenerator.getCourseList();
@@ -82,6 +84,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_COURSE"})
 	void createShouldSaveCourseIfitValidAndReturnSavedCourse() throws Exception {
 		
 		Course course = courseGenerator.getCourseList().get(0);
@@ -97,6 +100,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_COURSE"})
 	void createShouldReturnStatusIfCourseIsInvalid() throws Exception {
 		
 		Course course = courseGenerator.getCourseList().get(0);
@@ -114,6 +118,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_COURSE"})
 	void findByIdShouldReturnCourseIfSuchCourseExists() throws Exception {
 
 		Course course = courseGenerator.getCourseList().get(0);
@@ -129,6 +134,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_COURSE"})
 	void findByIdShouldReturnStatusNotFoundIfSuchCourseDoesNotExist() throws Exception {
 
 		Long id = 1L;
@@ -141,6 +147,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_COURSE"})
 	void updateShouldReturnUpdatedCourseDtoIfSuchCourseExistsAndValid() throws Exception {
 
 		Course course = courseGenerator.getCourseList().get(0);
@@ -158,6 +165,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_COURSE"})
 	void updateShouldReturnStatusBadRequestIfSuchCourseExistsButInvalid() throws Exception {
 
 		Course course = courseGenerator.getCourseList().get(0);
@@ -177,6 +185,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_COURSE"})
 	void updateShouldReturnStatusNotFoundIfSuchCourseDoesNotExist() throws Exception {
 
 		Course course = courseGenerator.getCourseList().get(0);
@@ -193,6 +202,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_COURSE"})
 	void deleteShouldReturnStatusAcceptedIfSuchCourseExists() throws Exception {
 		
 		Long id = 1L;
@@ -204,6 +214,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_COURSE"})
 	void deleteShouldReturnStatusNotFoundIfSuchCourseDoesNotExist() throws Exception {
 		
 		Long id = 1L;

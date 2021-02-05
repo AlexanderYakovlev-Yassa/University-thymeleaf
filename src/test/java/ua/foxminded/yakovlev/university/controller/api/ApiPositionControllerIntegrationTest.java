@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,6 +70,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_POSITION"})
 	void findAllShouldReturnAllPositions() throws Exception {
 		
 		List<Position> positionList = positionGenerator.getPositionList();
@@ -82,6 +84,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_POSITION"})
 	void createShouldSavePositionIfitValidAndReturnSavedPosition() throws Exception {
 		
 		Position position = positionGenerator.getPositionList().get(0);
@@ -97,6 +100,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_POSITION"})
 	void createShouldReturnStatusIfPositionIsInvalid() throws Exception {
 		
 		Position position = positionGenerator.getPositionList().get(0);
@@ -114,6 +118,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_POSITION"})
 	void findByIdShouldReturnPositionIfSuchPositionExists() throws Exception {
 
 		Position position = positionGenerator.getPositionList().get(0);
@@ -129,6 +134,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_POSITION"})
 	void findByIdShouldReturnStatusNotFoundIfSuchPositionDoesNotExist() throws Exception {
 
 		Long id = 1L;
@@ -141,6 +147,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_POSITION"})
 	void updateShouldReturnUpdatedPositionDtoIfSuchPositionExistsAndValid() throws Exception {
 
 		Position position = positionGenerator.getPositionList().get(0);
@@ -158,6 +165,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_POSITION"})
 	void updateShouldReturnStatusBadRequestIfSuchPositionExistsButInvalid() throws Exception {
 
 		Position position = positionGenerator.getPositionList().get(0);
@@ -177,6 +185,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_POSITION"})
 	void updateShouldReturnStatusNotFoundIfSuchPositionDoesNotExist() throws Exception {
 
 		Position position = positionGenerator.getPositionList().get(0);
@@ -193,6 +202,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_POSITION"})
 	void deleteShouldReturnStatusAcceptedIfSuchPositionExists() throws Exception {
 		
 		Long id = 1L;
@@ -204,6 +214,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_POSITION"})
 	void deleteShouldReturnStatusNotFoundIfSuchPositionDoesNotExist() throws Exception {
 		
 		Long id = 1L;

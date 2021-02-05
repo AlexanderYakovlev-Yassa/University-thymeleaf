@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,6 +79,7 @@ class ApiGroupControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_GROUP"})
 	void findAllShouldReturnAllGroups() throws Exception {
 		
 		List<Group> groupList = groupGenerator.getGroupList();
@@ -91,6 +93,7 @@ class ApiGroupControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_GROUP"})
 	void createShouldSaveGroupIfitValidAndReturnSavedGroup() throws Exception {
 		
 		Group group = groupGenerator.getGroupList().get(0);
@@ -106,6 +109,7 @@ class ApiGroupControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_GROUP"})
 	void createShouldReturnStatusIfGroupIsInvalid() throws Exception {
 		
 		Group group = groupGenerator.getGroupList().get(0);
@@ -123,6 +127,7 @@ class ApiGroupControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_GROUP"})
 	void findByIdShouldReturnGroupIfSuchGroupExists() throws Exception {
 
 		Group group = groupGenerator.getGroupList().get(0);
@@ -138,6 +143,7 @@ class ApiGroupControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_GROUP"})
 	void findByIdShouldReturnStatusNotFoundIfSuchGroupDoesNotExist() throws Exception {
 
 		Long id = 1L;
@@ -150,6 +156,7 @@ class ApiGroupControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_GROUP"})
 	void updateShouldReturnUpdatedGroupDtoIfSuchGroupExistsAndValid() throws Exception {
 
 		Group group = groupGenerator.getGroupList().get(0);
@@ -167,6 +174,7 @@ class ApiGroupControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_GROUP"})
 	void updateShouldReturnStatusBadRequestIfSuchGroupExistsButInvalid() throws Exception {
 
 		Group group = groupGenerator.getGroupList().get(0);
@@ -186,6 +194,7 @@ class ApiGroupControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_GROUP"})
 	void updateShouldReturnStatusNotFoundIfSuchGroupDoesNotExist() throws Exception {
 
 		Group group = groupGenerator.getGroupList().get(0);
@@ -202,6 +211,7 @@ class ApiGroupControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_GROUP"})
 	void deleteShouldReturnStatusAcceptedIfSuchGroupExists() throws Exception {
 		
 		Long id = 1L;
@@ -213,6 +223,7 @@ class ApiGroupControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_GROUP"})
 	void deleteShouldReturnStatusNotFoundIfSuchGroupDoesNotExist() throws Exception {
 		
 		Long id = 1L;
@@ -224,6 +235,7 @@ class ApiGroupControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_GROUP"})
 	void addStudentShouldReturnStatusOkAndListOfStudents() throws Exception {
 		
 		List<Student> studentList = studentGenerator.getStudentList();
@@ -242,6 +254,7 @@ class ApiGroupControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_GROUP"})
 	void addStudentShouldReturnStatusNotFoundIfSuchStudentDoesNotExist() throws Exception {
 		
 		List<Student> studentList = studentGenerator.getStudentList();
@@ -259,6 +272,7 @@ class ApiGroupControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_GROUP"})
 	void addStudentShouldReturnStatusNotFoundIfRequestContentIsNotValid() throws Exception {
 		
 		String jsonStudentDto = "invalid content";
