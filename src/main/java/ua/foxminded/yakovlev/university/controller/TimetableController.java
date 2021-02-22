@@ -154,7 +154,7 @@ public class TimetableController {
 		model.addAttribute("groupsId", groups);		
 		model.addAttribute("errorMessageList", errorMessageList);
 		
-		return "timetable/new-timetable-record";
+		return "timetable/edit-timetable-record";
 	}
 	
 	@PostMapping("/edit")
