@@ -8,7 +8,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import lombok.RequiredArgsConstructor;
 import ua.foxminded.yakovlev.university.dto.UserDto;
 import ua.foxminded.yakovlev.university.entity.Role;
@@ -61,8 +64,8 @@ public class UserController {
     }
 	
 	@GetMapping("/{id}")
-	@PreAuthorize("hasAuthority('MANAGE_USER')")
-    public String newUser(
+	@PreAuthorize("hasAuthority('READ_USER')")
+    public String findUser(
     		@PathVariable Long id,
     		Model model) {
 		
@@ -70,5 +73,13 @@ public class UserController {
 		model.addAttribute("roles", roleService.findAll());
 				
         return "users/edit-user";
+    }
+	
+	@PostMapping("/delete")
+	@PreAuthorize("hasAuthority('MANAGE_USER')")
+    public String delete(@RequestParam(name = "id") Long id) {
+		
+        userService.delete(id);
+        return "redirect:/users";
     }
 }
