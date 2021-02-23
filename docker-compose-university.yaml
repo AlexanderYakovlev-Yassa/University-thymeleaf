@@ -19,7 +19,15 @@ services:
   db:
     image: 'postgres:13'
     container_name: db
+    volumes:
+      - dbdata:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=1254
       - POSTGRES_DB=University
+      - PGDATA=/var/lib/postgresql/data
+    ports:
+      - 10000:5432
+      
+volumes:
+  dbdata:
