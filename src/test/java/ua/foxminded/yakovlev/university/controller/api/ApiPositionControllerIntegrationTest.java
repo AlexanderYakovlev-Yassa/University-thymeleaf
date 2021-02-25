@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,11 +21,14 @@ import ua.foxminded.yakovlev.university.entity.Position;
 import ua.foxminded.yakovlev.university.exception.NotFoundException;
 import ua.foxminded.yakovlev.university.mapper.PositionMapper;
 import ua.foxminded.yakovlev.university.service.PositionService;
+import ua.foxminded.yakovlev.university.service.RoleService;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.service.LecturerService;
+import ua.foxminded.yakovlev.university.service.AuthorityService;
 import ua.foxminded.yakovlev.university.service.CourseService;
 import ua.foxminded.yakovlev.university.service.StudentService;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
+import ua.foxminded.yakovlev.university.service.impl.UserService;
 import ua.foxminded.yakovlev.university.util.PositionGenerator;
 
 @WebMvcTest(ApiPositionController.class)
@@ -43,6 +47,12 @@ class ApiPositionControllerIntegrationTest {
 	private StudentService ss;
 	@MockBean
 	private TimetableRecordService ts;
+	@MockBean
+	private UserService us;
+	@MockBean
+	private RoleService rs;
+	@MockBean
+	private AuthorityService as;
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -60,6 +70,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_POSITION"})
 	void findAllShouldReturnAllPositions() throws Exception {
 		
 		List<Position> positionList = positionGenerator.getPositionList();
@@ -73,6 +84,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_POSITION"})
 	void createShouldSavePositionIfitValidAndReturnSavedPosition() throws Exception {
 		
 		Position position = positionGenerator.getPositionList().get(0);
@@ -88,6 +100,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_POSITION"})
 	void createShouldReturnStatusIfPositionIsInvalid() throws Exception {
 		
 		Position position = positionGenerator.getPositionList().get(0);
@@ -105,6 +118,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_POSITION"})
 	void findByIdShouldReturnPositionIfSuchPositionExists() throws Exception {
 
 		Position position = positionGenerator.getPositionList().get(0);
@@ -120,6 +134,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_POSITION"})
 	void findByIdShouldReturnStatusNotFoundIfSuchPositionDoesNotExist() throws Exception {
 
 		Long id = 1L;
@@ -132,6 +147,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_POSITION"})
 	void updateShouldReturnUpdatedPositionDtoIfSuchPositionExistsAndValid() throws Exception {
 
 		Position position = positionGenerator.getPositionList().get(0);
@@ -149,6 +165,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_POSITION"})
 	void updateShouldReturnStatusBadRequestIfSuchPositionExistsButInvalid() throws Exception {
 
 		Position position = positionGenerator.getPositionList().get(0);
@@ -168,6 +185,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_POSITION"})
 	void updateShouldReturnStatusNotFoundIfSuchPositionDoesNotExist() throws Exception {
 
 		Position position = positionGenerator.getPositionList().get(0);
@@ -184,6 +202,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_POSITION"})
 	void deleteShouldReturnStatusAcceptedIfSuchPositionExists() throws Exception {
 		
 		Long id = 1L;
@@ -195,6 +214,7 @@ class ApiPositionControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_POSITION"})
 	void deleteShouldReturnStatusNotFoundIfSuchPositionDoesNotExist() throws Exception {
 		
 		Long id = 1L;

@@ -35,7 +35,7 @@ class TimetableRepositoryIntegrationTest {
     @Test
     void findAllShoudReturnTimetableRecordList() {     	
     	
-    	List<TimetableRecord> recordList = repository.findAll();//.stream().forEach(System.out::println);   
+    	List<TimetableRecord> recordList = repository.findAll();
     	assertEquals(9, recordList.size());
     	assertNotNull(recordList.get(0).getDate());
     	assertNotNull(recordList.get(0).getLecturer());

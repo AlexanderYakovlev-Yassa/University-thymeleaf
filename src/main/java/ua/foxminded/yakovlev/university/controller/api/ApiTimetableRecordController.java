@@ -9,6 +9,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,23 +38,27 @@ public class ApiTimetableRecordController {
 	private final ResourceBundleMessageSource messageSource;
 	
 	@GetMapping
+	@PreAuthorize("hasAuthority('READ_TIMETABLE')")
     public ResponseEntity<List<TimetableRecordDto>> findAll() {		
         return ResponseEntity.ok(timetableRecordMapper.toTimetableRecordDtos(timetableRecordService.findAll()));
     }
 	
 	@PostMapping
+	@PreAuthorize("hasAuthority('MANAGE_TIMETABLE')")
     public ResponseEntity<TimetableRecordDto> create(@Valid@RequestBody TimetableRecordDto timetableRecordDto) {        
         return ResponseEntity.status(HttpStatus.CREATED).body(timetableRecordMapper
         		.toTimetableRecordDto(timetableRecordService.save(timetableRecordMapper.toTimetableRecord(timetableRecordDto))));
     }
 	
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('READ_TIMETABLE')")
     public ResponseEntity<TimetableRecordDto> findById(@PathVariable Long id) {               
         return ResponseEntity.ok(timetableRecordMapper.toTimetableRecordDto(timetableRecordService.findById(id)));
     }
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('MODIFY_TIMETABLE')")
     public ResponseEntity<TimetableRecordDto> update(@PathVariable Long id, @Valid@RequestBody TimetableRecordDto timetableRecordDto) {
 		
         TimetableRecord timetableRecord = timetableRecordMapper.toTimetableRecord(timetableRecordDto);
@@ -64,6 +69,7 @@ public class ApiTimetableRecordController {
 
 	@CrossOrigin(methods = RequestMethod.DELETE)
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAuthority('MANAGE_TIMETABLE')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         timetableRecordService.delete(id);
         
@@ -71,6 +77,7 @@ public class ApiTimetableRecordController {
     }
 	
 	@GetMapping("/date")
+	@PreAuthorize("hasAuthority('READ_TIMETABLE')")
     public ResponseEntity<List<TimetableRecordDto>> findByDate(
     		@RequestParam(name="start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
     		@RequestParam(name="end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
@@ -79,6 +86,7 @@ public class ApiTimetableRecordController {
     }
 	
 	@GetMapping("/date/group")
+	@PreAuthorize("hasAuthority('READ_TIMETABLE')")
     public ResponseEntity<List<TimetableRecordDto>> findByGroup(
     		@RequestParam(name="start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
     		@RequestParam(name="end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
@@ -88,6 +96,7 @@ public class ApiTimetableRecordController {
     }
 	
 	@GetMapping("/date/lecturer")
+	@PreAuthorize("hasAuthority('READ_TIMETABLE')")
     public ResponseEntity<List<TimetableRecordDto>> findByLecturer(
     		@RequestParam(name="start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
     		@RequestParam(name="end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,

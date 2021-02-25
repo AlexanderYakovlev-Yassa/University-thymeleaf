@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,8 +24,11 @@ import ua.foxminded.yakovlev.university.service.LecturerService;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.service.StudentService;
 import ua.foxminded.yakovlev.university.service.PositionService;
+import ua.foxminded.yakovlev.university.service.RoleService;
+import ua.foxminded.yakovlev.university.service.AuthorityService;
 import ua.foxminded.yakovlev.university.service.CourseService;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
+import ua.foxminded.yakovlev.university.service.impl.UserService;
 import ua.foxminded.yakovlev.university.util.LecturerGenerator;
 
 @WebMvcTest(ApiLecturerController.class)
@@ -43,6 +47,12 @@ class ApiLecturerControllerIntegrationTest {
 	private CourseService cs;
 	@MockBean
 	private TimetableRecordService ts;
+	@MockBean
+	private UserService us;
+	@MockBean
+	private RoleService rs;
+	@MockBean
+	private AuthorityService as;
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -60,6 +70,7 @@ class ApiLecturerControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_LECTURER"})
 	void findAllShouldReturnAllLecturers() throws Exception {
 		
 		List<Lecturer> lecturerList = lecturerGenerator.getLecturerList();
@@ -73,6 +84,7 @@ class ApiLecturerControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_LECTURER"})
 	void createShouldSaveLecturerIfitValidAndReturnSavedLecturer() throws Exception {
 		
 		Lecturer lecturer = lecturerGenerator.getLecturerList().get(0);
@@ -88,6 +100,7 @@ class ApiLecturerControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_LECTURER"})
 	void createShouldReturnStatusIfLecturerIsInvalid() throws Exception {
 		
 		Lecturer lecturer = lecturerGenerator.getLecturerList().get(0);
@@ -105,6 +118,7 @@ class ApiLecturerControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_LECTURER"})
 	void findByIdShouldReturnLecturerIfSuchLecturerExists() throws Exception {
 
 		Lecturer lecturer = lecturerGenerator.getLecturerList().get(0);
@@ -120,6 +134,7 @@ class ApiLecturerControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_LECTURER"})
 	void findByIdShouldReturnStatusNotFoundIfSuchLecturerDoesNotExist() throws Exception {
 
 		Long id = 1L;
@@ -132,6 +147,7 @@ class ApiLecturerControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_LECTURER"})
 	void updateShouldReturnUpdatedLecturerDtoIfSuchLecturerExistsAndValid() throws Exception {
 
 		Lecturer lecturer = lecturerGenerator.getLecturerList().get(0);
@@ -149,6 +165,7 @@ class ApiLecturerControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_LECTURER"})
 	void updateShouldReturnStatusBadRequestIfSuchLecturerExistsButInvalid() throws Exception {
 
 		Lecturer lecturer = lecturerGenerator.getLecturerList().get(0);
@@ -168,6 +185,7 @@ class ApiLecturerControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_LECTURER"})
 	void updateShouldReturnStatusNotFoundIfSuchLecturerDoesNotExist() throws Exception {
 
 		Lecturer lecturer = lecturerGenerator.getLecturerList().get(0);
@@ -184,6 +202,7 @@ class ApiLecturerControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_LECTURER"})
 	void deleteShouldReturnStatusAcceptedIfSuchLecturerExists() throws Exception {
 		
 		Long id = 1L;
@@ -195,6 +214,7 @@ class ApiLecturerControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_LECTURER"})
 	void deleteShouldReturnStatusNotFoundIfSuchLecturerDoesNotExist() throws Exception {
 		
 		Long id = 1L;

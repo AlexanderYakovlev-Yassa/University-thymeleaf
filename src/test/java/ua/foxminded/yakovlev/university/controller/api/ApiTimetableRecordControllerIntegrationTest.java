@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,10 +25,13 @@ import ua.foxminded.yakovlev.university.entity.TimetableRecord;
 import ua.foxminded.yakovlev.university.exception.NotFoundException;
 import ua.foxminded.yakovlev.university.mapper.TimetableRecordMapper;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
+import ua.foxminded.yakovlev.university.service.impl.UserService;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.service.LecturerService;
 import ua.foxminded.yakovlev.university.service.PositionService;
+import ua.foxminded.yakovlev.university.service.RoleService;
 import ua.foxminded.yakovlev.university.service.StudentService;
+import ua.foxminded.yakovlev.university.service.AuthorityService;
 import ua.foxminded.yakovlev.university.service.CourseService;
 import ua.foxminded.yakovlev.university.util.TimetableGenerator;
 
@@ -47,6 +51,12 @@ class ApiTimetableRecordControllerIntegrationTest {
 	private StudentService ss;
 	@MockBean
 	private CourseService cs;
+	@MockBean
+	private UserService us;
+	@MockBean
+	private RoleService rs;
+	@MockBean
+	private AuthorityService as;
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -68,6 +78,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_TIMETABLE"})
 	void findAllShouldReturnAllTimetableRecords() throws Exception {
 		
 		List<TimetableRecord> timetableRecordList = timetableGenerator.getTimetable();
@@ -81,6 +92,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_TIMETABLE"})
 	void createShouldSaveTimetableRecordIfitValidAndReturnSavedTimetableRecord() throws Exception {
 		
 		TimetableRecord timetableRecord = timetableGenerator.getTimetable().get(0);
@@ -96,6 +108,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_TIMETABLE"})
 	void createShouldReturnStatusIfTimetableRecordIsInvalid() throws Exception {
 		
 		TimetableRecord timetableRecord = timetableGenerator.getTimetable().get(0);
@@ -113,6 +126,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_TIMETABLE"})
 	void findByIdShouldReturnTimetableRecordIfSuchTimetableRecordExists() throws Exception {
 
 		TimetableRecord timetableRecord = timetableGenerator.getTimetable().get(0);
@@ -128,6 +142,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_TIMETABLE"})
 	void findByIdShouldReturnStatusNotFoundIfSuchTimetableRecordDoesNotExist() throws Exception {
 
 		Long id = 1L;
@@ -140,6 +155,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_TIMETABLE"})
 	void updateShouldReturnUpdatedTimetableRecordDtoIfSuchTimetableRecordExistsAndValid() throws Exception {
 
 		TimetableRecord timetableRecord = timetableGenerator.getTimetable().get(0);
@@ -157,6 +173,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_TIMETABLE"})
 	void updateShouldReturnStatusBadRequestIfSuchTimetableRecordExistsButInvalid() throws Exception {
 
 		TimetableRecord timetableRecord = timetableGenerator.getTimetable().get(0);
@@ -176,10 +193,10 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_TIMETABLE"})
 	void updateShouldReturnStatusNotFoundIfSuchTimetableRecordDoesNotExist() throws Exception {
 
 		TimetableRecord timetableRecord = timetableGenerator.getTimetable().get(0);
-		System.out.println(timetableGenerator.getTimetable().get(0).getDate());
 		Long id = timetableRecord.getId();
 		String jsonTimetableRecordDto = objectMapper.writeValueAsString(timetableRecordMapper.toTimetableRecordDto(timetableRecord));
 		
@@ -193,6 +210,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_TIMETABLE"})
 	void deleteShouldReturnStatusAcceptedIfSuchTimetableRecordExists() throws Exception {
 		
 		Long id = 1L;
@@ -204,6 +222,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_TIMETABLE"})
 	void deleteShouldReturnStatusNotFoundIfSuchTimetableRecordDoesNotExist() throws Exception {
 		
 		Long id = 1L;
@@ -215,6 +234,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_TIMETABLE"})
 	void findByDateShouldReturnStatusOkAndTimetableRecords() throws Exception {
 		
 		List<TimetableRecord> timetableRecordList = timetableGenerator.getTimetable();
@@ -234,6 +254,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_TIMETABLE"})
 	void findByDateShouldReturnStatusBadRequestIfParamsIsNotValid() throws Exception {
 		
 		String start = "not valid date";
@@ -249,6 +270,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_TIMETABLE"})
 	void findByGroupShouldReturnStatusOkAndTimetableRecords() throws Exception {
 		
 		List<TimetableRecord> timetableRecordList = timetableGenerator.getTimetable();
@@ -270,6 +292,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_TIMETABLE"})
 	void findByGroupShouldReturnStatusNotFoundIfSuchGroupIdDoesNotExist() throws Exception {
 		
 		String start = "2020-10-16T00:00:00";
@@ -289,6 +312,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_TIMETABLE"})
 	void findByGroupShouldReturnStatusBadRequestIfDateIsNotValid() throws Exception {
 		
 		String start = "invalid date";
@@ -306,6 +330,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_TIMETABLE"})
 	void findByLecturerShouldReturnStatusOkAndTimetableRecords() throws Exception {
 		
 		List<TimetableRecord> timetableRecordList = timetableGenerator.getTimetable();
@@ -327,6 +352,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_TIMETABLE"})
 	void findByLecturerShouldReturnStatusNotFoundIfSuchLecturerIdDoesNotExist() throws Exception {
 		
 		String start = "2020-10-16T00:00:00";
@@ -346,6 +372,7 @@ class ApiTimetableRecordControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_TIMETABLE"})
 	void findByLecturerShouldReturnStatusBadRequestIfDateIsNotValid() throws Exception {
 		
 		String start = "invalid date";

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,12 +20,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ua.foxminded.yakovlev.university.entity.Course;
 import ua.foxminded.yakovlev.university.exception.NotFoundException;
 import ua.foxminded.yakovlev.university.mapper.CourseMapper;
+import ua.foxminded.yakovlev.university.service.AuthorityService;
 import ua.foxminded.yakovlev.university.service.CourseService;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.service.LecturerService;
 import ua.foxminded.yakovlev.university.service.PositionService;
+import ua.foxminded.yakovlev.university.service.RoleService;
 import ua.foxminded.yakovlev.university.service.StudentService;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
+import ua.foxminded.yakovlev.university.service.impl.UserService;
 import ua.foxminded.yakovlev.university.util.CourseGenerator;
 
 @WebMvcTest(ApiCourseController.class)
@@ -43,6 +47,12 @@ class ApiCourseControllerIntegrationTest {
 	private StudentService ss;
 	@MockBean
 	private TimetableRecordService ts;
+	@MockBean
+	private UserService us;
+	@MockBean
+	private RoleService rs;
+	@MockBean
+	private AuthorityService as;
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -60,6 +70,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_COURSE"})
 	void findAllShouldReturnAllCourses() throws Exception {
 		
 		List<Course> courseList = courseGenerator.getCourseList();
@@ -73,6 +84,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_COURSE"})
 	void createShouldSaveCourseIfitValidAndReturnSavedCourse() throws Exception {
 		
 		Course course = courseGenerator.getCourseList().get(0);
@@ -88,6 +100,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_COURSE"})
 	void createShouldReturnStatusIfCourseIsInvalid() throws Exception {
 		
 		Course course = courseGenerator.getCourseList().get(0);
@@ -105,6 +118,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_COURSE"})
 	void findByIdShouldReturnCourseIfSuchCourseExists() throws Exception {
 
 		Course course = courseGenerator.getCourseList().get(0);
@@ -120,6 +134,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_COURSE"})
 	void findByIdShouldReturnStatusNotFoundIfSuchCourseDoesNotExist() throws Exception {
 
 		Long id = 1L;
@@ -132,6 +147,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_COURSE"})
 	void updateShouldReturnUpdatedCourseDtoIfSuchCourseExistsAndValid() throws Exception {
 
 		Course course = courseGenerator.getCourseList().get(0);
@@ -149,6 +165,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_COURSE"})
 	void updateShouldReturnStatusBadRequestIfSuchCourseExistsButInvalid() throws Exception {
 
 		Course course = courseGenerator.getCourseList().get(0);
@@ -168,6 +185,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_COURSE"})
 	void updateShouldReturnStatusNotFoundIfSuchCourseDoesNotExist() throws Exception {
 
 		Course course = courseGenerator.getCourseList().get(0);
@@ -184,6 +202,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_COURSE"})
 	void deleteShouldReturnStatusAcceptedIfSuchCourseExists() throws Exception {
 		
 		Long id = 1L;
@@ -195,6 +214,7 @@ class ApiCourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_COURSE"})
 	void deleteShouldReturnStatusNotFoundIfSuchCourseDoesNotExist() throws Exception {
 		
 		Long id = 1L;

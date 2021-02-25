@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,12 +35,14 @@ public class ApiCourseController {
 	private final ResourceBundleMessageSource messageSource;
 	
 	@GetMapping
+	@PreAuthorize("hasAuthority('READ_COURSE')")
     public ResponseEntity<List<CourseDto>> findAll() {		
 		
         return ResponseEntity.ok(courseMapper.toCourseDtos(courseService.findAll()));
     }
 	
 	@PostMapping
+	@PreAuthorize("hasAuthority('MANAGE_COURSE')")
     public ResponseEntity<CourseDto> create(@Valid@RequestBody CourseDto courseDto) {
 		
         Course course = courseService.save(courseMapper.toCourse(courseDto));
@@ -48,6 +51,7 @@ public class ApiCourseController {
     }
 	
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('READ_COURSE')")
     public ResponseEntity<CourseDto> findById(@PathVariable Long id) {
 
         Course course = courseService.findById(id);
@@ -57,6 +61,7 @@ public class ApiCourseController {
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('MODIFY_COURSE')")
     public ResponseEntity<CourseDto> update(@PathVariable Long id, @Valid@RequestBody CourseDto courseDto) {
 		
 		Course course = courseMapper.toCourse(courseDto);
@@ -67,6 +72,7 @@ public class ApiCourseController {
 
 	@CrossOrigin(methods = RequestMethod.DELETE)
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAuthority('MANAGE_COURSE')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         courseService.delete(id);
         

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,8 +24,11 @@ import ua.foxminded.yakovlev.university.service.StudentService;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.service.LecturerService;
 import ua.foxminded.yakovlev.university.service.PositionService;
+import ua.foxminded.yakovlev.university.service.RoleService;
+import ua.foxminded.yakovlev.university.service.AuthorityService;
 import ua.foxminded.yakovlev.university.service.CourseService;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
+import ua.foxminded.yakovlev.university.service.impl.UserService;
 import ua.foxminded.yakovlev.university.util.StudentGenerator;
 
 @WebMvcTest(ApiStudentController.class)
@@ -43,6 +47,12 @@ class ApiStudentControllerIntegrationTest {
 	private CourseService cs;
 	@MockBean
 	private TimetableRecordService ts;
+	@MockBean
+	private UserService us;
+	@MockBean
+	private RoleService rs;
+	@MockBean
+	private AuthorityService as;
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -60,6 +70,7 @@ class ApiStudentControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_STUDENT"})
 	void findAllShouldReturnAllStudents() throws Exception {
 		
 		List<Student> studentList = studentGenerator.getStudentList();
@@ -73,6 +84,7 @@ class ApiStudentControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_STUDENT"})
 	void createShouldSaveStudentIfitValidAndReturnSavedStudent() throws Exception {
 		
 		Student student = studentGenerator.getStudentList().get(0);
@@ -88,6 +100,7 @@ class ApiStudentControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_STUDENT"})
 	void createShouldReturnStatusIfStudentIsInvalid() throws Exception {
 		
 		Student student = studentGenerator.getStudentList().get(0);
@@ -105,6 +118,7 @@ class ApiStudentControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_STUDENT"})
 	void findByIdShouldReturnStudentIfSuchStudentExists() throws Exception {
 
 		Student student = studentGenerator.getStudentList().get(0);
@@ -120,6 +134,7 @@ class ApiStudentControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"READ_STUDENT"})
 	void findByIdShouldReturnStatusNotFoundIfSuchStudentDoesNotExist() throws Exception {
 
 		Long id = 1L;
@@ -132,6 +147,7 @@ class ApiStudentControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_STUDENT"})
 	void updateShouldReturnUpdatedStudentDtoIfSuchStudentExistsAndValid() throws Exception {
 
 		Student student = studentGenerator.getStudentList().get(0);
@@ -149,6 +165,7 @@ class ApiStudentControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_STUDENT"})
 	void updateShouldReturnStatusBadRequestIfSuchStudentExistsButInvalid() throws Exception {
 
 		Student student = studentGenerator.getStudentList().get(0);
@@ -168,6 +185,7 @@ class ApiStudentControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MODIFY_STUDENT"})
 	void updateShouldReturnStatusNotFoundIfSuchStudentDoesNotExist() throws Exception {
 
 		Student student = studentGenerator.getStudentList().get(0);
@@ -184,6 +202,7 @@ class ApiStudentControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_STUDENT"})
 	void deleteShouldReturnStatusAcceptedIfSuchStudentExists() throws Exception {
 		
 		Long id = 1L;
@@ -195,6 +214,7 @@ class ApiStudentControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "user", authorities={"MANAGE_STUDENT"})
 	void deleteShouldReturnStatusNotFoundIfSuchStudentDoesNotExist() throws Exception {
 		
 		Long id = 1L;

@@ -1,0 +1,67 @@
+- id: 1
+  name: "ivanov"
+  password: "$2a$10$iqEhMlswFNh9xw.dooscjecH0m.oassW9W4qTbpQFORIZgKHS4Cau"
+  person: 
+    personId: 1
+    firstName: "Иван"
+    lastName: "Иванов"
+  enabled: true
+  roleSet:
+    - id: 3
+      name: "STUDENT"
+      authorities: 
+        - id: 1
+          name: authority_1
+- id: 2
+  name: "sidorov"
+  password: "$2a$10$iqEhMlswFNh9xw.dooscjecH0m.oassW9W4qTbpQFORIZgKHS4Cau"
+  person: 
+    personId: 3
+    firstName: "Сидор"
+    lastName: "Сидоров"
+  enabled: true
+  roleSet:
+    - id: 3
+      name: "STUDENT"
+      authorities: 
+        - id: 1
+          name: authority_1
+- id: 3
+  name: "fedotov"
+  password: "$2a$10$iqEhMlswFNh9xw.dooscjecH0m.oassW9W4qTbpQFORIZgKHS4Cau"
+  person: 
+    personId: 4
+    firstName: "Егор"
+    lastName: "Федотов"
+  enabled: true
+  roleSet:
+    - id: 3
+      name: "STUDENT"
+      authorities: 
+        - id: 1
+          name: authority_1
+- id: 4
+  name: "aksenov"
+  password: "$2a$10$iqEhMlswFNh9xw.dooscjecH0m.oassW9W4qTbpQFORIZgKHS4Cau"
+  person: 
+    personId: 6
+    firstName: "Андрей"
+    lastName: "Аксенов"
+  enabled: true
+  roleSet:
+    - id: 1
+      name: "ADMIN"
+      authorities: 
+        - id: 1
+          name: authority_1
+        - id: 2
+          name: authority_2
+        - id: 3
+          name: authority_3
+    - id: 2
+      name: "LECTURER"
+      authorities: 
+        - id: 1
+          name: authority_1
+        - id: 2
+          name: authority_2

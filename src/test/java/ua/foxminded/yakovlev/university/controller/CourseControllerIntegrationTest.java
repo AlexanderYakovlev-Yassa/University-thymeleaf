@@ -11,15 +11,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import ua.foxminded.yakovlev.university.entity.Course;
+import ua.foxminded.yakovlev.university.service.AuthorityService;
 import ua.foxminded.yakovlev.university.service.CourseService;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.service.LecturerService;
 import ua.foxminded.yakovlev.university.service.PositionService;
+import ua.foxminded.yakovlev.university.service.RoleService;
 import ua.foxminded.yakovlev.university.service.StudentService;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
+import ua.foxminded.yakovlev.university.service.impl.UserService;
 import ua.foxminded.yakovlev.university.util.CourseGenerator;
 
 @WebMvcTest(CourseController.class)
@@ -38,6 +42,12 @@ class CourseControllerIntegrationTest {
 	private StudentService ss;
 	@MockBean
 	private TimetableRecordService ts;
+	@MockBean
+	private UserService us;
+	@MockBean
+	private RoleService rs;
+	@MockBean
+	private AuthorityService as;
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -50,6 +60,7 @@ class CourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "ram", authorities={"READ_COURSE"})
 	void showMustReturnPageWithAllCourses() throws Exception {
 		
 		List<Course> courseList = courseGenerator.getCourseList();
@@ -63,6 +74,7 @@ class CourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "ram", authorities={"MANAGE_COURSE"})
 	void createMustReturnPageForCompletingNewCourse() throws Exception {
 		
 		Course course = new Course();
@@ -74,6 +86,7 @@ class CourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "ram", authorities={"MANAGE_COURSE"})
 	void saveMustSaveCourseWhenCourseIsValid() throws Exception {
 		
 		Course course = courseGenerator.getCourse(null, "Name", "Description");
@@ -88,6 +101,7 @@ class CourseControllerIntegrationTest {
 	}
 
 	@Test
+	@WithMockUser(username = "ram", authorities={"MANAGE_COURSE"})
 	void saveMustRedirectToCreateWhenCourseIsInvalid() throws Exception {
 		
 		Course course = courseGenerator.getCourse(null, " ", "Description");		
@@ -100,6 +114,7 @@ class CourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "ram", authorities={"MODIFY_COURSE"})
 	void editMustReturnPageForEditingCourse() throws Exception {
 		
 		Course course = courseGenerator.getCourse(5L, "Name", "Description");
@@ -113,6 +128,7 @@ class CourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "ram", authorities={"MODIFY_COURSE"})
 	void updateMustRedirectToEditWhenCourseIsInvalid() throws Exception {
 		
 		Course course = courseGenerator.getCourse(5L, " ", "Description");
@@ -125,6 +141,7 @@ class CourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "ram", authorities={"MODIFY_COURSE"})
 	void updateMustUpdateCourseWhenCourseIsValid() throws Exception {
 		
 		Course course = courseGenerator.getCourse(5L, "Name", "Description");
@@ -137,6 +154,7 @@ class CourseControllerIntegrationTest {
 	}
 	
 	@Test
+	@WithMockUser(username = "ram", authorities={"MANAGE_COURSE"})
 	void deleteMustRetrieveDeleteMethodAndRedirectToCourses() throws Exception {
 		
 		Long id = 5L;

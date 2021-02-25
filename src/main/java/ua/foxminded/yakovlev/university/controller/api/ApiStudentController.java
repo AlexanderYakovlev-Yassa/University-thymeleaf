@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,12 +35,14 @@ public class ApiStudentController {
 	private final ResourceBundleMessageSource messageSource;
 	
 	@GetMapping
+	@PreAuthorize("hasAuthority('READ_STUDENT')")
     public ResponseEntity<List<StudentDto>> findAll() {		
 		
         return ResponseEntity.ok(studentMapper.toStudentDtos(studentService.findAll()));
     }
 	
 	@PostMapping
+	@PreAuthorize("hasAuthority('MANAGE_STUDENT')")
     public ResponseEntity<StudentDto> create(@Valid@RequestBody StudentDto studentDto) {
 		
         Student student = studentService.save(studentMapper.toStudent(studentDto));
@@ -48,6 +51,7 @@ public class ApiStudentController {
     }
 	
 	@GetMapping("/{id}")
+	@PreAuthorize("hasAuthority('READ_STUDENT')")
     public ResponseEntity<StudentDto> findById(@PathVariable Long id) {
 
         Student student = studentService.findById(id);
@@ -57,6 +61,7 @@ public class ApiStudentController {
 	
 	@CrossOrigin(methods = RequestMethod.PUT)
 	@PutMapping("/{id}")
+	@PreAuthorize("hasAuthority('MODIFY_STUDENT')")
     public ResponseEntity<StudentDto> update(@PathVariable Long id, @Valid@RequestBody StudentDto studentDto) {
 		
         Student student = studentMapper.toStudent(studentDto);
@@ -67,6 +72,7 @@ public class ApiStudentController {
 
 	@CrossOrigin(methods = RequestMethod.DELETE)
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasAuthority('MANAGE_STUDENT')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         studentService.delete(id);
         
@@ -74,6 +80,7 @@ public class ApiStudentController {
     }
 	
 	@GetMapping("/group/{id}")
+	@PreAuthorize("hasAuthority('READ_STUDENT')")
     public ResponseEntity<List<StudentDto>> findByGroup(@PathVariable Long id) {		
         return ResponseEntity.ok(studentMapper.toStudentDtos(studentService.findByGroupId(id)));
     }
