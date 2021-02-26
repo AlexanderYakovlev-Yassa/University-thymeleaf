@@ -38,7 +38,7 @@
 	    
 	    	function goToPage() {
 	    		
-	    		get('/university/users/active-user', function(data){
+	    		get('/university/api/users/active-user', function(data){
 	    			let user = data;
 	    			if (user.firstName == 'Unregistered') {
 	    				document.location.href = '/university/login';
