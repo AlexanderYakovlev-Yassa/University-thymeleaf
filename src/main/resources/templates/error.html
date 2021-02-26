@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="icon" th:href="@{/img/logo.png}" type="image/png">
+    <title>Greeting</title>
+</head>
+
+<body>    
+    
+	<div th:include="~{header :: header}"></div>
+	
+	<div class="container">
+		
+		<div class="row">
+			<div class="col-12">
+				<div>
+					<h2 class="text text-danger" th:text="${errorMessage}">ERROR MESSAGE</h2>
+				</div>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="col-12">
+				<div>
+					<a href="javascript:history.back()" class="btn btn-outline-primary">Назад</a>
+				</div>
+			</div>
+		</div>
+	
+		<div class="row">
+			<div class="col-12">
+				<div>					
+					<img th:src="@{/img/main-screen.png}" alt="university-img" class="img-fluid"/>
+				</div>				
+			</div>			
+		</div>
+	</div>
+	
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/jquery.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>
