@@ -1,5 +1,6 @@
 package ua.foxminded.yakovlev.university.controller;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +29,7 @@ import ua.foxminded.yakovlev.university.entity.Course;
 import ua.foxminded.yakovlev.university.entity.Group;
 import ua.foxminded.yakovlev.university.entity.Lecturer;
 import ua.foxminded.yakovlev.university.entity.TimetableRecord;
+import ua.foxminded.yakovlev.university.entity.User;
 import ua.foxminded.yakovlev.university.mapper.CourseMapper;
 import ua.foxminded.yakovlev.university.mapper.GroupMapper;
 import ua.foxminded.yakovlev.university.mapper.LecturerMapper;
@@ -34,6 +37,7 @@ import ua.foxminded.yakovlev.university.service.CourseService;
 import ua.foxminded.yakovlev.university.service.GroupService;
 import ua.foxminded.yakovlev.university.service.LecturerService;
 import ua.foxminded.yakovlev.university.service.TimetableRecordService;
+import ua.foxminded.yakovlev.university.service.impl.UserService;
 
 @Controller
 @RequiredArgsConstructor
@@ -46,7 +50,8 @@ public class TimetableController {
 	private final GroupService groupService;
 	private final GroupMapper groupMapper;
 	private final CourseService courseService;	
-	private final CourseMapper courseMapper;	
+	private final CourseMapper courseMapper;
+	private final UserService userService;
 	@Qualifier(value="messageSource")
 	private final ResourceBundleMessageSource messageSource;
 	private final Validator validator;
@@ -188,14 +193,34 @@ public class TimetableController {
 		timetableRecordService.update(newRecord);
 		
 		return "redirect:/timetable";
-	}
-	
+	}	
 	
 	@PostMapping("/delete")
 	@PreAuthorize("hasAuthority('MANAGE_TIMETABLE')")
     public String delete(@RequestParam(name = "id") long id) {
 		timetableRecordService.delete(id);
         return "redirect:/timetable";
+    }
+	
+	@GetMapping("/personal")
+	//@PreAuthorize("hasAuthority('READ_TIMETABLE')")
+    public String showPersonalTimetable(
+    		@RequestParam(name="start", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start, 
+    		@RequestParam(name="numberOfDays", required = false) Long numberOfDays, 
+    		Principal principal, 
+    		Model model) {
+		
+		if (principal == null) {
+			throw new IllegalArgumentException("Undefined user");
+		}
+		
+		User activeUser = userService.findByUsername(principal.getName());
+		
+		model.addAttribute("timetableRecords", timetableRecordService.findByUser(activeUser, start, numberOfDays));
+		model.addAttribute("startDate", start);
+		model.addAttribute("numberOfDays", numberOfDays);
+		
+        return "timetable/show-personal-timetable";
     }
 	
 	private TimetableRecord collectRecord(TimetableRecord record, String groups) {
