@@ -221,41 +221,7 @@ initPage();
 			refresh();
 		}
 	}
-	/*
-	function setDateTime(dateTime) {
-		let dateElement = document.getElementById("date");
-		let dateeTimeString = dateTime.toISOString();
-		dateElement.value = dateeTimeString.slice(0, dateeTimeString.length - 1);
-	}
-	
-	function setDate() {
-		
-		let dateElement = document.getElementById("date");
-		let element = document.getElementById("date-picker");
-		
-		let recordDate = new Date(dateElement.value);
-		let newDate = new Date(element.value);
 
-		recordDate.setDate(newDate.getDate());
-		recordDate.setMonth(newDate.getMonth());
-		recordDate.setFullYear(newDate.getFullYear());
-		
-		setDateTime(recordDate);
-	}
-	
-	function setTime() {
-		
-		let element = document.getElementById("time-picker");
-		let dateElement = document.getElementById("date");
-		let recordDate = new Date(dateElement.value);		
-		let newTimeParts = element.value.split(":");
-				
-		recordDate.setUTCHours(newTimeParts[0]);
-		recordDate.setMinutes(newTimeParts[1]);
-		
-		setDateTime(recordDate);
-	}
-	*/
 	function toDateTimePicker() {	
 		
 		let date = new Date();
