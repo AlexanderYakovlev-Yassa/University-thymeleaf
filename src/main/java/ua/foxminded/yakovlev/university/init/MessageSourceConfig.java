@@ -13,6 +13,7 @@ public class MessageSourceConfig {
 		String message = "message";
 		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 		messageSource.setBasename(message);
+		messageSource.setUseCodeAsDefaultMessage(true);
 		return messageSource;		
 	}
 }

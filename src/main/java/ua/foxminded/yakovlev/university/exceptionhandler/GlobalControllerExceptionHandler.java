@@ -6,51 +6,65 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.ModelAndView;
 
+import lombok.AllArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.http.HttpStatus;
 import ua.foxminded.yakovlev.university.exception.NotFoundException;
-import java.lang.IllegalArgumentException;
+import java.util.Locale;
 
 @ControllerAdvice
+@AllArgsConstructor
 class GlobalControllerExceptionHandler {
-    
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NotFoundException.class)
-    @ResponseBody
-    public ExceptionInfo handleNotFound(HttpServletRequest req, NotFoundException exception) {    	
-		return new ExceptionInfo(req.getRequestURI(), exception.getMessage());
-    }
-    
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseBody
-    public ExceptionInfo handleIllegalArgument(HttpServletRequest req, IllegalArgumentException exception) {    	    	
-		return new ExceptionInfo(req.getRequestURI(), exception.getMessage());
-    }
-    
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseBody
-    public ExceptionInfo handleMethodArgumentNotValid(HttpServletRequest req, MethodArgumentNotValidException exception) {
-                          
-            BindingResult result = exception.getBindingResult();                
-            String errorsMessage = result.getAllErrors().stream()
-            		.map((e) -> e.getDefaultMessage())
-            		.reduce((s1, s2) -> s1 + "; " + s2).orElse("");
-             
-            return new ExceptionInfo(req.getRequestURI(), errorsMessage);
-    }
-    
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    @ResponseBody
-    public ExceptionInfo MethodArgumentTypeMismatchException(HttpServletRequest req, MethodArgumentTypeMismatchException exception) {
-                          
-            String errorsMessage = exception.getRootCause().getMessage();
-             
-            return new ExceptionInfo(req.getRequestURI(), errorsMessage);
-    }
+	
+	private static final String DEFAULT_ERROR_VIEW = "error";
+	
+	@Qualifier(value="messageSource")
+	private final ResourceBundleMessageSource messageSource;
+
+	@ExceptionHandler(NotFoundException.class)
+	public ModelAndView handleNotFoundException(HttpServletRequest req, NotFoundException exception) {
+		return getModelAndView(DEFAULT_ERROR_VIEW, exception.getMessage(), HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ModelAndView handleIllegalArgument(HttpServletRequest req, IllegalArgumentException exception) {
+		return getModelAndView(DEFAULT_ERROR_VIEW, exception.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ModelAndView handleMethodArgumentNotValid(HttpServletRequest req, MethodArgumentNotValidException exception) {
+		
+		BindingResult result = exception.getBindingResult();
+		String errorsMessage = result.getAllErrors().stream().map((e) -> e.getDefaultMessage())
+				.reduce((s1, s2) -> s1 + "; " + s2).orElse("");
+		
+		return getModelAndView(DEFAULT_ERROR_VIEW, errorsMessage, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ModelAndView MethodArgumentTypeMismatchException(HttpServletRequest req,
+			MethodArgumentTypeMismatchException exception) {
+
+		return getModelAndView(DEFAULT_ERROR_VIEW, exception.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(Exception.class)
+	public ModelAndView exception(HttpServletRequest req,
+			Exception exception) {
+		return getModelAndView(DEFAULT_ERROR_VIEW, "error_message.access_denied", HttpStatus.FORBIDDEN);
+	}
+
+	private ModelAndView getModelAndView(String view, String message, HttpStatus status) {
+
+		ModelAndView modelAndView = new ModelAndView(view, status);
+		
+		modelAndView.addObject("errorMessage", messageSource.getMessage(message, null, Locale.getDefault()));
+
+		return modelAndView;
+	}
 }

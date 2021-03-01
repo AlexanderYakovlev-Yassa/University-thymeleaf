@@ -86,4 +86,8 @@ public class UserService implements UserDetailsService {
 	public void delete(Long id) {
 		userRepository.delete(findById(id));
 	}
+	
+	public Set<User> findByRoleId(Long id) {
+		return userRepository.findByRoleId(id);		
+	}
 }

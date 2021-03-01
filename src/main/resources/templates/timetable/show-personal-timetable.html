@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="icon" th:href="@{/img/logo.png}" type="image/icon type" />
+    <title>Timetable</title>
+</head>
+
+<body>
+
+	<div th:include="~{header :: header}"></div>
+	
+    <div class="container">
+    	<div class="row">
+			<div class="col-12">
+				<h4 class="text-primary">Мое расписание занятий</h4>
+			</div>
+		</div>
+		<hr/>
+    	<div class="row mt-3">
+			<div class="col-6">
+				<div class="btn-group btn-group-toggle" data-toggle="buttons" id="radio">
+					<label class="btn btn-outline-primary">
+						<input type="radio" onclick="radioOption1Clicked()" id="radioOption1" > Расписание на день
+					</label>
+					<label class="btn btn-outline-primary">
+						<input type="radio" onclick="radioOption30Clicked()" id="radioOption30" > Расписание на месяц
+					</label>
+				</div>			
+			</div>
+			<div class="col-4">
+				<input type="date" id="datePicker"  onchange="datePickerChanged()"/>
+			</div>
+			<div class="col-2">
+				<form method="GET" action="/university/timetable/personal">				
+					<input type="hidden" id="start" name="start"/>
+					<input type="hidden" id="numberOfDays" name="numberOfDays"/>
+					<button type="submit" class="btn btn-outline-primary" >Обновить</button>
+				</form>
+			</div>
+		</div>
+		<hr/>
+    	<div>			
+			<input type="hidden" th:value="${startDate}" id="oldStartDate" />
+			<input type="hidden" th:value="${numberOfDays}" id="oldNumberOfDays" />					
+		</div>
+        <div class="row">
+            <div class="col-12">
+            <div class="table-wrapper-scroll-y my-custom-scrollbar">
+            	<table class="table table-hover table-striped table-bordered table-sm my-custom-scrollbar">
+            		<thead>
+    					<tr>
+      						<th scope="col">Дата</th>
+      						<th scope="col">Вемя</th>
+      						<th scope="col">Курс</th>
+      						<th scope="col">Преподаватель</th>
+      						<th scope="col">Группы</th>
+    					</tr>
+  					</thead>
+  					<tbody id="timetable">
+               			<tr th:each="timetableRecord : ${timetableRecords}">
+               				<td>
+   								<input type="hidden" th:value="${timetableRecord.id}" />
+   								<input type="hidden" th:value="${timetableRecord.date}" />
+               					<a href="#">date</a>
+               				</td>
+               				<td>
+               					<a href="#">time</a>
+               				</td>
+               				<td>
+               					<a href="#" th:text="${timetableRecord.course.name}">course</a>
+               				</td>
+               				<td>
+               					<a href="#" th:text="${timetableRecord.lecturer.firstName} + ' ' + ${timetableRecord.lecturer.lastName}">lecturer</a>
+               				</td>
+               				<td>
+               					<span th:each="group : ${timetableRecord.groupList}">
+               						<a href="#" th:text="${group.name}">groups</a><span> </span>
+               					</span>                					
+               				</td>
+               			</tr>
+                	</tbody>
+                </table>
+            </div>
+            </div>
+        </div>
+    </div>
+    <hr/>
+    <div class="container">        		
+		<div class="row">
+			<div class="col-12 d-flex">
+				<div>
+					<form method="GET" action="detail">
+						<input type="hidden" id="record-id-to-be-detailed" name="recordId"/>
+						<input onclick="submitForm(this, 'record-id-to-be-detailed')" class="btn btn-outline-primary" value="Смотреть подробно"/>
+					</form>
+				</div>
+			</div>
+		</div>
+    </div>
+    <hr/>
+    
+<script th:src="@{/js/main.js}"></script>
+<script th:src="@{/js/jquery.js}"></script>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+<script>
+
+let globalStartDate = dropTimeOfDate(new Date());
+let globalNumberOfDays = 1;
+
+function dropTimeOfDate(date) {
+	date.setHours(0);
+	date.setMinutes(0);
+	date.setSeconds(0);
+	
+	return date;
+}
+
+function setRadioGroup() {
+	
+	let radioOption1 = document.getElementById("radioOption1");
+	let radioOption30 = document.getElementById("radioOption30");
+	
+	if (globalNumberOfDays == 1) {
+		radioOption1.checked = true;
+		radioOption30.checked = false;
+	}
+	
+	if (globalNumberOfDays > 1) {
+		radioOption1.checked = false;
+		radioOption30.checked = true;
+	}
+}
+
+function setDatePicker() {	
+	let datePicker = document.getElementById("datePicker");
+	let dateToBeSetted = new Date(globalStartDate.getTime() + getLocalTimeOffsetMillis());
+	datePicker.value = dateToBeSetted.toISOString().slice(0, -14);
+}
+
+function radioOption1Clicked() {
+	globalNumberOfDays = 1;
+	setRadioGroup();
+	setFormFields();
+}
+
+function radioOption30Clicked() {
+	globalNumberOfDays = 30;
+	setRadioGroup();
+	setFormFields();
+}
+
+function datePickerChanged() {
+	const date = new Date(document.getElementById("datePicker").value);
+	globalStartDate = date;
+	setFormFields();
+}
+
+function setFormFields() {
+	document.getElementById("numberOfDays").value = globalNumberOfDays;
+	let date = dropTimeOfDate(globalStartDate);
+	document.getElementById("start").value = date.toISOString().slice(0, -5);
+}
+
+function checkOldStartDate() {
+
+	const oldDateString = document.getElementById("oldStartDate").value;
+	
+	if (oldDateString != "") {
+		rawDate = new Date(oldDateString);
+		globalStartDate = new Date(rawDate.getTime() + getLocalTimeOffsetMillis());
+	}
+	
+	setDatePicker();
+}
+
+function getLocalTimeOffsetMillis() {
+	const date = new Date();
+	return date.getTimezoneOffset() * 60000 * (-1);
+}
+
+function checkOldNumberOfDays() {
+	
+	const oldNumberOfDays = document.getElementById("oldNumberOfDays").value;
+	
+	if (oldNumberOfDays != "") {
+		globalNumberOfDays = oldNumberOfDays;
+	}
+	
+	setRadioGroup();
+}
+
+checkOldStartDate();
+checkOldNumberOfDays();
+setFormFields();
+
+</script>
+ 
+<script>
+
+	function submitForm(element, id) {
+		
+		if (document.getElementById(id).value == '') {
+			alert("Вначале необходимо выбрать запись в таблице!");
+			return;
+		}
+		
+		element.parentNode.submit();
+	}
+	
+	function eventListenerHandler() {
+		
+		recordTable = document.getElementById("timetable");
+		recordTableRows = recordTable.getElementsByTagName("tr");
+		for (let i = 0; i < recordTableRows.length; i++) {
+			recordTableRows[i].addEventListener("click", () => select(recordTableRows[i]));
+			recordTableRows[i].addEventListener("click", () => {
+				document.getElementById("record-id-to-be-detailed").value = recordTableRows[i].getElementsByTagName("input")[0].value;
+			});
+		}
+	}
+	
+	eventListenerHandler();
+</script>
+<script>
+	let table = document.getElementById("timetable");
+	let rows = table.getElementsByTagName("tr");
+	
+	for (let i = 0; i < rows.length; i++) {
+		let cells = rows[i].getElementsByTagName("a");
+		let dateTime = rows[i].getElementsByTagName("input")[1].value;
+		cells[0].innerText = getDate(dateTime);
+		cells[1].innerText = getTime(dateTime);
+	}
+</script>
+</body>
+
+</html>

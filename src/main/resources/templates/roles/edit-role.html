@@ -52,7 +52,7 @@
 	  					</thead>
 	  					<tbody id="authorities"> 			
 	               			<tr th:each="authority, stats : *{authorities}">
-	               				<td th:text="${authority.key}" name="value" th:value="${authority.key}" readonly="true"></td>
+	               				<td th:text="${authority.key}" th:value="${authority.key}"></td>
 	               				<td>
 	               					<input type="checkbox" th:checked="${authority.value}" th:value="${authority.value}" th:field="*{authorities[__${authority.key}__]}" th:name="value"/>
 	               				</td>

@@ -28,6 +28,7 @@
       	          <a href="/university/courses" class="btn btn-outline-primary">курсы</a>
       	          <a href="/university/positions" class="btn btn-outline-primary">должности</a>
       	          <a href="/university/timetable" class="btn btn-outline-primary">расписание</a>
+      	          <a href="/university/timetable/personal" class="btn btn-outline-primary">мое расписание</a>
       	          <a href="/university/roles" class="btn btn-outline-primary">роли</a>
       	          <a href="/university/users" class="btn btn-outline-primary">пользователи</a>
       	      </div>
@@ -38,7 +39,7 @@
 	    
 	    	function goToPage() {
 	    		
-	    		get('/university/users/active-user', function(data){
+	    		get('/university/api/users/active-user', function(data){
 	    			let user = data;
 	    			if (user.firstName == 'Unregistered') {
 	    				document.location.href = '/university/login';

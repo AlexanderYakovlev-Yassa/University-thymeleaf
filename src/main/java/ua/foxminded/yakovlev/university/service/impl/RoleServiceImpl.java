@@ -1,5 +1,6 @@
 package ua.foxminded.yakovlev.university.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,12 +12,15 @@ import ua.foxminded.yakovlev.university.service.RoleService;
 @Transactional
 public class RoleServiceImpl extends AbstractServiceJpa<Role, Long> implements RoleService {
 	
-	private static final String ADMIN_ROLE_NAME = "ADMIN";
-	
+	private static final String ADMIN_ROLE_NAME = "ADMIN";	
 	private static final String ENTITY_NAME = "Role";
+	
+	private final UserService userService;
 
-	public RoleServiceImpl(RoleRepository repository) {
-		super(repository);
+	@Autowired
+	public RoleServiceImpl(RoleRepository repository, UserService userService) {
+		super(repository);		
+		this.userService = userService;
 	}
 
 	@Override
@@ -33,7 +37,11 @@ public class RoleServiceImpl extends AbstractServiceJpa<Role, Long> implements R
 	public void delete(Long id) {
 		
 		if (ADMIN_ROLE_NAME.equals(findById(id).getName())) {
-			throw new IllegalArgumentException("Role " + ADMIN_ROLE_NAME + " can not be deleted");
+			throw new IllegalArgumentException("error_message.addmin_cant_be_deleted");
+		}
+		
+		if (!userService.findByRoleId(id).isEmpty()) {
+			throw new IllegalArgumentException("error_message.role_is_in_use");
 		}
 		
 		super.delete(id);
