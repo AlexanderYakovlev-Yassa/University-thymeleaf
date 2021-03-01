@@ -203,7 +203,7 @@ public class TimetableController {
     }
 	
 	@GetMapping("/personal")
-	//@PreAuthorize("hasAuthority('READ_TIMETABLE')")
+	@PreAuthorize("hasAuthority('READ_TIMETABLE')")
     public String showPersonalTimetable(
     		@RequestParam(name="start", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start, 
     		@RequestParam(name="numberOfDays", required = false) Long numberOfDays, 
